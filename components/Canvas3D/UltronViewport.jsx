@@ -237,7 +237,7 @@ function UltronViewportComponent({
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none bg-[radial-gradient(circle_at_50%_50%,rgba(255,184,0,0.28)_0%,rgba(221,119,0,0.18)_25%,rgba(180,83,9,0.10)_50%,rgba(15,12,5,0.85)_75%,#080602_100%)]">
+    <div className="relative w-full h-full overflow-hidden select-none bg-black">
       {/* 3D WebGL Canvas Container */}
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 

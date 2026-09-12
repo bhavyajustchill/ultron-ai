@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Activity,
   Mic,
   MicOff,
   Square,
@@ -15,7 +14,6 @@ import {
   Settings,
   Smartphone,
   Brain,
-  Terminal,
   ZoomIn,
   ZoomOut,
   RotateCcw,
@@ -49,9 +47,6 @@ export default function Home() {
     setIsKeyModalOpen,
     isMemoryVaultOpen,
     setIsMemoryVaultOpen,
-    isCommsLogOpen,
-    setIsCommsLogOpen,
-    commsLog,
     setIsSettingsModalOpen,
     loadStoredApiKey,
     loadStoredMicMuted,
@@ -64,8 +59,6 @@ export default function Home() {
     addCommsMessage,
     isMobileModalOpen,
     setIsMobileModalOpen,
-    isTelemetryOpen,
-    setIsTelemetryOpen,
     isIntelOpen,
     setIsIntelOpen,
     intelSearchResults,
@@ -294,9 +287,9 @@ export default function Home() {
   const statusBadge = getStatusBadge();
 
   return (
-    <main className="relative w-screen h-screen bg-[#080602] text-[#F0F2F8] overflow-hidden select-none">
-      {/* Background Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(255,184,0,0.08),rgba(8,6,2,0.98))] pointer-events-none" />
+    <main className="relative w-screen h-screen bg-black text-[#F0F2F8] overflow-hidden select-none">
+      {/* Pure Black Void Backdrop */}
+      <div className="absolute inset-0 bg-black pointer-events-none" />
 
       {/* TOP MIDDLE BRANDING: ULTRON // AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
@@ -312,26 +305,8 @@ export default function Home() {
         </span>
       </div>
 
-      {/* TOP LEFT BUTTON CLUSTER: SYSTEMS & INTEL */}
-      <div className="absolute top-6 left-6 z-20 flex items-center gap-2">
-        {/* Systems Panel Toggle */}
-        <button
-          onClick={() => {
-            if (isTelemetryOpen) {
-              window.dispatchEvent(new CustomEvent("ada-close-telemetry"));
-            } else {
-              setIsTelemetryOpen(true);
-            }
-          }}
-          className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isTelemetryOpen
-            ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
-            : "border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
-            }`}
-          title="Toggle Systems & Telemetry Panel">
-          <Activity className="w-3.5 h-3.5 text-[#FFB800]" />
-          <span className="hidden sm:inline tracking-wider">SYSTEMS</span>
-        </button>
-
+      {/* TOP RIGHT CLUSTER: INTEL + ZOOM CONTROLS + FULLSCREEN */}
+      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         {/* Intel Modal Toggle */}
         <button
           onClick={() => {
@@ -354,10 +329,7 @@ export default function Home() {
             </span>
           )}
         </button>
-      </div>
 
-      {/* TOP RIGHT CLUSTER: ZOOM CONTROLS + COMMS LOG */}
-      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         {/* Camera Zoom & Reset Controls */}
         <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
           <button
@@ -392,29 +364,6 @@ export default function Home() {
             <Minimize2 className="w-3.5 h-3.5 text-[#FFB800]" />
           ) : (
             <Maximize2 className="w-3.5 h-3.5" />
-          )}
-        </button>
-
-        {/* Comms Log Toggle Button */}
-        <button
-          onClick={() => {
-            if (isCommsLogOpen) {
-              window.dispatchEvent(new CustomEvent("ada-close-comms"));
-            } else {
-              setIsCommsLogOpen(true);
-            }
-          }}
-          className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isCommsLogOpen
-            ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
-            : "border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
-            }`}
-          title="Toggle Comms Log Feed">
-          <Terminal className="w-3.5 h-3.5 text-[#FFB800]" />
-          <span className="hidden sm:inline tracking-wider">COMMS LOG</span>
-          {commsLog && commsLog.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
-              {commsLog.length}
-            </span>
           )}
         </button>
       </div>
@@ -637,17 +586,21 @@ export default function Home() {
       {/* Sci-Fi Neural Memory Vault Modal */}
       <SciFiMemoryVaultModal />
 
-      {/* Floating Right-Side Comms Log Panel (No Backdrop Blur) */}
-      <CommsLog sendTextMessage={sendTextMessage} />
+      {/* PERMANENT LEFT HUD STACK (SYSTEMS ABOVE, COMMS LOG ON BOTTOM) */}
+      <aside className="fixed top-6 left-4 sm:left-6 bottom-40 w-88 sm:w-96 max-w-[calc(100vw-2rem)] z-30 flex flex-col gap-2.5 pointer-events-none">
+        <div className="flex-[1.15] min-h-0 flex flex-col pointer-events-auto">
+          <TelemetryPanel
+            isConnected={isConnected}
+            onToggleConnection={handleToggleConnection}
+          />
+        </div>
+        <div className="flex-1 min-h-0 flex flex-col pointer-events-auto">
+          <CommsLog sendTextMessage={sendTextMessage} />
+        </div>
+      </aside>
 
       {/* Sci-Fi Operative Settings & Customization Modal */}
       <SciFiSettingsModal onReconnectSession={connectSession} />
-
-      {/* Floating Left-Side Systems & Telemetry Panel */}
-      <TelemetryPanel
-        isConnected={isConnected}
-        onToggleConnection={handleToggleConnection}
-      />
 
       {/* Floating Freely-Movable Neural Intel & Reconnaissance Modal */}
       <IntelModal />

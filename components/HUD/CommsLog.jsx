@@ -6,95 +6,26 @@ import { useAdaStore } from "@/lib/store";
 import { MarkdownText } from "@/components/HUD/MarkdownText";
 
 export function CommsLog({ sendTextMessage }) {
-  const { isCommsLogOpen, setIsCommsLogOpen, commsLog } = useAdaStore();
-
-  const [isClosing, setIsClosing] = useState(false);
-  const closeTimeoutRef = useRef(null);
-
+  const { commsLog } = useAdaStore();
   const scrollRef = useRef(null);
-  const [message, setMessage] = useState("");
-  const inputRef = useRef(null);
 
   // Auto-scroll on new comms message
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [commsLog, isCommsLogOpen]);
-
-  // Smooth Shutter Close
-  const triggerClose = useCallback(() => {
-    if (isClosing) return;
-    setIsClosing(true);
-    closeTimeoutRef.current = setTimeout(() => {
-      setIsCommsLogOpen(false);
-      setIsClosing(false);
-    }, 220); // Matches 0.22s scifi-modal-collapse-up keyframe
-  }, [isClosing, setIsCommsLogOpen]);
-
-  // Listen for external close toggle event (e.g. from top header button)
-  useEffect(() => {
-    const handleExternalClose = () => {
-      if (isCommsLogOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("ada-close-comms", handleExternalClose);
-    return () => window.removeEventListener("ada-close-comms", handleExternalClose);
-  }, [isCommsLogOpen, triggerClose]);
-
-  // Keyboard shortcut: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isCommsLogOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isCommsLogOpen, triggerClose]);
-
-  // Clean up timer on unmount
-  useEffect(() => {
-    return () => {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    };
-  }, []);
-
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
-    const trimmed = message.trim();
-    if (!trimmed) return;
-    if (sendTextMessage) {
-      sendTextMessage(trimmed);
-      setMessage("");
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
-
-  if (!isCommsLogOpen && !isClosing) return null;
+  }, [commsLog]);
 
   return (
     <aside
-      className={`fixed top-18 right-6 h-[44vh] max-h-[440px] w-88 sm:w-96 max-w-[calc(100vw-3rem)] z-30 flex flex-col bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255,184,0,0.25)] shadow-[0_0_40px_rgba(255,184,0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 ${
-        isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
-      }`}>
+      className="w-full flex-1 min-h-0 flex flex-col bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255,184,0,0.25)] shadow-[0_0_40px_rgba(255,184,0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3 gap-2">
       {/* Top Accent Gradient Line */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#CC8800] via-[#FFB800] to-[#CC8800] animate-pulse shrink-0" />
+      <div className="mx-4 mt-0.5 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#CC8800] via-[#FFB800] to-[#CC8800] animate-pulse shrink-0" />
 
       {/* Header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-[rgba(255,184,0,0.18)] shrink-0">
+      <div className="px-2 py-1.5 flex items-center justify-between border-b border-[rgba(255,184,0,0.18)] shrink-0">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 chamfer-xs bg-[rgba(255,184,0,0.1)] border border-[rgba(255,184,0,0.3)] shadow-[0_0_8px_rgba(255,184,0,0.25)]">
+          <div className="p-1 chamfer-xs bg-[rgba(255,184,0,0.1)] border border-[rgba(255,184,0,0.3)] shadow-[0_0_8px_rgba(255,184,0,0.25)]">
             <Terminal className="w-3.5 h-3.5 text-[#FFB800]" />
           </div>
           <span className="text-xs font-bold font-['Orbitron',sans-serif] tracking-wider text-[#FFB800] flex items-center gap-1.5">
@@ -104,21 +35,12 @@ export function CommsLog({ sendTextMessage }) {
             </span>
           </span>
         </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={triggerClose}
-            className="p-1 chamfer-xs border border-transparent hover:border-[rgba(255,184,0,0.3)] hover:bg-[rgba(255,184,0,0.1)] text-[#9E8B65] hover:text-[#FFB800] transition-all cursor-pointer"
-            title="Close Comms Log (Esc)">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
       </div>
 
       {/* Transcript Feed (Scrollable) */}
       <div
         ref={scrollRef}
-        className="flex-1 flex flex-col gap-2.5 p-3 font-mono text-xs overflow-y-auto pr-1.5 min-h-0">
+        className="flex-1 flex flex-col gap-2 p-1.5 font-mono text-xs overflow-y-auto pr-1 min-h-0">
         {commsLog.map((item) => {
           const isUltron = item.sender === "ultron" || item.sender === "jarvis" || item.sender === "ada";
           const isUser = item.sender === "user";

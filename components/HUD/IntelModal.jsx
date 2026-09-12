@@ -40,12 +40,12 @@ export function IntelModal() {
   const [position, setPosition] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Initialize position: x = 424px (24px left + 384px SystemsPanel + 16px gap), y = 72px (top-18)
+  // Initialize position: top-right where Comms Log used to live (x = window.innerWidth - panelWidth - 24, y = 72)
   useEffect(() => {
     if (isIntelOpen && position === null && typeof window !== "undefined") {
       const panelWidth = panelRef.current?.offsetWidth || 460;
-      const defaultX = Math.min(424, Math.max(10, window.innerWidth - panelWidth - 16));
-      const defaultY = 72; // Aligned with top-18 Systems Panel
+      const defaultX = Math.max(10, window.innerWidth - panelWidth - 24);
+      const defaultY = 72; // Aligned with top-18
       setPosition({ x: defaultX, y: defaultY });
     }
   }, [isIntelOpen, position]);
@@ -96,7 +96,7 @@ export function IntelModal() {
       return;
     }
 
-    const currentX = position?.x ?? 424;
+    const currentX = position?.x ?? (typeof window !== "undefined" ? Math.max(10, window.innerWidth - 484) : 800);
     const currentY = position?.y ?? 72;
 
     dragStartRef.current = {
@@ -187,7 +187,7 @@ export function IntelModal() {
           }
           : undefined
       }
-      className={`fixed z-35 ${!position ? "top-18 left-[424px]" : ""
+      className={`fixed z-35 ${!position ? "top-18 right-6" : ""
         } ${isMinimized ? "w-80 h-auto" : "w-96 sm:w-[460px] md:w-[500px] h-[44vh] max-h-[440px]"
         } max-w-[calc(100vw-2rem)] flex flex-col bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255, 184, 0,0.25)] shadow-[0_0_40px_rgba(255, 184, 0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 gap-2.5 ${isDragging ? "shadow-[0_0_50px_rgba(255, 184, 0,0.25)] border-[rgba(255, 184, 0,0.5)]" : ""
         } ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>

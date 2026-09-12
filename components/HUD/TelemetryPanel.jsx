@@ -225,50 +225,7 @@ const HostStatsCard = React.memo(function HostStatsCard() {
 });
 
 function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
-  const { setSystemTelemetry, setIsSettingsModalOpen, isTelemetryOpen, setIsTelemetryOpen } =
-    useAdaStore();
-
-  const [isClosing, setIsClosing] = useState(false);
-  const closeTimeoutRef = useRef(null);
-
-  // Smooth Shutter Close
-  const triggerClose = useCallback(() => {
-    if (isClosing) return;
-    setIsClosing(true);
-    closeTimeoutRef.current = setTimeout(() => {
-      setIsTelemetryOpen(false);
-      setIsClosing(false);
-    }, 220);
-  }, [isClosing, setIsTelemetryOpen]);
-
-  // Listen for external close toggle event (e.g. from top header button)
-  useEffect(() => {
-    const handleExternalClose = () => {
-      if (isTelemetryOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("ada-close-telemetry", handleExternalClose);
-    return () => window.removeEventListener("ada-close-telemetry", handleExternalClose);
-  }, [isTelemetryOpen, triggerClose]);
-
-  // Keyboard shortcut: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isTelemetryOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isTelemetryOpen, triggerClose]);
-
-  // Clean up close timer on unmount
-  useEffect(() => {
-    return () => {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    };
-  }, []);
+  const { setSystemTelemetry } = useAdaStore();
 
   // Poll host operating system telemetry every 2.5 seconds
   useEffect(() => {
@@ -295,21 +252,18 @@ function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
     };
   }, [setSystemTelemetry]);
 
-  if (!isTelemetryOpen && !isClosing) return null;
-
   return (
     <aside
-      className={`fixed top-18 left-6 h-[44vh] max-h-[440px] w-88 sm:w-96 max-w-[calc(100vw-3rem)] z-30 flex flex-col bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255,184,0,0.25)] shadow-[0_0_40px_rgba(255,184,0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 gap-2.5 ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
-        }`}>
+      className="w-full flex-1 min-h-0 flex flex-col bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255,184,0,0.25)] shadow-[0_0_40px_rgba(255,184,0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3 gap-2">
       {/* TOP ACCENT LINE */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#CC8800] via-[#FFB800] to-[#CC8800] animate-pulse shrink-0" />
+      <div className="mx-4 mt-0.5 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#CC8800] via-[#FFB800] to-[#CC8800] animate-pulse shrink-0" />
 
-      {/* TOP HEADER: BRANDING & CONTROLS */}
-      <div className="flex items-center justify-between border-b border-[rgba(255,184,0,0.18)] pb-2 shrink-0">
+      {/* TOP HEADER: BRANDING */}
+      <div className="flex items-center justify-between border-b border-[rgba(255,184,0,0.18)] pb-1.5 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 bg-[#FFB800] rounded-full animate-pulse shadow-[0_0_8px_#FFB800]" />
           <div className="flex flex-col">
-            <span className="text-sm font-['Orbitron',sans-serif] font-black tracking-widest text-[#FFB800]">
+            <span className="text-xs sm:text-sm font-['Orbitron',sans-serif] font-black tracking-widest text-[#FFB800]">
               SYSTEMS PANEL
             </span>
             <span className="text-[9px] font-mono tracking-wider text-[#9E8B65] uppercase">
@@ -317,22 +271,12 @@ function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
             </span>
           </div>
         </div>
-
-        <div className="flex items-center gap-1">
-          {/* Close Panel Button */}
-          <button
-            onClick={triggerClose}
-            className="p-1.5 chamfer-btn border border-transparent hover:border-[rgba(255,184,0,0.3)] hover:bg-[rgba(255,184,0,0.1)] text-[#9E8B65] hover:text-[#FFB800] transition-all cursor-pointer"
-            title="Close Systems Panel (Esc)">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
       </div>
 
       {/* SCROLLABLE SYS CONTENT */}
-      <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-1 min-h-0">
+      <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-1 min-h-0">
         {/* System Metric Cards */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           <CpuMetricCard />
           <MemMetricCard />
           <NetworkThroughputBadge />
