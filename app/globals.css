@@ -75,48 +75,21 @@ body {
   pointer-events: none;
 }
 
-/* Cyberpunk Tactical Chamfer Corners (Native 45-Degree Bevel with Continuous Borders) */
-.chamfer-xs {
-  border-radius: 3px;
-  corner-shape: bevel;
-}
-
-.chamfer-sm {
-  border-radius: 4px;
-  corner-shape: bevel;
-}
-
-.chamfer-btn {
-  border-radius: 6px;
-  corner-shape: bevel;
-}
-
-.chamfer-md {
-  border-radius: 8px;
-  corner-shape: bevel;
-}
-
-.chamfer-lg {
-  border-radius: 14px;
-  corner-shape: bevel;
-}
-
-.chamfer-xl {
-  border-radius: 18px;
-  corner-shape: bevel;
-}
-
-.chamfer-diagonal {
-  border-radius: 10px 0 10px 0;
-  corner-shape: bevel;
-}
-
+/* Sharp Squared 90-Degree Tactical Geometry (Zero Bevel / Sharp Corners) */
+.chamfer-xs,
+.chamfer-sm,
+.chamfer-btn,
+.chamfer-md,
+.chamfer-lg,
+.chamfer-xl,
+.chamfer-diagonal,
 .chamfer-tab {
-  border-radius: 8px 8px 0 0;
-  corner-shape: bevel;
+  border-radius: 0px !important;
+  corner-shape: initial !important;
+  clip-path: none !important;
 }
 
-/* Cyberpunk Tactical HUD Panels with Chamfered Edges */
+/* Tactical HUD Panels with Sharp 90-Degree Squared Edges */
 .hud-panel {
   background: rgba(13, 11, 5, 0.88);
   backdrop-filter: blur(12px);
@@ -124,8 +97,9 @@ body {
   box-shadow:
     0 0 15px rgba(0, 0, 0, 0.85),
     inset 0 0 10px rgba(255, 184, 0, 0.05);
-  border-radius: 14px;
-  corner-shape: bevel;
+  border-radius: 0px !important;
+  corner-shape: initial !important;
+  clip-path: none !important;
 }
 
 .hud-panel-cyan {
@@ -135,116 +109,9 @@ body {
   box-shadow:
     0 0 15px rgba(0, 0, 0, 0.8),
     inset 0 0 10px rgba(255, 184, 0, 0.05);
-  border-radius: 14px;
-  corner-shape: bevel;
-}
-
-/* Fallback for non-supporting browser engines (e.g. Gecko/Firefox) */
-@supports not (corner-shape: bevel) {
-  .chamfer-xs {
-    clip-path: polygon(
-      3px 0%,
-      calc(100% - 3px) 0%,
-      100% 3px,
-      100% calc(100% - 3px),
-      calc(100% - 3px) 100%,
-      3px 100%,
-      0% calc(100% - 3px),
-      0% 3px
-    );
-  }
-  .chamfer-sm {
-    clip-path: polygon(
-      4px 0%,
-      calc(100% - 4px) 0%,
-      100% 4px,
-      100% calc(100% - 4px),
-      calc(100% - 4px) 100%,
-      4px 100%,
-      0% calc(100% - 4px),
-      0% 4px
-    );
-  }
-  .chamfer-btn {
-    clip-path: polygon(
-      6px 0%,
-      calc(100% - 6px) 0%,
-      100% 6px,
-      100% calc(100% - 6px),
-      calc(100% - 6px) 100%,
-      6px 100%,
-      0% calc(100% - 6px),
-      0% 6px
-    );
-  }
-  .chamfer-md {
-    clip-path: polygon(
-      8px 0%,
-      calc(100% - 8px) 0%,
-      100% 8px,
-      100% calc(100% - 8px),
-      calc(100% - 8px) 100%,
-      8px 100%,
-      0% calc(100% - 8px),
-      0% 8px
-    );
-  }
-  .chamfer-lg {
-    clip-path: polygon(
-      14px 0%,
-      calc(100% - 14px) 0%,
-      100% 14px,
-      100% calc(100% - 14px),
-      calc(100% - 14px) 100%,
-      14px 100%,
-      0% calc(100% - 14px),
-      0% 14px
-    );
-  }
-  .chamfer-xl {
-    clip-path: polygon(
-      18px 0%,
-      calc(100% - 18px) 0%,
-      100% 18px,
-      100% calc(100% - 18px),
-      calc(100% - 18px) 100%,
-      18px 100%,
-      0% calc(100% - 18px),
-      0% 18px
-    );
-  }
-  .chamfer-diagonal {
-    clip-path: polygon(
-      10px 0%,
-      100% 0%,
-      100% calc(100% - 10px),
-      calc(100% - 10px) 100%,
-      0% 100%,
-      0% 10px
-    );
-  }
-  .chamfer-tab {
-    clip-path: polygon(
-      0% 0%,
-      calc(100% - 8px) 0%,
-      100% 8px,
-      100% 100%,
-      0% 100%
-    );
-  }
-  .hud-panel,
-  .hud-panel-cyan {
-    clip-path: polygon(
-      14px 0%,
-      calc(100% - 14px) 0%,
-      100% 14px,
-      100% calc(100% - 14px),
-      calc(100% - 14px) 100%,
-      14px 100%,
-      0% calc(100% - 14px),
-      0% 14px
-    );
-  }
+  border-radius: 0px !important;
+  corner-shape: initial !important;
+  clip-path: none !important;
 }
 
 /* Neon Glows */
@@ -280,7 +147,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #ffb800;
-  border-radius: 2px;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

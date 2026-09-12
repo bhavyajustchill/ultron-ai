@@ -298,16 +298,16 @@ export default function Home() {
       {/* Background Radial Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(255,184,0,0.08),rgba(8,6,2,0.98))] pointer-events-none" />
 
-      {/* TOP MIDDLE BRANDING: U.L.T.R.O.N // AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM */}
+      {/* TOP MIDDLE BRANDING: ULTRON // AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
-        <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] animate-pulse shadow-[0_0_12px_#FFB800]" />
-          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(255,184,0,0.45)]">
-            U.L.T.R.O.N
+        <div className="flex items-center gap-2.5">
+          <span className="w-1.5 h-1.5 bg-[#FFB800] animate-pulse shadow-[0_0_8px_#FFB800]" />
+          <h1 className="font-['Orbitron',sans-serif] text-lg sm:text-xl md:text-2xl font-black tracking-[0.28em] text-[#F0F2F8] drop-shadow-[0_0_14px_rgba(255,184,0,0.45)]">
+            ULTRON
           </h1>
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] animate-pulse shadow-[0_0_12px_#FFB800]" />
+          <span className="w-1.5 h-1.5 bg-[#FFB800] animate-pulse shadow-[0_0_8px_#FFB800]" />
         </div>
-        <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[#FFB800] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(255,184,0,0.35)] whitespace-nowrap">
+        <span className="font-mono text-[8px] sm:text-[10px] md:text-[11px] tracking-[0.18em] sm:tracking-[0.24em] text-[#FFB800] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_8px_rgba(255,184,0,0.35)] whitespace-nowrap">
           AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM
         </span>
       </div>
@@ -349,7 +349,7 @@ export default function Home() {
           <Globe className="w-3.5 h-3.5 text-[#FFB800]" />
           <span className="hidden sm:inline tracking-wider">INTEL</span>
           {intelSearchResults && intelSearchResults.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
               {intelSearchResults.length}
             </span>
           )}
@@ -412,7 +412,7 @@ export default function Home() {
           <Terminal className="w-3.5 h-3.5 text-[#FFB800]" />
           <span className="hidden sm:inline tracking-wider">COMMS LOG</span>
           {commsLog && commsLog.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
               {commsLog.length}
             </span>
           )}
