@@ -1,0 +1,343 @@
+@import "tailwindcss";
+
+:root {
+  /* Core Brand & Neon Highlights (JARVIS Electric Aqua-Cyan Theme) */
+  --jarvis-cyan: #00e5ff;
+  --jarvis-cyan-dim: #00364d;
+  --ada-scarlet: var(--jarvis-cyan);
+  --ada-scarlet-dim: var(--jarvis-cyan-dim);
+  --cyber-cyan: #00e5ff;
+  --amber-alert: #ffe600;
+
+  /* Tactical Surfaces & Depth (Deep Space Carbon Cyan) */
+  --void-black: #010e16;
+  --carbon-900: #031520;
+  --carbon-800: #071f30;
+  --carbon-border: rgba(0, 229, 255, 0.32);
+  --cyan-border: rgba(0, 229, 255, 0.32);
+
+  /* Text & Readability */
+  --text-primary: #f0f2f8;
+  --text-muted: #7e859e;
+  --text-cyan: #70f0ff;
+
+  --background: var(--void-black);
+  --foreground: var(--text-primary);
+}
+
+@theme inline {
+  --color-jarvis-cyan: var(--jarvis-cyan);
+  --color-jarvis-cyan-dim: var(--jarvis-cyan-dim);
+  --color-ada-scarlet: var(--ada-scarlet);
+  --color-ada-scarlet-dim: var(--ada-scarlet-dim);
+  --color-cyber-cyan: var(--cyber-cyan);
+  --color-amber-alert: var(--amber-alert);
+  --color-void-black: var(--void-black);
+  --color-carbon-900: var(--carbon-900);
+  --color-carbon-800: var(--carbon-800);
+  --color-carbon-border: var(--carbon-border);
+  --color-cyan-border: var(--cyan-border);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-text-cyan: var(--text-cyan);
+
+  --font-orbitron: var(--font-orbitron), sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+  --font-rajdhani: var(--font-rajdhani), sans-serif;
+}
+
+body {
+  background-color: var(--void-black);
+  color: var(--text-primary);
+  font-family:
+    var(--font-rajdhani),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+}
+
+/* CRT Scanline overlay */
+.crt-scanlines {
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size:
+    100% 3px,
+    6px 100%;
+  pointer-events: none;
+}
+
+/* Cyberpunk Tactical Chamfer Corners (Native 45-Degree Bevel with Continuous Borders) */
+.chamfer-xs {
+  border-radius: 3px;
+  corner-shape: bevel;
+}
+
+.chamfer-sm {
+  border-radius: 4px;
+  corner-shape: bevel;
+}
+
+.chamfer-btn {
+  border-radius: 6px;
+  corner-shape: bevel;
+}
+
+.chamfer-md {
+  border-radius: 8px;
+  corner-shape: bevel;
+}
+
+.chamfer-lg {
+  border-radius: 14px;
+  corner-shape: bevel;
+}
+
+.chamfer-xl {
+  border-radius: 18px;
+  corner-shape: bevel;
+}
+
+.chamfer-diagonal {
+  border-radius: 10px 0 10px 0;
+  corner-shape: bevel;
+}
+
+.chamfer-tab {
+  border-radius: 8px 8px 0 0;
+  corner-shape: bevel;
+}
+
+/* Cyberpunk Tactical HUD Panels with Chamfered Edges */
+.hud-panel {
+  background: rgba(5, 11, 18, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  box-shadow:
+    0 0 15px rgba(0, 0, 0, 0.75),
+    inset 0 0 10px rgba(0, 240, 255, 0.05);
+  border-radius: 14px;
+  corner-shape: bevel;
+}
+
+.hud-panel-cyan {
+  background: rgba(10, 11, 16, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow:
+    0 0 15px rgba(0, 0, 0, 0.7),
+    inset 0 0 10px rgba(0, 240, 255, 0.04);
+  border-radius: 14px;
+  corner-shape: bevel;
+}
+
+/* Fallback for non-supporting browser engines (e.g. Gecko/Firefox) */
+@supports not (corner-shape: bevel) {
+  .chamfer-xs {
+    clip-path: polygon(
+      3px 0%,
+      calc(100% - 3px) 0%,
+      100% 3px,
+      100% calc(100% - 3px),
+      calc(100% - 3px) 100%,
+      3px 100%,
+      0% calc(100% - 3px),
+      0% 3px
+    );
+  }
+  .chamfer-sm {
+    clip-path: polygon(
+      4px 0%,
+      calc(100% - 4px) 0%,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      0% calc(100% - 4px),
+      0% 4px
+    );
+  }
+  .chamfer-btn {
+    clip-path: polygon(
+      6px 0%,
+      calc(100% - 6px) 0%,
+      100% 6px,
+      100% calc(100% - 6px),
+      calc(100% - 6px) 100%,
+      6px 100%,
+      0% calc(100% - 6px),
+      0% 6px
+    );
+  }
+  .chamfer-md {
+    clip-path: polygon(
+      8px 0%,
+      calc(100% - 8px) 0%,
+      100% 8px,
+      100% calc(100% - 8px),
+      calc(100% - 8px) 100%,
+      8px 100%,
+      0% calc(100% - 8px),
+      0% 8px
+    );
+  }
+  .chamfer-lg {
+    clip-path: polygon(
+      14px 0%,
+      calc(100% - 14px) 0%,
+      100% 14px,
+      100% calc(100% - 14px),
+      calc(100% - 14px) 100%,
+      14px 100%,
+      0% calc(100% - 14px),
+      0% 14px
+    );
+  }
+  .chamfer-xl {
+    clip-path: polygon(
+      18px 0%,
+      calc(100% - 18px) 0%,
+      100% 18px,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      18px 100%,
+      0% calc(100% - 18px),
+      0% 18px
+    );
+  }
+  .chamfer-diagonal {
+    clip-path: polygon(
+      10px 0%,
+      100% 0%,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0% 100%,
+      0% 10px
+    );
+  }
+  .chamfer-tab {
+    clip-path: polygon(
+      0% 0%,
+      calc(100% - 8px) 0%,
+      100% 8px,
+      100% 100%,
+      0% 100%
+    );
+  }
+  .hud-panel,
+  .hud-panel-cyan {
+    clip-path: polygon(
+      14px 0%,
+      calc(100% - 14px) 0%,
+      100% 14px,
+      100% calc(100% - 14px),
+      calc(100% - 14px) 100%,
+      14px 100%,
+      0% calc(100% - 14px),
+      0% 14px
+    );
+  }
+}
+
+/* Neon Glows */
+.glow-scarlet {
+  box-shadow:
+    0 0 15px rgba(0, 229, 255, 0.45),
+    inset 0 0 8px rgba(0, 229, 255, 0.18);
+}
+
+.glow-cyan {
+  box-shadow:
+    0 0 15px rgba(0, 229, 255, 0.45),
+    inset 0 0 8px rgba(0, 229, 255, 0.18);
+}
+
+.text-glow-scarlet {
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.85);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.85);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #02121c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00e5ff;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4df3ff;
+}
+
+/* Sci-Fi Holographic Shutter Unfold & Collapse Animations (Vertical Up/Down) */
+@keyframes scifiModalUnfoldDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scaleY(0.06);
+    clip-path: inset(0 0 94% 0);
+    filter: brightness(2.2) drop-shadow(0 0 25px rgba(0, 229, 255, 0.6));
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1.02);
+    clip-path: inset(0 0 0% 0);
+    filter: brightness(1.2) drop-shadow(0 0 15px rgba(0, 229, 255, 0.2));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    clip-path: none;
+    filter: brightness(1);
+  }
+}
+
+@keyframes scifiModalCollapseUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    clip-path: none;
+    filter: brightness(1);
+  }
+  30% {
+    opacity: 1;
+    filter: brightness(1.6) drop-shadow(0 0 20px rgba(0, 229, 255, 0.6));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-24px) scaleY(0.04);
+    clip-path: inset(0 0 94% 0);
+    filter: brightness(2);
+  }
+}
+
+.scifi-modal-unfold-down {
+  animation: scifiModalUnfoldDown 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+
+.scifi-modal-collapse-up {
+  animation: scifiModalCollapseUp 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: top center;
+}
+
+.scifi-modal-grow {
+  animation: scifiModalUnfoldDown 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+
