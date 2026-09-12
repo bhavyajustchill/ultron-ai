@@ -1,0 +1,20 @@
+Create a Custom Interface
+Connect to a free AI
+Add a realistic Voice
+Customize its personality, name and wake phrase
+Computer Control
+Real-time web search
+Long-term memory (rag based)
+Spotify integration
+Built-in youtube player
+PDF and document creation
+File Uploads
+Create files and folders
+write/update files
+open websites
+open apps
+create new projects with basic template (flutter, react, node/express api, next js, shadcn admin panel)
+run terminal commands
+organize any folder to make sub folders for file types (like downloads folder for example)
+gltf viewer
+humor

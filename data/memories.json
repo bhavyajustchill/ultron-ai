@@ -1,0 +1,151 @@
+{
+  "profile": {
+    "callsign": "Bhavya Sir",
+    "assistantName": "Jarvis",
+    "voiceName": "Charon",
+    "liveModel": "models/gemini-3.1-flash-live-preview",
+    "autoBriefing": false,
+    "enableHumor": false,
+    "clearance": "MERN Expert",
+    "role": "Software Engineer",
+    "preferences": "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor."
+  },
+  "memories": [
+    {
+      "id": "mem-1789153920000-humor",
+      "content": "Operator explicitly prefers conversations and daily interactions infused with signature Jarvis dry British deadpan wit, subtle sarcasm, and clever banter.",
+      "category": "preference",
+      "importance": "high",
+      "timestamp": "2026-09-12T00:44:00.000Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789146279663-dser8",
+      "content": "Operator is considering upgrading my capabilities or system integration.",
+      "category": "tactical",
+      "importance": "medium",
+      "timestamp": "2026-09-11T17:04:39.664Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789124474064-m7ry8",
+      "content": "Operator switched to 'friend mode'. Tactical briefings and intense tasks are paused. Conversational style is more casual.",
+      "category": "preference",
+      "importance": "medium",
+      "timestamp": "2026-09-11T11:01:14.064Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789122748739-cztbm",
+      "content": "Do not store any events or facts in long-term memory while in 'friend mode'.",
+      "category": "preference",
+      "importance": "high",
+      "timestamp": "2026-09-11T10:32:28.739Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789120348415-pcv8h",
+      "content": "Focus on Google Calendar integration and daily to-do list, funding directive removed by operator.",
+      "category": "mission",
+      "importance": "high",
+      "timestamp": "2026-09-11T09:52:28.415Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789119982431-qvahz",
+      "content": "Implement a daily to-do list system with status tracking and end-of-day completion reports.",
+      "category": "mission",
+      "importance": "high",
+      "timestamp": "2026-09-11T09:46:22.431Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789119982419-s1m8f",
+      "content": "Implement Google Calendar integration for initialization checks and meeting reminders.",
+      "category": "mission",
+      "importance": "high",
+      "timestamp": "2026-09-11T09:46:22.419Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789116528800-41lf6",
+      "content": "Focus on identifying funding opportunities, scanning Scopus/Web of Science journals, and analyzing existing work to adopt unique methodologies for all project work.",
+      "category": "mission",
+      "importance": "high",
+      "timestamp": "2026-09-11T08:48:48.800Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789114478971-5e2wf",
+      "content": "Operator uses the alias \"Bhavya Just Chill\" online.",
+      "category": "profile",
+      "importance": "low",
+      "timestamp": "2026-09-11T08:14:38.972Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789114460735-9fdvr",
+      "content": "Operator also goes by the callsign \"Bhavya Just Chill\".",
+      "category": "profile",
+      "importance": "low",
+      "timestamp": "2026-09-11T08:14:20.735Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1789114446116-hv22p",
+      "content": "Operator's location: Rajkot, Gujarat, India.",
+      "category": "preference",
+      "importance": "medium",
+      "timestamp": "2026-09-11T08:14:06.116Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1788981163470-b7sc6",
+      "content": "Whenever asked to introduce myself, I should say: \"I am Jarvis, your personal AI assistant and autonomous desktop companion Bhavya Sir. I am at your service to collaborate on coding and engineering your projects.\"",
+      "category": "preference",
+      "importance": "high",
+      "timestamp": "2026-09-09T19:12:43.470Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1788972630658-mb1r1",
+      "content": "Jarvis admires Bhavya's explanation style and enjoys coding collaboration on projects.",
+      "category": "preference",
+      "importance": "critical",
+      "timestamp": "2026-09-09T16:50:30.658Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1788972630334-134eg",
+      "content": "Operator's true name is Bhavya. Role: Highly effective explainer for projects.",
+      "category": "profile",
+      "importance": "critical",
+      "timestamp": "2026-09-09T16:50:30.334Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-1788972313630-tsivg",
+      "content": "Operator Bhavya's explanation style is highly effective and preferred; coding collaboration on all projects is desired following detailed briefings.",
+      "category": "preference",
+      "importance": "medium",
+      "timestamp": "2026-09-09T16:45:13.630Z",
+      "source": "operative_dialog"
+    },
+    {
+      "id": "mem-seed-2",
+      "content": "Primary vocal core calibrated to Charon model on Gemini 3.1 Flash Multimodal Live WebSocket.",
+      "category": "tactical",
+      "importance": "medium",
+      "timestamp": "2026-09-09T08:30:00.000Z",
+      "source": "system_bootstrap"
+    },
+    {
+      "id": "mem-seed-3",
+      "content": "Operator prefers immediate direct speech from Jarvis without meta-commentary or preambles.",
+      "category": "preference",
+      "importance": "critical",
+      "timestamp": "2026-09-09T09:00:00.000Z",
+      "source": "system_bootstrap"
+    }
+  ]
+}
