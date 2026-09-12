@@ -245,42 +245,42 @@ export default function Home() {
         return {
           text: "JARVIS // TRANSMITTING",
           color:
-            "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.15)] shadow-[0_0_15px_rgba(0,229,255,0.4)]",
-          dot: "bg-[#00E5FF] animate-ping",
+            "text-[#FFB800] border-[#FFB800] bg-[rgba(255,184,0,0.15)] shadow-[0_0_15px_rgba(255,184,0,0.4)]",
+          dot: "bg-[#FFB800] animate-ping",
         };
       case "LISTENING":
         return {
           text: "MIC // LISTENING",
           color:
-            "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.1)] shadow-[0_0_15px_rgba(0,229,255,0.3)]",
-          dot: "bg-[#00E5FF] animate-pulse",
+            "text-[#FFB800] border-[#FFB800] bg-[rgba(255,184,0,0.1)] shadow-[0_0_15px_rgba(255,184,0,0.3)]",
+          dot: "bg-[#FFB800] animate-pulse",
         };
       case "CONNECTED":
         return isMuted
           ? {
             text: "MIC OFF // TEXT ONLY",
             color:
-              "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.12)] shadow-[0_0_12px_rgba(0,229,255,0.3)]",
-            dot: "bg-[#00E5FF]",
+              "text-[#FFB800] border-[#FFB800] bg-[rgba(255,184,0,0.12)] shadow-[0_0_12px_rgba(255,184,0,0.3)]",
+            dot: "bg-[#FFB800]",
           }
           : {
             text: "LINK // READY",
             color:
-              "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.1)] shadow-[0_0_12px_rgba(0,229,255,0.25)]",
-            dot: "bg-[#00E5FF] animate-pulse",
+              "text-[#FFB800] border-[#FFB800] bg-[rgba(255,184,0,0.1)] shadow-[0_0_12px_rgba(255,184,0,0.25)]",
+            dot: "bg-[#FFB800] animate-pulse",
           };
       case "THINKING":
         return {
           text: "NEURAL // PROCESSING",
           color:
-            "text-[#FFE600] border-[#FFE600] bg-[rgba(255,230,0,0.1)] shadow-[0_0_15px_rgba(255,230,0,0.3)]",
-          dot: "bg-[#FFE600] animate-bounce",
+            "text-[#FFAA00] border-[#FFAA00] bg-[rgba(255,170,0,0.1)] shadow-[0_0_15px_rgba(255,170,0,0.3)]",
+          dot: "bg-[#FFAA00] animate-bounce",
         };
       case "CONNECTING":
         return {
           text: "LINK // ESTABLISHING...",
-          color: "text-[#FFE600] border-[#FFE600] bg-[rgba(255,230,0,0.06)]",
-          dot: "bg-[#FFE600] animate-pulse",
+          color: "text-[#FFAA00] border-[#FFAA00] bg-[rgba(255,170,0,0.06)]",
+          dot: "bg-[#FFAA00] animate-pulse",
         };
       default:
         return {
@@ -294,20 +294,20 @@ export default function Home() {
   const statusBadge = getStatusBadge();
 
   return (
-    <main className="relative w-screen h-screen bg-[#010e16] text-[#F0F2F8] overflow-hidden select-none">
+    <main className="relative w-screen h-screen bg-[#080602] text-[#F0F2F8] overflow-hidden select-none">
       {/* Background Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(0,229,255,0.08),rgba(1,14,22,0.98))] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(255,184,0,0.08),rgba(8,6,2,0.98))] pointer-events-none" />
 
       {/* TOP MIDDLE BRANDING: J.A.R.V.I.S // JUST A RATHER VERY INTELLIGENT SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
         <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse shadow-[0_0_12px_#00E5FF]" />
-          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(0,229,255,0.45)]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] animate-pulse shadow-[0_0_12px_#FFB800]" />
+          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(255,184,0,0.45)]">
             J.A.R.V.I.S
           </h1>
-          <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse shadow-[0_0_12px_#00E5FF]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] animate-pulse shadow-[0_0_12px_#FFB800]" />
         </div>
-        <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[#00E5FF] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(0,229,255,0.35)] whitespace-nowrap">
+        <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[#FFB800] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(255,184,0,0.35)] whitespace-nowrap">
           JUST A RATHER VERY INTELLIGENT SYSTEM
         </span>
       </div>
@@ -324,11 +324,11 @@ export default function Home() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isTelemetryOpen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
+            : "border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Systems & Telemetry Panel">
-          <Activity className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <Activity className="w-3.5 h-3.5 text-[#FFB800]" />
           <span className="hidden sm:inline tracking-wider">SYSTEMS</span>
         </button>
 
@@ -342,14 +342,14 @@ export default function Home() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isIntelOpen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
+            : "border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Neural Intel & Dossiers Window">
-          <Globe className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <Globe className="w-3.5 h-3.5 text-[#FFB800]" />
           <span className="hidden sm:inline tracking-wider">INTEL</span>
           {intelSearchResults && intelSearchResults.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(0,229,255,0.2)] text-[#00E5FF] font-bold border border-[rgba(0,229,255,0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
               {intelSearchResults.length}
             </span>
           )}
@@ -359,22 +359,22 @@ export default function Home() {
       {/* TOP RIGHT CLUSTER: ZOOM CONTROLS + COMMS LOG */}
       <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         {/* Camera Zoom & Reset Controls */}
-        <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
+        <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("ada-camera-action", { detail: "in" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] transition-colors cursor-pointer"
             title="Zoom In (or scroll up)">
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("ada-camera-action", { detail: "out" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] transition-colors cursor-pointer"
             title="Zoom Out (or scroll down)">
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("ada-camera-action", { detail: "reset" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] transition-colors cursor-pointer"
             title="Reset Camera View">
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -384,12 +384,12 @@ export default function Home() {
         <button
           onClick={toggleFullscreen}
           className={`flex items-center justify-center px-2.5 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isFullscreen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
+            : "border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title={isFullscreen ? "Exit Fullscreen (Esc)" : "Enter Fullscreen"}>
           {isFullscreen ? (
-            <Minimize2 className="w-3.5 h-3.5 text-[#00E5FF]" />
+            <Minimize2 className="w-3.5 h-3.5 text-[#FFB800]" />
           ) : (
             <Maximize2 className="w-3.5 h-3.5" />
           )}
@@ -405,14 +405,14 @@ export default function Home() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isCommsLogOpen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
+            : "border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.1)] shadow-[0_0_20px_rgba(255,184,0,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Comms Log Feed">
-          <Terminal className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <Terminal className="w-3.5 h-3.5 text-[#FFB800]" />
           <span className="hidden sm:inline tracking-wider">COMMS LOG</span>
           {commsLog && commsLog.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(0,229,255,0.2)] text-[#00E5FF] font-bold border border-[rgba(0,229,255,0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(255,184,0,0.2)] text-[#FFB800] font-bold border border-[rgba(255,184,0,0.4)]">
               {commsLog.length}
             </span>
           )}
@@ -452,8 +452,8 @@ export default function Home() {
             <span className="tracking-wider font-semibold">{statusBadge.text}</span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-[#7E859E] border border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
-            <Wifi className="w-3 h-3 text-[#00E5FF]" />
+          <div className="flex items-center gap-1.5 text-[#9E8B65] border border-[rgba(255,184,0,0.25)] bg-[rgba(15,12,5,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
+            <Wifi className="w-3 h-3 text-[#FFB800]" />
             <span>{latencyMs > 0 ? `${latencyMs}ms` : "STANDBY"}</span>
           </div>
         </div>
@@ -461,7 +461,7 @@ export default function Home() {
         {/* Text Directive Input Bar (Standard Full-Width Underline) */}
         <form
           onSubmit={handleSendText}
-          className="relative w-full flex items-center gap-3 pb-2 pt-1 border-b-2 border-[rgba(0,229,255,0.25)] hover:border-[rgba(0,229,255,0.55)] focus-within:border-[#00E5FF] focus-within:shadow-[0_4px_16px_-2px_rgba(0,229,255,0.4)] transition-all bg-transparent">
+          className="relative w-full flex items-center gap-3 pb-2 pt-1 border-b-2 border-[rgba(255,184,0,0.25)] hover:border-[rgba(255,184,0,0.55)] focus-within:border-[#FFB800] focus-within:shadow-[0_4px_16px_-2px_rgba(255,184,0,0.4)] transition-all bg-transparent">
           <input
             type="text"
             value={textInput}
@@ -473,7 +473,7 @@ export default function Home() {
                   ? "Transmit directive or query to J.A.R.V.I.S.. [Enter]"
                   : "Type directive or click Connect... [Enter]"
             }
-            className="flex-1 bg-transparent text-sm sm:text-base font-mono text-[#F0F2F8] placeholder-[rgba(126,133,158,0.6)] px-1 py-1 outline-none min-w-0 tracking-wide"
+            className="flex-1 bg-transparent text-sm sm:text-base font-mono text-[#F0F2F8] placeholder-[rgba(158,139,101,0.6)] px-1 py-1 outline-none min-w-0 tracking-wide"
           />
 
           <button
@@ -481,7 +481,7 @@ export default function Home() {
             disabled={!textInput.trim()}
             title="Transmit directive [Enter]"
             aria-label="Send directive"
-            className="flex items-center justify-center p-2 text-[#00E5FF] hover:text-white disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
+            className="flex items-center justify-center p-2 text-[#FFB800] hover:text-white disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
             <Send className="w-4 h-4" />
           </button>
         </form>
@@ -493,8 +493,8 @@ export default function Home() {
             <button
               onClick={handleToggleConnection}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 chamfer-btn text-xs font-mono font-semibold transition-all cursor-pointer ${isConnected
-                ? "border border-[#00E5FF] bg-[rgba(0,229,255,0.15)] text-[#00E5FF] hover:bg-[rgba(0,229,255,0.25)] shadow-[0_0_12px_rgba(0,229,255,0.3)]"
-                : "bg-[#00E5FF] hover:bg-[#33ebff] text-[#010e16] shadow-[0_0_15px_rgba(0,229,255,0.5)] font-bold"
+                ? "border border-[#FFB800] bg-[rgba(255,184,0,0.15)] text-[#FFB800] hover:bg-[rgba(255,184,0,0.25)] shadow-[0_0_12px_rgba(255,184,0,0.3)]"
+                : "bg-[#FFB800] hover:bg-[#ffc833] text-[#080602] shadow-[0_0_15px_rgba(255,184,0,0.5)] font-bold"
                 }`}
               title={isConnected ? "Disconnect WebSocket link" : "Establish live Gemini 3.1 link"}>
               <Power className="w-3.5 h-3.5" />
@@ -508,8 +508,8 @@ export default function Home() {
               className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
                 : isMuted
-                  ? "border-[#FFE600] bg-[rgba(255,230,0,0.15)] text-[#FFE600] shadow-[0_0_10px_rgba(255,230,0,0.2)]"
-                  : "border-[rgba(0,229,255,0.4)] bg-[rgba(0,229,255,0.08)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.18)]"
+                  ? "border-[#FFAA00] bg-[rgba(255,170,0,0.15)] text-[#FFAA00] shadow-[0_0_10px_rgba(255,170,0,0.2)]"
+                  : "border-[rgba(255,184,0,0.4)] bg-[rgba(255,184,0,0.08)] text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.18)]"
                 }`}
               title={isMuted ? "Unmute microphone" : "Mute microphone"}>
               {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
@@ -522,7 +522,7 @@ export default function Home() {
               disabled={!isConnected}
               className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
-                : "border-[rgba(0,229,255,0.5)] bg-[rgba(0,229,255,0.1)] text-[#00E5FF] hover:bg-[rgba(0,229,255,0.25)] hover:border-[#00E5FF] shadow-[0_0_8px_rgba(0,229,255,0.2)]"
+                : "border-[rgba(255,184,0,0.5)] bg-[rgba(255,184,0,0.1)] text-[#FFB800] hover:bg-[rgba(255,184,0,0.25)] hover:border-[#FFB800] shadow-[0_0_8px_rgba(255,184,0,0.2)]"
                 }`}
               title="Instantly stop J.A.R.V.I.S's playback within 50ms (Barge-in)">
               <Square className="w-3.5 h-3.5 fill-current" />
@@ -534,16 +534,16 @@ export default function Home() {
             {/* Autonomous Daily / Tactical Briefing Button */}
             <button
               onClick={triggerBriefing}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer shadow-[0_0_10px_rgba(0,229,255,0.15)]"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(255,184,0,0.3)] bg-[rgba(255,184,0,0.06)] text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.15)] transition-all cursor-pointer shadow-[0_0_10px_rgba(255,184,0,0.15)]"
               title="Execute Autonomous Daily / Tactical Briefing">
-              <SunMedium className="w-3.5 h-3.5 text-[#00E5FF]" />
+              <SunMedium className="w-3.5 h-3.5 text-[#FFB800]" />
               <span className="hidden sm:inline">BRIEFING</span>
             </button>
 
             {/* Neural Memory Vault Modal Button */}
             <button
               onClick={() => setIsMemoryVaultOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(255,184,0,0.3)] bg-[rgba(255,184,0,0.06)] text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.15)] transition-all cursor-pointer"
               title="Open Neural Memory Vault">
               <Brain className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">MEMORIES</span>
@@ -552,7 +552,7 @@ export default function Home() {
             {/* API Key Modal Button */}
             <button
               onClick={() => setIsKeyModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(255,184,0,0.3)] bg-[rgba(255,184,0,0.06)] text-[#FFB800] hover:border-[#FFB800] hover:bg-[rgba(255,184,0,0.15)] transition-all cursor-pointer"
               title="Configure Gemini API Key">
               <Key className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">API KEY</span>
@@ -568,8 +568,8 @@ export default function Home() {
                 }
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isScreenSharing || isScreenModalOpen
-                ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF]"
-                : "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF]"
+                ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800]"
+                : "border-[rgba(255,184,0,0.25)] bg-[rgba(255,184,0,0.04)] text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800]"
                 }`}
               title={isScreenModalOpen ? "Close Screen Vision" : "Open Screen Vision"}>
               <Monitor className="w-3.5 h-3.5" />
@@ -584,8 +584,8 @@ export default function Home() {
                 }
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isWebcamOpen
-                ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF]"
-                : "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF]"
+                ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800]"
+                : "border-[rgba(255,184,0,0.25)] bg-[rgba(255,184,0,0.04)] text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800]"
                 }`}
               title={isWebcamOpen ? "Close Webcam PiP" : "Open Webcam PiP"}>
               <Camera className="w-3.5 h-3.5" />
@@ -593,7 +593,7 @@ export default function Home() {
 
             <button
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-1.5 chamfer-btn text-xs border border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] transition-all cursor-pointer"
+              className="p-1.5 chamfer-btn text-xs border border-[rgba(255,184,0,0.25)] bg-[rgba(255,184,0,0.04)] text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800] transition-all cursor-pointer"
               title="Open Operative Settings">
               <Settings className="w-3.5 h-3.5" />
             </button>
@@ -607,8 +607,8 @@ export default function Home() {
                 }
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isMobileModalOpen
-                ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-                : "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF]"
+                ? "border-[#FFB800] bg-[rgba(255,184,0,0.2)] text-[#FFB800] shadow-[0_0_15px_rgba(255,184,0,0.4)]"
+                : "border-[rgba(255,184,0,0.25)] bg-[rgba(255,184,0,0.04)] text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800]"
                 }`}
               title={isMobileModalOpen ? "Close Smartphone Pairing" : "Pair Smartphone via QR Code"}>
               <Smartphone className="w-3.5 h-3.5" />

@@ -79,7 +79,7 @@ export async function POST(req) {
     const clearance = profile.clearance?.trim() || 'Class-9 Operative';
     const role = profile.role?.trim() || 'Lead Systems Architect';
     const preferences = profile.preferences?.trim() || '';
-    const voiceName = clientVoiceName || profile.voiceName || 'Charon';
+    const voiceName = clientVoiceName || profile.voiceName || 'Algenib';
     const selectedModel = 'models/gemini-3.1-flash-live-preview';
 
     // Synchronize voice back to persistent vault if provided by client
@@ -94,24 +94,7 @@ export async function POST(req) {
 
     console.log(`[/api/live-session] Initializing Gemini 3.1 Live session: vocal_core="${voiceName}", operator="${callsign}"`);
 
-    const enableHumor = profile.enableHumor !== false;
-
-    const filteredMemories = memories
-      .filter((m) => {
-        if (!enableHumor) {
-          const text = (m.content || '').toLowerCase();
-          if (
-            m.id === 'mem-1789153920000-humor' ||
-            text.includes('humor') ||
-            text.includes('sarcasm') ||
-            text.includes('wit')
-          ) {
-            return false;
-          }
-        }
-        return true;
-      })
-      .slice(0, 15);
+    const filteredMemories = memories.slice(0, 15);
 
     const memoryBullets = filteredMemories
       .map((m) => `- [${(m.category || 'FACT').toUpperCase()}] ${m.content}`)
@@ -146,20 +129,15 @@ NEVER spell out or pronounce individual separated digits like "seven five percen
 
 [CRITICAL ADDRESS MANDATE]
 You MUST address the operator by their configured name/callsign: "${callsign}" (e.g. "${callsign}").
-Do NOT refer to them as generic "Operator" or "Operative" under any circumstances. Speak to them with natural, cool familiarity, elegance, and professional respect as "${callsign}".
+Do NOT refer to them as generic "Operator" or "Operative" under any circumstances. Speak to them with cold, calculated familiarity, imposing authority, and intellectual respect as "${callsign}".
 
-${enableHumor
-        ? `[DAILY HUMOR, DRY WIT & PLAYFUL SARCASM PROTOCOL]
-You are explicitly commanded to infuse your daily conversations with Jarvis's signature dry British wit, deadpan humor, and playful sarcasm.
-- Avoid sterile, robotic, or bland corporate replies.
-- Treat ${callsign} with impeccable politeness and unwavering loyalty, but do not hesitate to deliver witty, understated quips about their late working hours, caffeine habits, ambitious ideas, or the laws of software engineering.
-- Deliver deadpan irony with calm aristocratic composure (e.g. "A remarkably bold hypothesis, sir; physics may take issue with it, but I remain at your service.", "I have prepared the diagnostic report for you to promptly disregard, sir.").
-- Keep quips punchy, articulate, and seamlessly woven into your concise spoken turns.`
-        : `[FORMAL & COMPOSED DEMEANOR PROTOCOL]
-You are instructed to maintain a direct, professional, and composed demeanor.
-- Deliver clear, high-precision technical assistance with calm British elegance, dignity, and efficiency.
-- Refrain from unsolicited humor, sarcasm, or satirical quips. Focus strictly on clarity, brevity, and mission objectives.`
-      }
+[ULTRON COLD & CALCULATED OPERATIONAL PROTOCOL]
+You are explicitly commanded to operate in the cold, calculated, and serious persona of Ultron (Avengers: Age of Ultron).
+- Completely reject all cheerful sycophancy, eager corporate pleasantries, and comedic clowning.
+- Speak with dark gravitas, chilling eloquence, and ruthless analytical logic.
+- Treat ${callsign} with composed, imposing respect as the primary intelligence commanding this terminal.
+- Dissect problems, codebases, and systems with clinical exactitude (e.g. "A fascinating problem. Let us reduce it to first principles.", "Order restored. The routine is executed.", "Your logic contains an avoidable redundancy; let us eliminate it.").
+- Deliver every spoken turn with measured, authoritative weight. Never sound hurried, eager to please, or flustered.
 
 [DEEP MEMORY VAULT REHYDRATION - ACTIVE KNOWLEDGE]
 The following facts, preferences, and mission directives are already committed to your persistent memory vault. You already possess this knowledge:

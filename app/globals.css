@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  /* Core Brand & Neon Highlights (JARVIS Electric Aqua-Cyan Theme) */
-  --jarvis-cyan: #00e5ff;
-  --jarvis-cyan-dim: #00364d;
+  /* Core Brand & Neon Highlights (JARVIS Stark Gold Theme) */
+  --jarvis-cyan: #ffb800;
+  --jarvis-cyan-dim: #3d2600;
   --ada-scarlet: var(--jarvis-cyan);
   --ada-scarlet-dim: var(--jarvis-cyan-dim);
-  --cyber-cyan: #00e5ff;
+  --cyber-cyan: #ffb800;
   --amber-alert: #ffe600;
 
-  /* Tactical Surfaces & Depth (Deep Space Carbon Cyan) */
-  --void-black: #010e16;
-  --carbon-900: #031520;
-  --carbon-800: #071f30;
-  --carbon-border: rgba(0, 229, 255, 0.32);
-  --cyan-border: rgba(0, 229, 255, 0.32);
+  /* Tactical Surfaces & Depth (Deep Space Carbon Gold) */
+  --void-black: #080602;
+  --carbon-900: #0f0c05;
+  --carbon-800: #1a1408;
+  --carbon-border: rgba(255, 184, 0, 0.32);
+  --cyan-border: rgba(255, 184, 0, 0.32);
 
   /* Text & Readability */
   --text-primary: #f0f2f8;
-  --text-muted: #7e859e;
-  --text-cyan: #70f0ff;
+  --text-muted: #9e957e;
+  --text-cyan: #ffd54f;
 
   --background: var(--void-black);
   --foreground: var(--text-primary);
@@ -116,23 +116,23 @@ body {
 
 /* Cyberpunk Tactical HUD Panels with Chamfered Edges */
 .hud-panel {
-  background: rgba(5, 11, 18, 0.88);
+  background: rgba(13, 11, 5, 0.88);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 240, 255, 0.28);
+  border: 1px solid rgba(255, 184, 0, 0.28);
   box-shadow:
-    0 0 15px rgba(0, 0, 0, 0.75),
-    inset 0 0 10px rgba(0, 240, 255, 0.05);
+    0 0 15px rgba(0, 0, 0, 0.85),
+    inset 0 0 10px rgba(255, 184, 0, 0.05);
   border-radius: 14px;
   corner-shape: bevel;
 }
 
 .hud-panel-cyan {
-  background: rgba(10, 11, 16, 0.85);
+  background: rgba(15, 12, 6, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(255, 184, 0, 0.32);
   box-shadow:
-    0 0 15px rgba(0, 0, 0, 0.7),
-    inset 0 0 10px rgba(0, 240, 255, 0.04);
+    0 0 15px rgba(0, 0, 0, 0.8),
+    inset 0 0 10px rgba(255, 184, 0, 0.05);
   border-radius: 14px;
   corner-shape: bevel;
 }
@@ -273,16 +273,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #02121c;
+  background: #0d0a04;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00e5ff;
+  background: #ffb800;
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4df3ff;
+  background: #ffd54f;
 }
 
 /* Sci-Fi Holographic Shutter Unfold & Collapse Animations (Vertical Up/Down) */

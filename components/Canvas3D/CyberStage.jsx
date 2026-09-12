@@ -43,8 +43,8 @@ export function CyberStage({ showFloor = true }) {
 
   return (
     <group>
-      {/* 1. Electric Aqua-Cyan Ambient Lighting */}
-      <ambientLight color="#00e5ff" intensity={1.1} />
+      {/* 1. Stark Gold Ambient Lighting */}
+      <ambientLight color="#FFB800" intensity={1.1} />
 
       {/* 2. Key Light (Clean White Studio Directional) */}
       <directionalLight
@@ -54,20 +54,20 @@ export function CyberStage({ showFloor = true }) {
         intensity={2.2}
       />
 
-      {/* 3. Fill Light (Electric Aqua Accent) */}
-      <directionalLight position={[1.8, 1.4, 1.8]} color="#00e5ff" intensity={1.8} />
+      {/* 3. Fill Light (Gold Accent) */}
+      <directionalLight position={[1.8, 1.4, 1.8]} color="#FFB800" intensity={1.8} />
 
-      {/* 4. Top Rim Spotlight (Electric Cyan Silhouette) */}
+      {/* 4. Top Rim Spotlight (Amber Silhouette) */}
       <spotLight
         position={[0, 2.8, -1.8]}
-        color="#00b4ff"
+        color="#FFAA00"
         intensity={1.8}
         angle={0.7}
         penumbra={0.8}
       />
 
-      {/* 5. Front Lower Fill Light (Azure Cyan) */}
-      <directionalLight position={[0, 1.0, 2.5]} color="#00f0ff" intensity={0.8} />
+      {/* 5. Front Lower Fill Light (Stark Gold) */}
+      <directionalLight position={[0, 1.0, 2.5]} color="#FFB800" intensity={0.8} />
 
       {/* 6. Cyberpunk Holographic Pedestal (if floor ever enabled) */}
       {showFloor && (
@@ -75,19 +75,19 @@ export function CyberStage({ showFloor = true }) {
           {/* Dark Carbon Pedestal Base */}
           <mesh position={[0, 0, 0]}>
             <circleGeometry args={[1.05, 48]} />
-            <meshStandardMaterial color="#010e16" roughness={0.8} />
+            <meshStandardMaterial color="#080602" roughness={0.8} />
           </mesh>
 
-          {/* Outer Electric Aqua-Cyan Theme Ring */}
+          {/* Outer Stark Gold Theme Ring */}
           <mesh ref={ringRef1} position={[0, 0, 0.002]}>
             <ringGeometry args={[0.9, 0.95, 48]} />
-            <meshBasicMaterial color="#00E5FF" transparent opacity={0.65} wireframe />
+            <meshBasicMaterial color="#FFB800" transparent opacity={0.65} wireframe />
           </mesh>
 
-          {/* Inner Electric Aqua-Cyan Theme Ring */}
+          {/* Inner Stark Gold Theme Ring */}
           <mesh ref={ringRef2} position={[0, 0, 0.003]}>
             <ringGeometry args={[0.65, 0.7, 36]} />
-            <meshBasicMaterial color="#00E5FF" transparent opacity={0.7} wireframe />
+            <meshBasicMaterial color="#FFB800" transparent opacity={0.7} wireframe />
           </mesh>
         </group>
       )}

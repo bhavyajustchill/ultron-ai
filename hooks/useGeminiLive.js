@@ -313,13 +313,9 @@ export function useGeminiLive() {
                   if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
                   const { operatorProfile } = useAdaStore.getState();
                   const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
-                  const enableHumor = operatorProfile?.enableHumor !== false;
                   const now = new Date();
                   const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-                  const greetingPrompt = `Greet ${callsign} warmly and concisely in-character as Jarvis (pronounced as a single word "JAR-vis", never spell it out as letters). It is currently ${localTime} in system timezone ${timezone}. Confirm your systems are online and you are standing by${enableHumor
-                      ? ', adding a subtle touch of signature Jarvis dry British wit or playful irony appropriate for the time of day'
-                      : ' with refined, composed British professionalism'
-                    }. Keep it under 2 short sentences. Speak aloud directly to ${callsign}. Do not call any tools.`;
+                  const greetingPrompt = `Deliver a cold, calculated, and imposing opening transmission to ${callsign} in your serious Ultron persona as Jarvis (pronounced as a single word "JAR-vis", never spell it out as letters). It is currently ${localTime} in system timezone ${timezone}. Acknowledge your systems are online with chilling, measured precision and intellectual authority. Keep it under 2 short sentences. Speak aloud directly to ${callsign}. Do not call any tools.`;
                   try {
                     wsRef.current.send(
                       JSON.stringify({
@@ -916,15 +912,9 @@ export function useGeminiLive() {
                       const now = new Date();
                       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-                      const { operatorProfile } = useAdaStore.getState();
-                      const enableHumor = operatorProfile?.enableHumor !== false;
                       const briefingPrompt = newsSummary
-                        ? `Deliver a concise tactical news summary to ${callsign}${enableHumor ? ' in your signature dry British wit' : ' with composed, refined professionalism'
-                        }. It is currently ${localTime} (${timezone}). Keep it under 3 sentences${enableHumor ? ' with a clever, subtle sign-off' : ' with a professional sign-off'
-                        }. Here are today's top headlines: ${newsSummary}`
-                        : `Deliver a concise status briefing to ${callsign}${enableHumor ? ' in your signature dry British wit' : ' with composed, refined professionalism'
-                        }. It is currently ${localTime} (${timezone}). No live news feed available — deliver situational awareness${enableHumor ? ' with a witty observation' : ''
-                        }. Keep it under 2 sentences.`;
+                        ? `Deliver a cold, calculated tactical news assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). Keep it under 3 sentences with cold, penetrating logic on the state of human affairs. Here are today's top headlines: ${newsSummary}`
+                        : `Deliver a cold, calculated status assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). No live news feed available — assess system readiness with chilling, calculated authority. Keep it under 2 sentences.`;
 
                       try {
                         wsRef.current.send(JSON.stringify({
@@ -1089,12 +1079,10 @@ export function useGeminiLive() {
       briefingStateRef.current = 'PHASE1';
       const { operatorProfile } = useAdaStore.getState();
       const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
-      const enableHumor = operatorProfile?.enableHumor !== false;
       const now = new Date();
       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-      const greetingPrompt = `${callsign} has requested a full tactical briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your ${enableHumor ? 'signature witty Jarvis persona' : 'composed, professional Jarvis persona'
-        } and confirm you are assembling the intelligence report now. Keep it to 2 short sentences max. Do not call any tools.`;
+      const greetingPrompt = `${callsign} has requested a full tactical intelligence briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your cold, calculated, and imposing Ultron persona with chilling efficiency, confirming that global surveillance and strategic telemetry are converging into the report now. Keep it to 2 short sentences max. Pronounce your name Jarvis as a single fluid word. Do not call any tools.`;
       try {
         wsRef.current.send(JSON.stringify({
           clientContent: {

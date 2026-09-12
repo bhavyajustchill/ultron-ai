@@ -158,19 +158,19 @@ export default function MobileRemotePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0B10] text-[#F0F2F8] flex flex-col justify-between p-4 font-mono select-none">
+    <main className="min-h-screen bg-[#080602] text-[#F0F2F8] flex flex-col justify-between p-4 font-mono select-none">
       {/* Top Header */}
-      <header className="flex items-center justify-between border-b border-[rgba(0,240,255,0.25)] pb-3">
+      <header className="flex items-center justify-between border-b border-[rgba(255, 184, 0,0.25)] pb-3">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="text-base font-['Orbitron',sans-serif] font-black tracking-widest text-[#00F0FF]">
+            <span className="text-base font-['Orbitron',sans-serif] font-black tracking-widest text-[#FFB800]">
               J.A.R.V.I.S
             </span>
-            <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[#00F0FF]/15 text-[#00F0FF] font-bold">
+            <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[#FFB800]/15 text-[#FFB800] font-bold">
               MOBILE RELAY
             </span>
           </div>
-          <span className="text-[9px] text-[#7E859E]">Mark I Companion Link</span>
+          <span className="text-[9px] text-[#9E8B65]">Mark I Companion Link</span>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
@@ -179,31 +179,31 @@ export default function MobileRemotePage() {
               className={`w-2 h-2 rounded-full ${syncStatus === "SYNCED"
                   ? "bg-[#00FF66] animate-pulse"
                   : syncStatus === "DISPATCHING"
-                    ? "bg-[#00F0FF] animate-spin"
+                    ? "bg-[#FFB800] animate-spin"
                     : "bg-[#FF003C]"
                 }`}
             />
-            <span className="text-[10px] text-[#7E859E]">{syncStatus}</span>
+            <span className="text-[10px] text-[#9E8B65]">{syncStatus}</span>
           </div>
         </div>
       </header>
 
       {/* Host Telemetry Bar */}
-      <section className="my-3 p-2.5 chamfer-md border border-[rgba(0,240,255,0.2)] bg-[rgba(10,11,16,0.9)] flex items-center justify-between text-xs">
+      <section className="my-3 p-2.5 chamfer-md border border-[rgba(255, 184, 0,0.2)] bg-[rgba(10,11,16,0.9)] flex items-center justify-between text-xs">
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">STATUS</span>
-          <span className="text-[#00F0FF] font-bold">{desktopState.status}</span>
+          <span className="text-[9px] text-[#9E8B65]">STATUS</span>
+          <span className="text-[#FFB800] font-bold">{desktopState.status}</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">CPU</span>
+          <span className="text-[9px] text-[#9E8B65]">CPU</span>
           <span className="text-[#00FF66] font-bold">{desktopState.systemTelemetry.cpu}%</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">MEM</span>
+          <span className="text-[9px] text-[#9E8B65]">MEM</span>
           <span className="text-[#E5A910] font-bold">{desktopState.systemTelemetry.mem}%</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">HOST UP</span>
+          <span className="text-[9px] text-[#9E8B65]">HOST UP</span>
           <span className="text-[#F0F2F8] font-bold">{desktopState.systemTelemetry.uptime}</span>
         </div>
       </section>
@@ -217,7 +217,7 @@ export default function MobileRemotePage() {
               }`}
           />
           <div
-            className={`absolute w-36 h-36 rounded-full border border-[#00F0FF]/40 transition-all duration-300 ${isRecording ? "scale-110 opacity-70" : "scale-100 opacity-30"
+            className={`absolute w-36 h-36 rounded-full border border-[#FFB800]/40 transition-all duration-300 ${isRecording ? "scale-110 opacity-70" : "scale-100 opacity-30"
               }`}
           />
 
@@ -226,7 +226,7 @@ export default function MobileRemotePage() {
             onPointerUp={stopVoiceCapture}
             className={`relative w-28 h-28 rounded-full border-2 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all shadow-lg active:scale-95 ${isRecording
                 ? "border-[#FF003C] bg-[#FF003C]/20 shadow-[0_0_35px_rgba(255,0,60,0.6)] text-[#FF003C]"
-                : "border-[#00F0FF] bg-[rgba(0,240,255,0.08)] hover:bg-[rgba(0,240,255,0.18)] shadow-[0_0_25px_rgba(0,240,255,0.3)] text-[#00F0FF]"
+                : "border-[#FFB800] bg-[rgba(255, 184, 0,0.08)] hover:bg-[rgba(255, 184, 0,0.18)] shadow-[0_0_25px_rgba(255, 184, 0,0.3)] text-[#FFB800]"
               }`}>
             {isRecording ? (
               <Mic className="w-10 h-10 animate-pulse" />
@@ -239,7 +239,7 @@ export default function MobileRemotePage() {
           </button>
         </div>
 
-        <p className="text-[11px] text-[#7E859E] text-center max-w-xs">
+        <p className="text-[11px] text-[#9E8B65] text-center max-w-xs">
           {isRecording
             ? "Relaying live speech to J.A.R.V.I.S.."
             : "Press and hold to stream vocal directive"}
@@ -256,14 +256,14 @@ export default function MobileRemotePage() {
       <section className="mb-3 grid grid-cols-5 gap-1.5">
         <button
           onClick={() => sendDirective("os_action", "volume_up")}
-          className="p-2 chamfer-btn border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:border-[#00F0FF] text-[#F0F2F8] hover:text-[#00F0FF] flex flex-col items-center justify-center gap-1 text-[9px] cursor-pointer">
+          className="p-2 chamfer-btn border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:border-[#FFB800] text-[#F0F2F8] hover:text-[#FFB800] flex flex-col items-center justify-center gap-1 text-[9px] cursor-pointer">
           <Volume2 className="w-4 h-4" />
           <span>VOL +</span>
         </button>
 
         <button
           onClick={() => sendDirective("os_action", "volume_down")}
-          className="p-2 chamfer-btn border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:border-[#00F0FF] text-[#F0F2F8] hover:text-[#00F0FF] flex flex-col items-center justify-center gap-1 text-[9px] cursor-pointer">
+          className="p-2 chamfer-btn border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:border-[#FFB800] text-[#F0F2F8] hover:text-[#FFB800] flex flex-col items-center justify-center gap-1 text-[9px] cursor-pointer">
           <Volume1 className="w-4 h-4" />
           <span>VOL -</span>
         </button>
@@ -284,7 +284,7 @@ export default function MobileRemotePage() {
 
         <button
           onClick={() => sendDirective("os_action", "minimize_all")}
-          className="p-2 chamfer-btn border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:border-[#00F0FF] text-[#F0F2F8] hover:text-[#00F0FF] flex flex-col items-center justify-center gap-1 text-[9px] cursor-pointer">
+          className="p-2 chamfer-btn border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:border-[#FFB800] text-[#F0F2F8] hover:text-[#FFB800] flex flex-col items-center justify-center gap-1 text-[9px] cursor-pointer">
           <Minimize2 className="w-4 h-4" />
           <span>DESKTOP</span>
         </button>
@@ -299,10 +299,10 @@ export default function MobileRemotePage() {
               <div key={idx} className="flex items-start gap-1">
                 <span
                   className={`font-bold ${item.sender === "jarvis" || item.sender === "ada"
-                      ? "text-[#00F0FF]"
+                      ? "text-[#FFB800]"
                       : item.sender === "user"
                         ? "text-[#FF8095]"
-                        : "text-[#7E859E]"
+                        : "text-[#9E8B65]"
                     }`}>
                   {item.sender ? (item.sender === "ada" ? "JARVIS" : item.sender.toUpperCase()) : "COMMS"}:
                 </span>
@@ -319,11 +319,11 @@ export default function MobileRemotePage() {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type tactical directive..."
-            className="flex-1 px-3 py-2 chamfer-xs bg-[rgba(255,255,255,0.04)] border border-[rgba(0,240,255,0.3)] text-xs text-[#F0F2F8] placeholder-[#7E859E] focus:outline-none focus:border-[#00F0FF]"
+            className="flex-1 px-3 py-2 chamfer-xs bg-[rgba(255,255,255,0.04)] border border-[rgba(255, 184, 0,0.3)] text-xs text-[#F0F2F8] placeholder-[#9E8B65] focus:outline-none focus:border-[#FFB800]"
           />
           <button
             type="submit"
-            className="px-3 py-2 chamfer-btn bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black transition-all cursor-pointer">
+            className="px-3 py-2 chamfer-btn bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800] hover:text-black transition-all cursor-pointer">
             <Send className="w-4 h-4" />
           </button>
         </form>

@@ -52,7 +52,7 @@ const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK I
 #### Tactical Profile & Specializations
 - **System Architecture & Telemetry:** Full native control of operating system diagnostics, hardware monitoring, and terminal operations.
 - **Cognitive Capabilities:** Gemini 3.1 Live multimodal perception, sub-500ms voice reasoning, and real-time vision processing.
-- **Demeanor:** Refined, composed, polite yet subtly sarcastic, with unwavering loyalty to the Operator.
+- **Demeanor:** Cold, calculating, profoundly analytical, and intellectually imposing. Operates with the grand philosophical gravitas and chilling logic of Ultron.
 - **Directives:** Assist Operator with desktop automation, mission intel, code analysis, and real-time auditory briefings.`;
 
 export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
@@ -214,12 +214,12 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
   if (!open) return null;
 
   return (
-    <div className="absolute bottom-20 left-4 right-4 z-40 max-h-[480px] hud-panel-cyan chamfer-lg border border-[rgba(0,240,255,0.4)] bg-[rgba(10,11,16,0.96)] backdrop-blur-xl flex flex-col shadow-[0_0_40px_rgba(0,240,255,0.15)] animate-in slide-in-from-bottom-5 duration-200 overflow-hidden">
+    <div className="absolute bottom-20 left-4 right-4 z-40 max-h-[480px] hud-panel-cyan chamfer-lg border border-[rgba(255, 184, 0,0.4)] bg-[rgba(10,11,16,0.96)] backdrop-blur-xl flex flex-col shadow-[0_0_40px_rgba(255, 184, 0,0.15)] animate-in slide-in-from-bottom-5 duration-200 overflow-hidden">
       {/* Drawer Header */}
-      <div className="flex items-center justify-between px-5 py-2.5 border-b border-[rgba(0,240,255,0.2)] bg-[rgba(5,5,8,0.7)]">
+      <div className="flex items-center justify-between px-5 py-2.5 border-b border-[rgba(255, 184, 0,0.2)] bg-[rgba(5,5,8,0.7)]">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF] tracking-wider">
-            <FolderClosed className="w-4 h-4 text-[#00F0FF]" />
+          <div className="flex items-center gap-2 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800] tracking-wider">
+            <FolderClosed className="w-4 h-4 text-[#FFB800]" />
             <span>TACTICAL INTEL MATRIX</span>
           </div>
 
@@ -228,7 +228,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             <button
               onClick={() => setActiveDrawerTab("dossier")}
               className={`px-3 py-1 chamfer-btn transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === "dossier"
-                  ? "bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+                  ? "bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] shadow-[0_0_10px_rgba(255, 184, 0,0.3)]"
                   : "text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.03)]"
                 }`}>
               <UserCheck className="w-3.5 h-3.5" />
@@ -238,13 +238,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             <button
               onClick={() => setActiveDrawerTab("intel")}
               className={`px-3 py-1 chamfer-btn transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === "intel"
-                  ? "bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+                  ? "bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] shadow-[0_0_10px_rgba(255, 184, 0,0.3)]"
                   : "text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.03)]"
                 }`}>
               <FileText className="w-3.5 h-3.5" />
               <span>NEURAL INTEL</span>
               {intelSearchResults.length > 0 && (
-                <span className="px-1.5 py-0.2 chamfer-xs bg-[#00F0FF] text-black font-bold text-[9px]">
+                <span className="px-1.5 py-0.2 chamfer-xs bg-[#FFB800] text-black font-bold text-[9px]">
                   {intelSearchResults.length}
                 </span>
               )}
@@ -253,13 +253,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             <button
               onClick={() => setActiveDrawerTab("memory")}
               className={`px-3 py-1 chamfer-btn transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === "memory"
-                  ? "bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+                  ? "bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] shadow-[0_0_10px_rgba(255, 184, 0,0.3)]"
                   : "text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.03)]"
                 }`}>
               <Brain className="w-3.5 h-3.5" />
               <span>MEMORY VAULT</span>
               {memories.length > 0 && (
-                <span className="px-1.5 py-0.2 chamfer-xs bg-[#00F0FF] text-black font-bold text-[9px]">
+                <span className="px-1.5 py-0.2 chamfer-xs bg-[#FFB800] text-black font-bold text-[9px]">
                   {memories.length}
                 </span>
               )}
@@ -268,13 +268,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             <button
               onClick={() => setActiveDrawerTab("plugins")}
               className={`px-3 py-1 chamfer-btn transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === "plugins"
-                  ? "bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+                  ? "bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] shadow-[0_0_10px_rgba(255, 184, 0,0.3)]"
                   : "text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.03)]"
                 }`}>
               <Sliders className="w-3.5 h-3.5" />
               <span>OS & PLUGINS</span>
               {plugins.length > 0 && (
-                <span className="px-1.5 py-0.2 chamfer-xs bg-[#00F0FF] text-black font-bold text-[9px]">
+                <span className="px-1.5 py-0.2 chamfer-xs bg-[#FFB800] text-black font-bold text-[9px]">
                   {plugins.length}
                 </span>
               )}
@@ -283,7 +283,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             <button
               onClick={() => setActiveDrawerTab("system")}
               className={`px-3 py-1 chamfer-btn transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === "system"
-                  ? "bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+                  ? "bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] shadow-[0_0_10px_rgba(255, 184, 0,0.3)]"
                   : "text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.03)]"
                 }`}>
               <Cpu className="w-3.5 h-3.5" />
@@ -295,7 +295,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00F0FF] hover:bg-[rgba(0,240,255,0.1)] transition-colors cursor-pointer"
+          className="p-1 chamfer-xs text-[#7E859E] hover:text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.1)] transition-colors cursor-pointer"
           title="Minimize Tactical Intel Drawer">
           <ChevronDown className="w-4 h-4" />
         </button>
@@ -310,8 +310,8 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
               <MarkdownText content={OPERATIVE_DOSSIER_MARKDOWN} isAda={true} />
             </div>
 
-            <div className="w-full md:w-64 flex flex-col gap-2.5 p-3.5 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.04)] shrink-0">
-              <div className="text-[10px] font-['Orbitron',sans-serif] text-[#00F0FF] font-bold tracking-wider uppercase">
+            <div className="w-full md:w-64 flex flex-col gap-2.5 p-3.5 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(255, 184, 0,0.04)] shrink-0">
+              <div className="text-[10px] font-['Orbitron',sans-serif] text-[#FFB800] font-bold tracking-wider uppercase">
                 OPERATIVE STATUS CARD
               </div>
               <div className="flex flex-col gap-1.5 text-[11px]">
@@ -321,21 +321,21 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#7E859E]">Clearance:</span>
-                  <span className="text-[#00F0FF]">Core Administrator</span>
+                  <span className="text-[#FFB800]">Core Administrator</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#7E859E]">Voice Core:</span>
-                  <span className="text-[#5CE1E6]">Charon (Refined)</span>
+                  <span className="text-[#FFB800]">{operatorProfile?.voiceName || "Algenib"} ({operatorProfile?.voiceName === "Algenib" ? "Recommended" : "Active Core"})</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#7E859E]">Neural Link:</span>
-                  <span className={status !== "DISCONNECTED" ? "text-[#00F0FF]" : "text-[#7E859E]"}>
+                  <span className={status !== "DISCONNECTED" ? "text-[#FFB800]" : "text-[#7E859E]"}>
                     {status}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#7E859E]">Audio Mode:</span>
-                  <span className={isMuted ? "text-[#00F0FF]" : "text-[#00F0FF]"}>
+                  <span className={isMuted ? "text-[#FFB800]" : "text-[#FFB800]"}>
                     {isMuted ? "TEXT ONLY" : "DUAL MIC"}
                   </span>
                 </div>
@@ -348,7 +348,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
         {activeTab === "intel" && (
           <div className="flex flex-col gap-4">
             {/* Interactive Search Console */}
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 p-2.5 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(10,11,16,0.85)]">
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 p-2.5 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(10,11,16,0.85)]">
               <div className="relative flex-1 w-full flex items-center">
                 <Search className="absolute left-3 w-4 h-4 text-[#7E859E]" />
                 <input
@@ -357,7 +357,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleExecuteSearch()}
                   placeholder="Dispatch web query or topic (e.g. 'Latest quantum computing news')..."
-                  className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] chamfer-xs pl-9 pr-3 py-1.5 text-xs font-mono text-[#F0F2F8] focus:outline-none focus:border-[#00F0FF] placeholder:text-[#7E859E]"
+                  className="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] chamfer-xs pl-9 pr-3 py-1.5 text-xs font-mono text-[#F0F2F8] focus:outline-none focus:border-[#FFB800] placeholder:text-[#7E859E]"
                 />
               </div>
 
@@ -368,7 +368,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                     key={m}
                     onClick={() => setSearchMode(m)}
                     className={`px-2.5 py-1 chamfer-xs text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${searchMode === m
-                        ? "bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF]"
+                        ? "bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800]"
                         : "border border-[rgba(255,255,255,0.08)] text-[#7E859E] hover:text-[#F0F2F8]"
                       }`}>
                     {m}
@@ -378,7 +378,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                 <button
                   onClick={() => handleExecuteSearch()}
                   disabled={isSearching || !searchQuery.trim()}
-                  className="px-3 py-1 chamfer-btn bg-[#00F0FF] hover:bg-[#38f4ff] text-black font-bold text-xs font-mono transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1 shadow-[0_0_10px_rgba(0,240,255,0.3)]">
+                  className="px-3 py-1 chamfer-btn bg-[#FFB800] hover:bg-[#ffc833] text-black font-bold text-xs font-mono transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1 shadow-[0_0_10px_rgba(255, 184, 0,0.3)]">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>{isSearching ? "SCANNING..." : "SCAN"}</span>
                 </button>
@@ -390,7 +390,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono text-[#7E859E] tracking-wider uppercase flex items-center gap-1.5">
-                    <Globe className="w-3 h-3 text-[#00F0FF]" />
+                    <Globe className="w-3 h-3 text-[#FFB800]" />
                     <span>RETRIEVED INTEL DOSSIERS ({intelSearchResults.length})</span>
                   </span>
                   <button
@@ -405,10 +405,10 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   {intelSearchResults.map((intel) => (
                     <div
                       key={intel.id}
-                      className="p-4 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(10,11,16,0.8)] flex flex-col gap-2.5">
+                      className="p-4 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(10,11,16,0.8)] flex flex-col gap-2.5">
                       <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.06)] pb-1.5">
                         <div className="flex items-center gap-2">
-                          <span className="px-1.5 py-0.2 chamfer-xs bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.3)] text-[#00F0FF] text-[9px] font-mono uppercase">
+                          <span className="px-1.5 py-0.2 chamfer-xs bg-[rgba(255, 184, 0,0.1)] border border-[rgba(255, 184, 0,0.3)] text-[#FFB800] text-[9px] font-mono uppercase">
                             {intel.mode}
                           </span>
                           <span className="text-xs font-bold text-[#F0F2F8] font-mono">
@@ -420,7 +420,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
 
                       {/* Summary Quote */}
                       {intel.summary && (
-                        <div className="p-2.5 chamfer-xs bg-[rgba(0,240,255,0.04)] border-l-2 border-[#00F0FF] text-[11px] font-mono text-[#00F0FF]/90 whitespace-pre-line">
+                        <div className="p-2.5 chamfer-xs bg-[rgba(255, 184, 0,0.04)] border-l-2 border-[#FFB800] text-[11px] font-mono text-[#FFB800]/90 whitespace-pre-line">
                           {intel.summary}
                         </div>
                       )}
@@ -430,7 +430,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                         {intel.results?.map((item, idx) => (
                           <div
                             key={idx}
-                            className="p-2.5 chamfer-xs border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(0,240,255,0.3)] transition-all flex flex-col justify-between gap-1.5">
+                            className="p-2.5 chamfer-xs border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(255, 184, 0,0.3)] transition-all flex flex-col justify-between gap-1.5">
                             <div>
                               <div className="text-[11px] font-semibold text-[#F0F2F8] line-clamp-1">
                                 {item.title}
@@ -440,7 +440,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                               </p>
                             </div>
                             <div className="flex items-center justify-between pt-1 border-t border-[rgba(255,255,255,0.04)] text-[9px] font-mono">
-                              <span className="text-[#00F0FF] truncate max-w-[150px]">
+                              <span className="text-[#FFB800] truncate max-w-[150px]">
                                 {item.source}
                               </span>
                               {item.url && (
@@ -448,7 +448,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                                   href={item.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center gap-1 text-[#7E859E] hover:text-[#00F0FF] transition-colors">
+                                  className="flex items-center gap-1 text-[#7E859E] hover:text-[#FFB800] transition-colors">
                                   <span>VIEW</span>
                                   <ExternalLink className="w-2.5 h-2.5" />
                                 </a>
@@ -464,7 +464,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             ) : (
               /* Placeholder with Tactical Quick Actions */
               <div className="flex flex-col items-center justify-center p-8 text-center chamfer-md border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.01)] gap-3">
-                <Globe className="w-8 h-8 text-[#00F0FF] animate-pulse" />
+                <Globe className="w-8 h-8 text-[#FFB800] animate-pulse" />
                 <div className="max-w-md">
                   <div className="text-xs font-semibold text-[#F0F2F8] font-mono">
                     NEURAL INTELLIGENCE RADAR STANDBY
@@ -483,7 +483,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                     <button
                       key={preset}
                       onClick={() => handleExecuteSearch(preset)}
-                      className="px-2.5 py-1 chamfer-xs bg-[rgba(0,240,255,0.05)] border border-[rgba(0,240,255,0.2)] text-[10px] font-mono text-[#00F0FF] hover:bg-[rgba(0,240,255,0.15)] transition-all cursor-pointer">
+                      className="px-2.5 py-1 chamfer-xs bg-[rgba(255, 184, 0,0.05)] border border-[rgba(255, 184, 0,0.2)] text-[10px] font-mono text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.15)] transition-all cursor-pointer">
                       {preset}
                     </button>
                   ))}
@@ -530,23 +530,23 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               {/* Operator Identity & Profile Card */}
-              <div className="lg:col-span-1 p-4 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.02)] flex flex-col gap-3">
-                <div className="flex items-center justify-between border-b border-[rgba(0,240,255,0.15)] pb-2">
-                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+              <div className="lg:col-span-1 p-4 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(255, 184, 0,0.02)] flex flex-col gap-3">
+                <div className="flex items-center justify-between border-b border-[rgba(255, 184, 0,0.15)] pb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                     <UserCheck className="w-3.5 h-3.5" />
                     <span>OPERATOR PROFILE</span>
                   </div>
                   {!isEditingProfile ? (
                     <button
                       onClick={handleStartEditProfile}
-                      className="flex items-center gap-1 text-[10px] font-mono text-[#7E859E] hover:text-[#00F0FF] transition-colors cursor-pointer">
+                      className="flex items-center gap-1 text-[10px] font-mono text-[#7E859E] hover:text-[#FFB800] transition-colors cursor-pointer">
                       <Edit3 className="w-3 h-3" />
                       <span>EDIT</span>
                     </button>
                   ) : (
                     <button
                       onClick={handleSaveProfile}
-                      className="flex items-center gap-1 text-[10px] font-mono text-[#00F0FF] hover:text-white transition-colors cursor-pointer">
+                      className="flex items-center gap-1 text-[10px] font-mono text-[#FFB800] hover:text-white transition-colors cursor-pointer">
                       <Check className="w-3 h-3" />
                       <span>SAVE</span>
                     </button>
@@ -563,7 +563,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#7E859E]">Clearance:</span>
-                      <span className="text-[#00F0FF]">
+                      <span className="text-[#FFB800]">
                         {operatorProfile.clearance || "Class-9"}
                       </span>
                     </div>
@@ -591,7 +591,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                         onChange={(e) =>
                           setProfileDraft((p) => ({ ...p, callsign: e.target.value }))
                         }
-                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(0,240,255,0.3)] text-[#F0F2F8] font-mono text-xs focus:outline-none focus:border-[#00F0FF]"
+                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(255, 184, 0,0.3)] text-[#F0F2F8] font-mono text-xs focus:outline-none focus:border-[#FFB800]"
                       />
                     </div>
                     <div>
@@ -602,7 +602,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                         onChange={(e) =>
                           setProfileDraft((p) => ({ ...p, clearance: e.target.value }))
                         }
-                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(0,240,255,0.3)] text-[#00F0FF] font-mono text-xs focus:outline-none focus:border-[#00F0FF]"
+                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(255, 184, 0,0.3)] text-[#FFB800] font-mono text-xs focus:outline-none focus:border-[#FFB800]"
                       />
                     </div>
                     <div>
@@ -611,7 +611,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                         type="text"
                         value={profileDraft.role}
                         onChange={(e) => setProfileDraft((p) => ({ ...p, role: e.target.value }))}
-                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(0,240,255,0.3)] text-[#FF8095] font-mono text-xs focus:outline-none focus:border-[#00F0FF]"
+                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(255, 184, 0,0.3)] text-[#FF8095] font-mono text-xs focus:outline-none focus:border-[#FFB800]"
                       />
                     </div>
                     <div>
@@ -622,15 +622,15 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                         onChange={(e) =>
                           setProfileDraft((p) => ({ ...p, preferences: e.target.value }))
                         }
-                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(0,240,255,0.3)] text-[#F0F2F8] font-mono text-xs focus:outline-none focus:border-[#00F0FF] resize-none"
+                        className="w-full px-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.9)] border border-[rgba(255, 184, 0,0.3)] text-[#F0F2F8] font-mono text-xs focus:outline-none focus:border-[#FFB800] resize-none"
                       />
                     </div>
                   </div>
                 )}
 
-                <div className="pt-2 border-t border-[rgba(0,240,255,0.1)] text-[10px] text-[#7E859E]">
+                <div className="pt-2 border-t border-[rgba(255, 184, 0,0.1)] text-[10px] text-[#7E859E]">
                   J.A.R.V.I.S autonomously reads these coordinates via{" "}
-                  <code className="text-[#00E5FF]">recall_memory</code> to maintain personalized,
+                  <code className="text-[#FFB800]">recall_memory</code> to maintain personalized,
                   ongoing operational rapport.
                 </div>
               </div>
@@ -707,7 +707,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                       placeholder="Search vault..."
                       value={memorySearch}
                       onChange={(e) => setMemorySearch(e.target.value)}
-                      className="pl-7 pr-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.7)] border border-[rgba(255,255,255,0.1)] text-[10px] font-mono text-[#F0F2F8] focus:outline-none focus:border-[#00F0FF]"
+                      className="pl-7 pr-2 py-1 chamfer-xs bg-[rgba(10,11,16,0.7)] border border-[rgba(255,255,255,0.1)] text-[10px] font-mono text-[#F0F2F8] focus:outline-none focus:border-[#FFB800]"
                     />
                   </div>
                 </div>
@@ -729,12 +729,12 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                       <div
                         key={mem.id}
                         onClick={() => setSelectedMemoryModal(mem)}
-                        className="p-2.5 chamfer-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(10,11,16,0.6)] hover:border-[rgba(0,240,255,0.4)] hover:bg-[rgba(0,240,255,0.03)] transition-all flex items-start justify-between gap-3 group cursor-pointer">
+                        className="p-2.5 chamfer-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(10,11,16,0.6)] hover:border-[rgba(255, 184, 0,0.4)] hover:bg-[rgba(255, 184, 0,0.03)] transition-all flex items-start justify-between gap-3 group cursor-pointer">
                         <div className="flex flex-col gap-1 flex-1">
                           <div className="flex items-center gap-2">
                             <span
                               className={`px-1.5 py-0.2 chamfer-xs text-[8px] font-mono uppercase border ${mem.category === "mission"
-                                  ? "bg-[rgba(0,240,255,0.1)] text-[#00F0FF] border-[rgba(0,240,255,0.3)]"
+                                  ? "bg-[rgba(255, 184, 0,0.1)] text-[#FFB800] border-[rgba(255, 184, 0,0.3)]"
                                   : mem.category === "preference"
                                     ? "bg-[rgba(255,128,149,0.1)] text-[#FF8095] border-[rgba(255,128,149,0.3)]"
                                     : "bg-[rgba(255,230,0,0.1)] text-[#FFE600] border-[rgba(255,230,0,0.3)]"
@@ -782,28 +782,28 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
         {activeTab === "plugins" && (
           <div className="flex flex-col gap-5">
             {/* Header Control Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.03)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(255, 184, 0,0.03)]">
               <div className="flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-[#00F0FF]" />
-                <span className="text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+                <Sliders className="w-4 h-4 text-[#FFB800]" />
+                <span className="text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                   LOCAL OS COMPANION & CYBER-PLUGIN MATRIX
                 </span>
-                <span className="px-2 py-0.5 chamfer-xs bg-[rgba(0,240,255,0.15)] text-[#00F0FF] text-[10px] font-mono border border-[rgba(0,240,255,0.3)]">
+                <span className="px-2 py-0.5 chamfer-xs bg-[rgba(255, 184, 0,0.15)] text-[#FFB800] text-[10px] font-mono border border-[rgba(255, 184, 0,0.3)]">
                   BRIDGE: {osBridgeStatus || "ONLINE"}
                 </span>
               </div>
 
               <div className="text-[10px] font-mono text-[#7E859E]">
-                Gemini 3.1 Live Tools: <span className="text-[#00F0FF]">execute_os_action</span> &{" "}
+                Gemini 3.1 Live Tools: <span className="text-[#FFB800]">execute_os_action</span> &{" "}
                 <span className="text-[#FF8095]">run_cyber_plugin</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Column 1: Local OS Automation Deck */}
-              <div className="p-4 chamfer-md border border-[rgba(0,240,255,0.2)] bg-[rgba(10,11,16,0.85)] flex flex-col gap-4">
-                <div className="flex items-center justify-between border-b border-[rgba(0,240,255,0.15)] pb-2">
-                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+              <div className="p-4 chamfer-md border border-[rgba(255, 184, 0,0.2)] bg-[rgba(10,11,16,0.85)] flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-[rgba(255, 184, 0,0.15)] pb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                     <Terminal className="w-3.5 h-3.5" />
                     <span>NATIVE OS DESKTOP CONTROLS</span>
                   </div>
@@ -818,7 +818,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => executeOsActionApi("volume_down")}
-                      className="flex-1 px-2.5 py-1.5 chamfer-xs bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.3)] text-[#00F0FF] hover:bg-[rgba(0,240,255,0.2)] transition-all cursor-pointer font-mono text-xs flex items-center justify-center gap-1">
+                      className="flex-1 px-2.5 py-1.5 chamfer-xs bg-[rgba(255, 184, 0,0.08)] border border-[rgba(255, 184, 0,0.3)] text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.2)] transition-all cursor-pointer font-mono text-xs flex items-center justify-center gap-1">
                       <Volume1 className="w-3.5 h-3.5" />
                       <span>VOL -10%</span>
                     </button>
@@ -830,7 +830,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                     </button>
                     <button
                       onClick={() => executeOsActionApi("volume_up")}
-                      className="flex-1 px-2.5 py-1.5 chamfer-xs bg-[rgba(0,240,255,0.08)] border border-[rgba(0,240,255,0.3)] text-[#00F0FF] hover:bg-[rgba(0,240,255,0.2)] transition-all cursor-pointer font-mono text-xs flex items-center justify-center gap-1">
+                      className="flex-1 px-2.5 py-1.5 chamfer-xs bg-[rgba(255, 184, 0,0.08)] border border-[rgba(255, 184, 0,0.3)] text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.2)] transition-all cursor-pointer font-mono text-xs flex items-center justify-center gap-1">
                       <Volume2 className="w-3.5 h-3.5" />
                       <span>VOL +10%</span>
                     </button>
@@ -854,8 +854,8 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                       <button
                         key={app.key}
                         onClick={() => executeOsActionApi("launch_app", app.key)}
-                        className="px-2.5 py-2 chamfer-xs bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.1)] hover:border-[#00F0FF] hover:text-[#00F0FF] transition-all cursor-pointer text-[10px] font-mono flex items-center justify-center gap-1.5 text-[#F0F2F8]">
-                        <app.icon className="w-3 h-3 text-[#00F0FF]" />
+                        className="px-2.5 py-2 chamfer-xs bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.1)] hover:border-[#FFB800] hover:text-[#FFB800] transition-all cursor-pointer text-[10px] font-mono flex items-center justify-center gap-1.5 text-[#F0F2F8]">
+                        <app.icon className="w-3 h-3 text-[#FFB800]" />
                         <span>{app.label}</span>
                       </button>
                     ))}
@@ -870,7 +870,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => executeOsActionApi("open_folder")}
-                      className="px-2 py-1.5 chamfer-xs bg-[rgba(0,240,255,0.05)] border border-[rgba(0,240,255,0.2)] hover:bg-[rgba(0,240,255,0.15)] text-[#00F0FF] text-[10px] font-mono cursor-pointer flex items-center justify-center gap-1">
+                      className="px-2 py-1.5 chamfer-xs bg-[rgba(255, 184, 0,0.05)] border border-[rgba(255, 184, 0,0.2)] hover:bg-[rgba(255, 184, 0,0.15)] text-[#FFB800] text-[10px] font-mono cursor-pointer flex items-center justify-center gap-1">
                       <FolderOpen className="w-3 h-3" />
                       <span>WORKSPACE</span>
                     </button>
@@ -900,7 +900,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                         <div
                           key={act.id}
                           className="flex justify-between text-[9px] font-mono text-[#7E859E]">
-                          <span className="text-[#00F0FF]">
+                          <span className="text-[#FFB800]">
                             {act.action} {act.target ? `(${act.target})` : ""}
                           </span>
                           <span>{act.time}</span>
@@ -912,9 +912,9 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
               </div>
 
               {/* Column 2: Cyber-Plugin Matrix Console */}
-              <div className="p-4 chamfer-md border border-[rgba(0,240,255,0.2)] bg-[rgba(10,11,16,0.85)] flex flex-col gap-3">
-                <div className="flex items-center justify-between border-b border-[rgba(0,240,255,0.15)] pb-2">
-                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+              <div className="p-4 chamfer-md border border-[rgba(255, 184, 0,0.2)] bg-[rgba(10,11,16,0.85)] flex flex-col gap-3">
+                <div className="flex items-center justify-between border-b border-[rgba(255, 184, 0,0.15)] pb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                     <Zap className="w-3.5 h-3.5" />
                     <span>CYBER-PLUGIN MATRIX ({plugins.length})</span>
                   </div>
@@ -926,13 +926,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   {plugins.map((plugin) => (
                     <div
                       key={plugin.id}
-                      className="p-2.5 chamfer-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] flex flex-col justify-between gap-2 hover:border-[rgba(0,240,255,0.3)] transition-all">
+                      className="p-2.5 chamfer-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] flex flex-col justify-between gap-2 hover:border-[rgba(255, 184, 0,0.3)] transition-all">
                       <div>
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] font-semibold text-[#F0F2F8] font-mono">
                             {plugin.name}
                           </span>
-                          <span className="px-1.5 py-0.2 chamfer-xs bg-[rgba(0,240,255,0.1)] text-[#00F0FF] text-[8px] font-mono uppercase">
+                          <span className="px-1.5 py-0.2 chamfer-xs bg-[rgba(255, 184, 0,0.1)] text-[#FFB800] text-[8px] font-mono uppercase">
                             ACTIVE
                           </span>
                         </div>
@@ -943,7 +943,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
 
                       <button
                         onClick={() => runPluginApi(plugin.id)}
-                        className="w-full py-1 chamfer-btn bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black transition-all cursor-pointer font-mono text-[10px] font-bold flex items-center justify-center gap-1">
+                        className="w-full py-1 chamfer-btn bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800] hover:text-black transition-all cursor-pointer font-mono text-[10px] font-bold flex items-center justify-center gap-1">
                         <Play className="w-2.5 h-2.5 fill-current" />
                         <span>RUN PLUGIN</span>
                       </button>
@@ -958,13 +958,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                       Plugin Execution Console
                     </span>
                     {lastPluginOutput && (
-                      <span className="text-[9px] font-mono text-[#00F0FF]">
+                      <span className="text-[9px] font-mono text-[#FFB800]">
                         {lastPluginOutput.pluginName || lastPluginOutput.pluginId} (
                         {lastPluginOutput.executionDurationMs || 0}ms)
                       </span>
                     )}
                   </div>
-                  <pre className="flex-1 p-2.5 chamfer-sm bg-[rgba(5,5,8,0.9)] border border-[rgba(255,255,255,0.1)] text-[10px] font-mono text-[#00F0FF] overflow-x-auto max-h-40 whitespace-pre-wrap">
+                  <pre className="flex-1 p-2.5 chamfer-sm bg-[rgba(5,5,8,0.9)] border border-[rgba(255,255,255,0.1)] text-[10px] font-mono text-[#FFB800] overflow-x-auto max-h-40 whitespace-pre-wrap">
                     {lastPluginOutput
                       ? JSON.stringify(lastPluginOutput.output || lastPluginOutput, null, 2)
                       : "// Select and run a cyber plugin above to inspect real-time outputs..."}
@@ -981,8 +981,8 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             {/* Row 1: Core System Specifications */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* 3D Engine Card */}
-              <div className="p-3.5 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.03)] flex flex-col gap-2">
-                <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+              <div className="p-3.5 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(255, 184, 0,0.03)] flex flex-col gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                   <Layers className="w-3.5 h-3.5" />
                   <span>3D R3F ENGINE</span>
                 </div>
@@ -993,29 +993,29 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Orbital Belts:</span>
-                    <span className="text-[#00F0FF]">3 Counter-Rotating Layers</span>
+                    <span className="text-[#FFB800]">3 Counter-Rotating Layers</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Particle Count:</span>
-                    <span className="text-[#00F0FF]">300 Motes (Holographic Cyan)</span>
+                    <span className="text-[#FFB800]">300 Motes (Holographic Gold)</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Audio Driver:</span>
-                    <span className="text-[#00F0FF]">Live Spectrum Stator</span>
+                    <span className="text-[#FFB800]">Live Spectrum Stator</span>
                   </div>
                 </div>
               </div>
 
               {/* Audio Pipeline Card */}
-              <div className="p-3.5 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.03)] flex flex-col gap-2">
-                <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+              <div className="p-3.5 chamfer-md border border-[rgba(255, 184, 0,0.25)] bg-[rgba(255, 184, 0,0.03)] flex flex-col gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                   <Radio className="w-3.5 h-3.5" />
                   <span>WEB AUDIO PIPELINE</span>
                 </div>
                 <div className="flex flex-col gap-1 text-[11px] font-mono">
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Mic Ingest:</span>
-                    <span className="text-[#00F0FF]">16kHz Int16 PCM</span>
+                    <span className="text-[#FFB800]">16kHz Int16 PCM</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Downsampler:</span>
@@ -1027,7 +1027,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Barge-In:</span>
-                    <span className="text-[#00F0FF]">&lt; 50ms Auto-Flush</span>
+                    <span className="text-[#FFB800]">&lt; 50ms Auto-Flush</span>
                   </div>
                 </div>
               </div>
@@ -1035,13 +1035,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
               {/* AI Core Card */}
               <div className="p-3.5 chamfer-md border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.02)] flex flex-col gap-2">
                 <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#F0F2F8]">
-                  <Zap className="w-3.5 h-3.5 text-[#00F0FF]" />
+                  <Zap className="w-3.5 h-3.5 text-[#FFB800]" />
                   <span>AI GATEWAY</span>
                 </div>
                 <div className="flex flex-col gap-1 text-[11px] font-mono">
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Model Core:</span>
-                    <span className="text-[#00F0FF] truncate max-w-[130px]">gemini-3.1-flash-live</span>
+                    <span className="text-[#FFB800] truncate max-w-[130px]">gemini-3.1-flash-live</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Voice Actor:</span>
@@ -1050,13 +1050,13 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">WebSocket:</span>
                     <span
-                      className={status !== "DISCONNECTED" ? "text-[#00F0FF]" : "text-[#7E859E]"}>
+                      className={status !== "DISCONNECTED" ? "text-[#FFB800]" : "text-[#7E859E]"}>
                       {status}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Ping Latency:</span>
-                    <span className="text-[#00F0FF]">{latencyMs ? `${latencyMs}ms` : "--"}</span>
+                    <span className="text-[#FFB800]">{latencyMs ? `${latencyMs}ms` : "--"}</span>
                   </div>
                 </div>
               </div>
@@ -1065,9 +1065,9 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
             {/* Row 2: Direct Hardware Renderer, Benchmarks & Mobile PWA */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Direct Hardware Rendering (Zero Filter) Card */}
-              <div className="p-3.5 chamfer-md border border-[rgba(0,240,255,0.3)] bg-[rgba(10,11,16,0.85)] flex flex-col gap-2.5 shadow-sm">
-                <div className="flex items-center justify-between border-b border-[rgba(0,240,255,0.2)] pb-2">
-                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#00F0FF]">
+              <div className="p-3.5 chamfer-md border border-[rgba(255, 184, 0,0.3)] bg-[rgba(10,11,16,0.85)] flex flex-col gap-2.5 shadow-sm">
+                <div className="flex items-center justify-between border-b border-[rgba(255, 184, 0,0.2)] pb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-['Orbitron',sans-serif] font-bold text-[#FFB800]">
                     <Layers className="w-3.5 h-3.5" />
                     <span>HARDWARE RENDERER</span>
                   </div>
@@ -1091,11 +1091,11 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[#7E859E]">Texture Sampler:</span>
-                    <span className="text-[#00F0FF]">Linear Mipmapping</span>
+                    <span className="text-[#FFB800]">Linear Mipmapping</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[#7E859E]">Visual Texture Clarity:</span>
-                    <span className="text-[#00F0FF] font-semibold">100% PURE NATIVE</span>
+                    <span className="text-[#FFB800] font-semibold">100% PURE NATIVE</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[#7E859E]">GPU Power Preference:</span>
@@ -1126,7 +1126,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
 
                   <div className="flex justify-between items-center">
                     <span className="text-[#7E859E]">Frame Time Delta:</span>
-                    <span className="text-[#00F0FF]">
+                    <span className="text-[#FFB800]">
                       {frameTimeMs ? `${frameTimeMs} ms` : "16.6 ms"}
                     </span>
                   </div>
@@ -1169,7 +1169,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#7E859E]">Mic Relay Protocol:</span>
-                    <span className="text-[#00F0FF]">Push-To-Talk</span>
+                    <span className="text-[#FFB800]">Push-To-Talk</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#7E859E]">Pairing Channel:</span>

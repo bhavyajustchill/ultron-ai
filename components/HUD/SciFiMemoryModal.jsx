@@ -146,14 +146,14 @@ export function SciFiMemoryModal() {
       case "medium":
         return {
           text: "STANDARD",
-          color: "text-[#00F0FF] border-[rgba(0,240,255,0.3)] bg-[rgba(0,240,255,0.08)]",
-          dot: "bg-[#00F0FF]",
+          color: "text-[#FFB800] border-[rgba(255, 184, 0,0.3)] bg-[rgba(255, 184, 0,0.08)]",
+          dot: "bg-[#FFB800]",
         };
       default:
         return {
           text: "LOW / RECON",
-          color: "text-[#7E859E] border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.04)]",
-          dot: "bg-[#7E859E]",
+          color: "text-[#9E8B65] border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.04)]",
+          dot: "bg-[#9E8B65]",
         };
     }
   };
@@ -162,7 +162,7 @@ export function SciFiMemoryModal() {
   const getCategoryIcon = (category) => {
     switch (category?.toLowerCase()) {
       case "mission":
-        return <Target className="w-3.5 h-3.5 text-[#00F0FF]" />;
+        return <Target className="w-3.5 h-3.5 text-[#FFB800]" />;
       case "preference":
         return <Brain className="w-3.5 h-3.5 text-[#FF8095]" />;
       case "tactical":
@@ -186,24 +186,24 @@ export function SciFiMemoryModal() {
       }`}>
       {/* Sci-Fi Shutter Unfold / Collapse Modal Container */}
       <div
-        className={`relative w-full max-w-2xl bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(0,229,255,0.25)] shadow-[0_0_40px_rgba(0,229,255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col gap-4 text-[#F0F2F8] font-mono ${
+        className={`relative w-full max-w-2xl bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255, 184, 0,0.25)] shadow-[0_0_40px_rgba(255, 184, 0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col gap-4 text-[#F0F2F8] font-mono ${
           isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
         }`}>
         {/* Holographic Top Accent Bar */}
-        <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[#FF003C] via-[#00F0FF] to-[#FF003C] animate-pulse" />
+        <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[#FF003C] via-[#FFB800] to-[#FF003C] animate-pulse" />
 
         {/* Modal Header */}
-        <div className="px-6 pt-3 pb-2 flex items-center justify-between border-b border-[rgba(0,240,255,0.18)]">
+        <div className="px-6 pt-3 pb-2 flex items-center justify-between border-b border-[rgba(255, 184, 0,0.18)]">
           <div className="flex items-center gap-3">
             <span className="relative flex h-2.5 w-2.5 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00F0FF] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00F0FF]" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFB800] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FFB800]" />
             </span>
             <div>
-              <h2 className="text-xs sm:text-sm font-['Orbitron',sans-serif] font-bold tracking-wider text-[#00F0FF]">
+              <h2 className="text-xs sm:text-sm font-['Orbitron',sans-serif] font-bold tracking-wider text-[#FFB800]">
                 SYNDICATE NEURAL MEMORY VAULT
               </h2>
-              <p className="text-[10px] text-[#7E859E]">
+              <p className="text-[10px] text-[#9E8B65]">
                 QUANTUM PERSISTENCE LAYER // RECORD DECRYPTED
               </p>
             </div>
@@ -215,7 +215,7 @@ export function SciFiMemoryModal() {
             </span>
             <button
               onClick={handleClose}
-              className="px-2.5 py-1 chamfer-xs text-xs text-[#7E859E] hover:text-[#FF003C] hover:bg-[#FF003C]/10 border border-transparent hover:border-[#FF003C]/30 transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-2.5 py-1 chamfer-xs text-xs text-[#9E8B65] hover:text-[#FF003C] hover:bg-[#FF003C]/10 border border-transparent hover:border-[#FF003C]/30 transition-all cursor-pointer flex items-center gap-1.5"
               title="Close Modal (Escape)">
               <X className="w-4 h-4" />
               <span className="text-[10px] hidden sm:inline font-mono">ESC</span>
@@ -227,7 +227,7 @@ export function SciFiMemoryModal() {
         <div className="px-6 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
           {/* 1. Category */}
           <div className="p-2 chamfer-sm border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] flex flex-col gap-1">
-            <div className="flex items-center justify-between text-[10px] text-[#7E859E]">
+            <div className="flex items-center justify-between text-[10px] text-[#9E8B65]">
               <span>CATEGORY</span>
               {getCategoryIcon(isEditing ? draftCategory : currentMemory.category)}
             </div>
@@ -235,13 +235,13 @@ export function SciFiMemoryModal() {
               <select
                 value={draftCategory}
                 onChange={(e) => setDraftCategory(e.target.value)}
-                className="bg-[#050508] border border-[rgba(0,240,255,0.3)] chamfer-xs px-1.5 py-0.5 text-xs text-[#00F0FF] uppercase focus:outline-none">
+                className="bg-[#050508] border border-[rgba(255, 184, 0,0.3)] chamfer-xs px-1.5 py-0.5 text-xs text-[#FFB800] uppercase focus:outline-none">
                 <option value="tactical">tactical</option>
                 <option value="preference">preference</option>
                 <option value="mission">mission</option>
               </select>
             ) : (
-              <span className="font-bold uppercase text-[#00F0FF]">
+              <span className="font-bold uppercase text-[#FFB800]">
                 {currentMemory.category || "TACTICAL"}
               </span>
             )}
@@ -249,7 +249,7 @@ export function SciFiMemoryModal() {
 
           {/* 2. Priority / Importance */}
           <div className="p-2 chamfer-sm border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] flex flex-col gap-1">
-            <div className="flex items-center justify-between text-[10px] text-[#7E859E]">
+            <div className="flex items-center justify-between text-[10px] text-[#9E8B65]">
               <span>PRIORITY</span>
               <span className={`w-1.5 h-1.5 rounded-full ${importanceBadge.dot}`} />
             </div>
@@ -257,7 +257,7 @@ export function SciFiMemoryModal() {
               <select
                 value={draftImportance}
                 onChange={(e) => setDraftImportance(e.target.value)}
-                className="bg-[#050508] border border-[rgba(0,240,255,0.3)] chamfer-xs px-1.5 py-0.5 text-xs text-[#FFE600] uppercase focus:outline-none">
+                className="bg-[#050508] border border-[rgba(255, 184, 0,0.3)] chamfer-xs px-1.5 py-0.5 text-xs text-[#FFE600] uppercase focus:outline-none">
                 <option value="critical">critical</option>
                 <option value="high">high</option>
                 <option value="medium">medium</option>
@@ -270,9 +270,9 @@ export function SciFiMemoryModal() {
 
           {/* 3. Source Origin */}
           <div className="p-2 chamfer-sm border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] flex flex-col gap-1">
-            <div className="flex items-center justify-between text-[10px] text-[#7E859E]">
+            <div className="flex items-center justify-between text-[10px] text-[#9E8B65]">
               <span>ORIGIN</span>
-              <Cpu className="w-3.5 h-3.5 text-[#7E859E]" />
+              <Cpu className="w-3.5 h-3.5 text-[#9E8B65]" />
             </div>
             <span className="font-mono text-[11px] text-[#FF8095] truncate">
               {currentMemory.source || "operative_dialog"}
@@ -281,9 +281,9 @@ export function SciFiMemoryModal() {
 
           {/* 4. Timestamp */}
           <div className="p-2 chamfer-sm border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] flex flex-col gap-1">
-            <div className="flex items-center justify-between text-[10px] text-[#7E859E]">
+            <div className="flex items-center justify-between text-[10px] text-[#9E8B65]">
               <span>INSCRIBED</span>
-              <Clock className="w-3.5 h-3.5 text-[#7E859E]" />
+              <Clock className="w-3.5 h-3.5 text-[#9E8B65]" />
             </div>
             <span className="font-mono text-[11px] text-[#F0F2F8]">
               {memoryTimestamp.toLocaleDateString()}
@@ -294,17 +294,17 @@ export function SciFiMemoryModal() {
         {/* Directive Payload Console */}
         <div className="px-6 flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-[11px]">
-            <span className="text-[#00F0FF] font-semibold flex items-center gap-1.5">
+            <span className="text-[#FFB800] font-semibold flex items-center gap-1.5">
               <span className="text-[#FF003C]">&gt;</span> DIRECTIVE_PAYLOAD:
             </span>
-            <span className="text-[10px] text-[#7E859E]">
+            <span className="text-[10px] text-[#9E8B65]">
               {memoryTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </span>
           </div>
 
-          <div className="relative p-4 chamfer-md bg-[rgba(5,5,8,0.92)] border border-[rgba(0,240,255,0.2)] shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
+          <div className="relative p-4 chamfer-md bg-[rgba(5,5,8,0.92)] border border-[rgba(255, 184, 0,0.2)] shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
             {/* Terminal Line Number Strip */}
-            <div className="absolute top-4 left-3 select-none text-[11px] font-mono text-[#7E859E]/40 leading-relaxed flex flex-col text-right pr-2 border-r border-white/5">
+            <div className="absolute top-4 left-3 select-none text-[11px] font-mono text-[#9E8B65]/40 leading-relaxed flex flex-col text-right pr-2 border-r border-white/5">
               <span>01</span>
               <span>02</span>
               <span>03</span>
@@ -321,7 +321,7 @@ export function SciFiMemoryModal() {
                 autoFocus
               />
             ) : (
-              <div className="pl-8 text-sm text-[#F0F2F8] font-mono leading-relaxed break-words whitespace-pre-wrap selection:bg-[#00F0FF]/20 selection:text-[#00F0FF]">
+              <div className="pl-8 text-sm text-[#F0F2F8] font-mono leading-relaxed break-words whitespace-pre-wrap selection:bg-[#FFB800]/20 selection:text-[#FFB800]">
                 {currentMemory.content || currentMemory.text || "NO DIRECTIVE PAYLOAD RECORDED."}
               </div>
             )}
@@ -331,7 +331,7 @@ export function SciFiMemoryModal() {
         {/* Modal Action Controls Footer */}
         <div className="px-6 py-3 border-t border-[rgba(255,255,255,0.08)] bg-[rgba(5,5,8,0.6)] flex flex-wrap items-center justify-between gap-3 text-xs">
           {/* Status Indicator */}
-          <div className="flex items-center gap-2 text-[10px] text-[#7E859E]">
+          <div className="flex items-center gap-2 text-[10px] text-[#9E8B65]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66]" />
             <span className="hidden sm:inline">STATE: COMMITTED TO GEMINI CONTEXT</span>
             <span className="sm:hidden">COMMITTED</span>
@@ -359,7 +359,7 @@ export function SciFiMemoryModal() {
             {/* Copy Directive */}
             <button
               onClick={handleCopyDirective}
-              className="px-3 py-1.5 chamfer-btn border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.03)] hover:border-[#00F0FF] hover:text-[#00F0FF] transition-all cursor-pointer flex items-center gap-1.5">
+              className="px-3 py-1.5 chamfer-btn border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.03)] hover:border-[#FFB800] hover:text-[#FFB800] transition-all cursor-pointer flex items-center gap-1.5">
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-[#00FF66]" />
@@ -377,14 +377,14 @@ export function SciFiMemoryModal() {
             {isEditing ? (
               <button
                 onClick={handleSaveEdit}
-                className="px-3.5 py-1.5 chamfer-btn bg-[#00F0FF] hover:bg-[#80F7FF] text-black font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,240,255,0.4)] transition-all cursor-pointer">
+                className="px-3.5 py-1.5 chamfer-btn bg-[#FFB800] hover:bg-[#ffe57f] text-black font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(255, 184, 0,0.4)] transition-all cursor-pointer">
                 <Save className="w-3.5 h-3.5" />
                 <span>SAVE</span>
               </button>
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-3 py-1.5 chamfer-btn border border-[rgba(0,240,255,0.4)] bg-[rgba(0,240,255,0.08)] text-[#00F0FF] hover:bg-[#00F0FF]/20 hover:border-[#00F0FF] flex items-center gap-1.5 transition-all cursor-pointer">
+                className="px-3 py-1.5 chamfer-btn border border-[rgba(255, 184, 0,0.4)] bg-[rgba(255, 184, 0,0.08)] text-[#FFB800] hover:bg-[#FFB800]/20 hover:border-[#FFB800] flex items-center gap-1.5 transition-all cursor-pointer">
                 <Edit3 className="w-3.5 h-3.5" />
                 <span>EDIT</span>
               </button>

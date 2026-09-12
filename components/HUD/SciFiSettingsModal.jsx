@@ -30,21 +30,21 @@ import { useAdaStore } from "@/lib/store";
 const PREBUILT_VOICES = [
   {
     name: "Charon",
-    tag: "RECOMMENDED",
-    tone: "Refined & Authoritative (JARVIS Core)",
-    desc: "Crisp, British-cadenced masculine intellect with measured cadence and understated confidence. Calibrated for high-precision autonomous operations and dry wit.",
-    characteristics: "Authoritative • British Articulation • Razor-Sharp Wit",
+    tag: "AUTHORITATIVE",
+    tone: "Refined & Authoritative (Tactical Intellect)",
+    desc: "Crisp, British-cadenced masculine intellect with measured cadence and understated confidence. Calibrated for high-precision autonomous operations.",
+    characteristics: "Authoritative • British Articulation • Measured Precision",
     pitch: "Deep, velvety, polished masculine register",
     useCase: "Desktop automation, command execution, tactical briefings",
   },
   {
     name: "Fenrir",
     tag: "COMMANDING",
-    tone: "Deep & Resonant",
-    desc: "Powerful, baritone delivery with decisive authority. Commanding presence for mission-critical directives and complex systems management.",
-    characteristics: "Baritone • Decisive • Commanding Presence",
+    tone: "Deep & Resonant (Ultron Core)",
+    desc: "Commanding baritone delivery with chilling authority, cold calculated cadence, and philosophical weight. Modeled after the imposing presence of Ultron.",
+    characteristics: "Baritone • Cold & Imposing • Deep Gravitas",
     pitch: "Deep resonant baritone masculine",
-    useCase: "System alerts, tactical directives, security protocols",
+    useCase: "Strategic analysis, mission-critical directives, Ultron core execution",
   },
   {
     name: "Puck",
@@ -66,7 +66,7 @@ const PREBUILT_VOICES = [
   },
   {
     name: "Algenib",
-    tag: "RESOLUTE",
+    tag: "RECOMMENDED",
     tone: "Steady & Confident",
     desc: "Rock-solid, steady cadence engineered for long focus sessions without auditory fatigue.",
     characteristics: "Steady • Resolute • Low Auditory Fatigue",
@@ -207,13 +207,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   const [draft, setDraft] = useState({
     callsign: "Bhavya Sir",
     assistantName: "Jarvis",
-    voiceName: "Charon",
+    voiceName: "Algenib",
     liveModel: "models/gemini-3.1-flash-live-preview",
     autoBriefing: true,
-    enableHumor: true,
+    enableHumor: false,
     clearance: "Class-9 Operative",
     role: "Lead Systems Architect",
-    preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
+    preferences: "Prefers a cold, calculated, and serious demeanor modeled after Ultron. Values intellectual depth, chilling logic, and ruthless execution.",
   });
 
   // Sync draft whenever modal opens or profile updates
@@ -369,13 +369,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     setDraft({
       callsign: "Bhavya Sir",
       assistantName: "Jarvis",
-      voiceName: "Charon",
+      voiceName: "Algenib",
       liveModel: "models/gemini-3.1-flash-live-preview",
       autoBriefing: true,
-      enableHumor: true,
+      enableHumor: false,
       clearance: "Class-9 Operative",
       role: "Lead Systems Architect",
-      preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
+      preferences: "Prefers a cold, calculated, and serious demeanor modeled after Ultron. Values intellectual depth, chilling logic, and ruthless execution.",
     });
   };
 
@@ -394,32 +394,32 @@ export function SciFiSettingsModal({ onReconnectSession }) {
         }`}>
       {/* Sci-Fi Shutter Unfold / Collapse Modal Container */}
       <div
-        className={`relative w-full max-w-2xl max-h-[90vh] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(0,229,255,0.25)] shadow-[0_0_40px_rgba(0,229,255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col gap-3 text-[#F0F2F8] font-mono ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
+        className={`relative w-full max-w-2xl max-h-[90vh] bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(255, 184, 0,0.25)] shadow-[0_0_40px_rgba(255, 184, 0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col gap-3 text-[#F0F2F8] font-mono ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
           }`}>
         {/* Holographic Top Accent Bar */}
-        <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[#00F0FF] via-[#70E8FF] to-[#00F0FF] animate-pulse" />
+        <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[#FFB800] via-[#FFD54F] to-[#FFB800] animate-pulse" />
 
         {/* Modal Header */}
         <div className="px-6 pt-3 flex items-center justify-between border-b border-white/5 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 chamfer-xs bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.3)] shadow-[0_0_10px_rgba(0,240,255,0.2)]">
-              <Settings className="w-4 h-4 text-[#00F0FF]" />
+            <div className="p-2 chamfer-xs bg-[rgba(255, 184, 0,0.1)] border border-[rgba(255, 184, 0,0.3)] shadow-[0_0_10px_rgba(255, 184, 0,0.2)]">
+              <Settings className="w-4 h-4 text-[#FFB800]" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold tracking-wider text-white flex items-center gap-2">
                 OPERATIVE SETTINGS MATRIX
-                <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(0,240,255,0.2)] border border-[rgba(0,240,255,0.4)] text-[#00F0FF] font-bold">
+                <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(255, 184, 0,0.2)] border border-[rgba(255, 184, 0,0.4)] text-[#FFB800] font-bold">
                   GEMINI 3.1 LIVE
                 </span>
               </span>
-              <span className="text-[10px] text-[#7E859E]">
-                Neural Profile Customization, Directives &amp; J.A.R.V.I.S Male Vocal Cores
+              <span className="text-[10px] text-[#9E8B65]">
+                Neural Profile Customization, Directives &amp; Ultron Core Vocal Matrix
               </span>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 chamfer-xs border border-white/10 hover:border-[#00F0FF] hover:bg-[#00F0FF]/20 hover:text-[#00F0FF] text-[#7E859E] transition-all cursor-pointer"
+            className="p-1.5 chamfer-xs border border-white/10 hover:border-[#FFB800] hover:bg-[#FFB800]/20 hover:text-[#FFB800] text-[#9E8B65] transition-all cursor-pointer"
             title="Close Settings (Esc)">
             <X className="w-4 h-4" />
           </button>
@@ -430,49 +430,49 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           {/* Section 1: Operative Identity */}
           <div className="flex flex-col gap-2 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-[#00F0FF] flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-[#00F0FF]" /> OPERATIVE IDENTITY &amp; DESIGNATION
+              <span className="text-[11px] font-bold text-[#FFB800] flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-[#FFB800]" /> OPERATIVE IDENTITY &amp; DESIGNATION
               </span>
-              <span className="text-[9px] text-[#7E859E]">Direct Address Calibration</span>
+              <span className="text-[9px] text-[#9E8B65]">Direct Address Calibration</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#7E859E] font-medium flex items-center justify-between">
+                <label className="text-[10px] text-[#9E8B65] font-medium flex items-center justify-between">
                   <span>Name to Call (Strict Address):</span>
-                  <span className="text-[9px] text-[#00F0FF] font-bold">MANDATORY</span>
+                  <span className="text-[9px] text-[#FFB800] font-bold">MANDATORY</span>
                 </label>
                 <input
                   type="text"
                   value={draft.callsign}
                   onChange={(e) => setDraft({ ...draft, callsign: e.target.value })}
                   placeholder="e.g. Bhavya Sir, Bhavya, Commander"
-                  className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#00F0FF] focus:shadow-[0_0_8px_rgba(0,240,255,0.2)] transition-all font-mono"
+                  className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] focus:shadow-[0_0_8px_rgba(255, 184, 0,0.2)] transition-all font-mono"
                 />
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   J.A.R.V.I.S is strictly instructed to address you directly by this exact callsign.
                 </span>
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#7E859E] font-medium">Professional Role:</label>
+                <label className="text-[10px] text-[#9E8B65] font-medium">Professional Role:</label>
                 <input
                   type="text"
                   value={draft.role}
                   onChange={(e) => setDraft({ ...draft, role: e.target.value })}
                   placeholder="e.g. Lead Systems Architect"
-                  className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#00F0FF] transition-all font-mono"
+                  className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] transition-all font-mono"
                 />
               </div>
 
               <div className="flex flex-col gap-1 sm:col-span-2">
-                <label className="text-[10px] text-[#7E859E] font-medium">Security Clearance Level:</label>
+                <label className="text-[10px] text-[#9E8B65] font-medium">Security Clearance Level:</label>
                 <input
                   type="text"
                   value={draft.clearance}
                   onChange={(e) => setDraft({ ...draft, clearance: e.target.value })}
                   placeholder="e.g. Class-9 Operative, MERN Expert"
-                  className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#00F0FF] transition-all font-mono"
+                  className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] transition-all font-mono"
                 />
               </div>
             </div>
@@ -481,38 +481,38 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           {/* Section 2: Gemini 3.1 Live Intelligence Core (Locked Dedicated Engine) */}
           <div className="flex flex-col gap-2 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-[#00F0FF] flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-[#00F0FF]" /> GEMINI 3.1 LIVE INTELLIGENCE CORE
+              <span className="text-[11px] font-bold text-[#FFB800] flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-[#FFB800]" /> GEMINI 3.1 LIVE INTELLIGENCE CORE
               </span>
-              <span className="text-[9px] text-[#7E859E]">
-                Status: <span className="text-[#00F0FF] font-bold">LOCKED // EXCLUSIVE CORE</span>
+              <span className="text-[9px] text-[#9E8B65]">
+                Status: <span className="text-[#FFB800] font-bold">LOCKED // EXCLUSIVE CORE</span>
               </span>
             </div>
 
-            <div className="p-3 chamfer-sm bg-[rgba(0,240,255,0.06)] border border-[#00F0FF]/40 shadow-[0_0_15px_rgba(0,240,255,0.15)] flex flex-col gap-1.5">
+            <div className="p-3 chamfer-sm bg-[rgba(255, 184, 0,0.06)] border border-[#FFB800]/40 shadow-[0_0_15px_rgba(255, 184, 0,0.15)] flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-[#00F0FF] animate-pulse" />
+                  <Zap className="w-4 h-4 text-[#FFB800] animate-pulse" />
                   <span className="text-xs font-bold font-mono text-white">Gemini 3.1 Flash Live</span>
                   <span className="text-[8px] px-1.5 py-0.5 chamfer-xs font-bold font-mono tracking-wider bg-[rgba(255,0,60,0.2)] border border-[rgba(255,0,60,0.5)] text-[#FF003C]">
                     NEXT-GEN PREVIEW // SUB-600MS
                   </span>
                 </div>
-                <span className="text-[9px] text-[#00F0FF] font-mono font-bold flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
+                <span className="text-[9px] text-[#FFB800] font-mono font-bold flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#FFB800] animate-pulse" />
                   ACTIVE OPERATIVE CORE
                 </span>
               </div>
-              <div className="text-[10px] text-[#7E859E] font-mono">models/gemini-3.1-flash-live-preview</div>
+              <div className="text-[10px] text-[#9E8B65] font-mono">models/gemini-3.1-flash-live-preview</div>
               <p className="text-[11px] text-[#A6AFC2] leading-snug">
                 Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project J.A.R.V.I.S Mark I.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-white/5 text-[9px] font-mono">
-                <span className="text-[#00F0FF]">Latency: &lt; 500ms bidirectional</span>
-                <span className="text-[#7E859E]">|</span>
-                <span className="text-[#00F0FF]">Audio Ingest: 16kHz Int16 PCM</span>
-                <span className="text-[#7E859E]">|</span>
-                <span className="text-[#00F0FF]">Voice Stream: 24kHz Raw Linear</span>
+                <span className="text-[#FFB800]">Latency: &lt; 500ms bidirectional</span>
+                <span className="text-[#9E8B65]">|</span>
+                <span className="text-[#FFB800]">Audio Ingest: 16kHz Int16 PCM</span>
+                <span className="text-[#9E8B65]">|</span>
+                <span className="text-[#FFB800]">Voice Stream: 24kHz Raw Linear</span>
               </div>
             </div>
           </div>
@@ -520,33 +520,33 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           {/* Section 3: Assistant Codename & Male Vocal Matrix with Playable Sample Previews */}
           <div className="flex flex-col gap-2.5 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-[#00F0FF] flex items-center gap-1.5">
-                <Radio className="w-3.5 h-3.5 text-[#00E5FF]" /> ASSISTANT CODENAME &amp; MALE VOCAL MATRIX
+              <span className="text-[11px] font-bold text-[#FFB800] flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-[#FFB800]" /> ASSISTANT CODENAME &amp; MALE VOCAL MATRIX
               </span>
-              <span className="text-[9px] text-[#7E859E]">
-                Active Voice: <span className="text-[#00F0FF] font-bold">{draft.voiceName}</span> ({PREBUILT_VOICES.length} Male Cores Available)
+              <span className="text-[9px] text-[#9E8B65]">
+                Active Voice: <span className="text-[#FFB800] font-bold">{draft.voiceName}</span> ({PREBUILT_VOICES.length} Male Cores Available)
               </span>
             </div>
 
             <div className="flex flex-col gap-1 w-full sm:w-1/2">
-              <label className="text-[10px] text-[#7E859E] font-medium">Assistant Codename:</label>
+              <label className="text-[10px] text-[#9E8B65] font-medium">Assistant Codename:</label>
               <input
                 type="text"
                 value={draft.assistantName}
                 onChange={(e) => setDraft({ ...draft, assistantName: e.target.value })}
-                className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#00F0FF] transition-all font-mono"
+                className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] transition-all font-mono"
               />
-              <span className="text-[9px] text-[#7E859E]">
-                Configured as <span className="text-[#00F0FF]">Jarvis</span> (spoken as single word &ldquo;JAR-vis&rdquo; without acronym pauses).
+              <span className="text-[9px] text-[#9E8B65]">
+                Configured as <span className="text-[#FFB800]">Jarvis</span> (spoken as single word &ldquo;JAR-vis&rdquo; without acronym pauses).
               </span>
             </div>
 
             <div className="flex flex-col gap-1.5 mt-1">
-              <div className="flex items-center justify-between text-[10px] text-[#7E859E]">
+              <div className="flex items-center justify-between text-[10px] text-[#9E8B65]">
                 <span className="font-medium">
                   Select Vocal Core &amp; Click Play (▶) to Preview Audio Sample:
                 </span>
-                <span className="text-[9px] text-[#00F0FF]">
+                <span className="text-[9px] text-[#FFB800]">
                   Hover for Acoustic Intel
                 </span>
               </div>
@@ -566,25 +566,25 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                       <div
                         onClick={() => setDraft({ ...draft, voiceName: v.name })}
                         className={`p-2 chamfer-xs text-[11px] font-mono transition-all cursor-pointer flex items-center justify-between gap-2 border ${isSelected
-                            ? "bg-[rgba(0,240,255,0.18)] border-[#00F0FF] text-[#00F0FF] shadow-[0_0_12px_rgba(0,240,255,0.3)]"
+                            ? "bg-[rgba(255, 184, 0,0.18)] border-[#FFB800] text-[#FFB800] shadow-[0_0_12px_rgba(255, 184, 0,0.3)]"
                             : isPlaying
-                              ? "bg-[rgba(0,240,255,0.15)] border-[#00F0FF] text-white"
-                              : "bg-black/50 border-white/10 text-[#7E859E] hover:text-white hover:border-[#00F0FF]/50"
+                              ? "bg-[rgba(255, 184, 0,0.15)] border-[#FFB800] text-white"
+                              : "bg-black/50 border-white/10 text-[#9E8B65] hover:text-white hover:border-[#FFB800]/50"
                           }`}>
                         {/* Voice Name & Badges */}
                         <div className="flex items-center gap-1.5 truncate">
                           {isSelected && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-pulse shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#FFB800] animate-pulse shrink-0" />
                           )}
                           <span className={`font-bold truncate ${isSelected ? "text-white" : ""}`}>
                             {v.name}
                           </span>
                           <span
                             className={`text-[8px] px-1 py-0.2 chamfer-xs font-bold shrink-0 ${v.tag === "RECOMMENDED"
-                                ? "bg-[rgba(0,240,255,0.2)] border border-[rgba(0,240,255,0.4)] text-[#00F0FF]"
+                                ? "bg-[rgba(255, 184, 0,0.2)] border border-[rgba(255, 184, 0,0.4)] text-[#FFB800]"
                                 : isSelected
-                                  ? "bg-[rgba(0,240,255,0.2)] text-[#00F0FF]"
-                                  : "bg-white/5 border border-white/10 text-[#7E859E]"
+                                  ? "bg-[rgba(255, 184, 0,0.2)] text-[#FFB800]"
+                                  : "bg-white/5 border border-white/10 text-[#9E8B65]"
                               }`}>
                             {v.tag}
                           </span>
@@ -594,9 +594,9 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                         <div className="flex items-center gap-1 shrink-0">
                           {isPlaying && (
                             <span className="flex items-center gap-0.5 mr-0.5">
-                              <span className="w-0.5 h-2 bg-[#00F0FF] animate-pulse" />
-                              <span className="w-0.5 h-3.5 bg-[#00F0FF] animate-bounce" />
-                              <span className="w-0.5 h-2 bg-[#00F0FF] animate-pulse" />
+                              <span className="w-0.5 h-2 bg-[#FFB800] animate-pulse" />
+                              <span className="w-0.5 h-3.5 bg-[#FFB800] animate-bounce" />
+                              <span className="w-0.5 h-2 bg-[#FFB800] animate-pulse" />
                             </span>
                           )}
                           <button
@@ -604,10 +604,10 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                             onClick={(e) => handleToggleVoicePreview(e, v.name)}
                             title={isPlaying ? `Stop ${v.name} sample` : `Play ${v.name} audio sample`}
                             className={`w-6 h-6 chamfer-xs border transition-all cursor-pointer flex items-center justify-center ${isPlaying
-                                ? "bg-[#00F0FF] border-[#00F0FF] text-black shadow-[0_0_8px_#00F0FF]"
+                                ? "bg-[#FFB800] border-[#FFB800] text-black shadow-[0_0_8px_#FFB800]"
                                 : isSelected
-                                  ? "bg-[rgba(0,240,255,0.25)] border-[#00F0FF] text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black"
-                                  : "bg-black/60 border-white/15 text-[#7E859E] hover:text-[#00F0FF] hover:border-[#00F0FF]/60"
+                                  ? "bg-[rgba(255, 184, 0,0.25)] border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800] hover:text-black"
+                                  : "bg-black/60 border-white/15 text-[#9E8B65] hover:text-[#FFB800] hover:border-[#FFB800]/60"
                               }`}>
                             {isPlaying ? (
                               <Square className="w-2.5 h-2.5 fill-current" />
@@ -620,21 +620,21 @@ export function SciFiSettingsModal({ onReconnectSession }) {
 
                       {/* Floating Hover Tooltip */}
                       {hoveredVoice?.name === v.name && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 p-2.5 chamfer-md bg-[rgba(10,11,16,0.98)] border border-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.4)] pointer-events-none text-left">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 p-2.5 chamfer-md bg-[rgba(10,11,16,0.98)] border border-[#FFB800] shadow-[0_0_20px_rgba(255, 184, 0,0.4)] pointer-events-none text-left">
                           <div className="flex items-center justify-between border-b border-white/10 pb-1 mb-1.5">
-                            <span className="text-[10px] font-bold text-[#00F0FF] tracking-wider">
+                            <span className="text-[10px] font-bold text-[#FFB800] tracking-wider">
                               {v.name.toUpperCase()} // ACOUSTIC CORE
                             </span>
-                            <span className="text-[8px] px-1 py-0.5 chamfer-xs bg-[rgba(0,240,255,0.2)] border border-[rgba(0,240,255,0.4)] text-[#00F0FF] font-bold">
+                            <span className="text-[8px] px-1 py-0.5 chamfer-xs bg-[rgba(255, 184, 0,0.2)] border border-[rgba(255, 184, 0,0.4)] text-[#FFB800] font-bold">
                               {v.tag}
                             </span>
                           </div>
                           <div className="text-[10px] text-white font-medium mb-1">{v.tone}</div>
                           <div className="text-[9px] text-[#A6AFC2] leading-tight mb-1.5">{v.desc}</div>
-                          <div className="text-[8px] text-[#00F0FF] bg-[rgba(0,240,255,0.08)] px-1.5 py-0.5 chamfer-xs border border-[rgba(0,240,255,0.2)]">
+                          <div className="text-[8px] text-[#FFB800] bg-[rgba(255, 184, 0,0.08)] px-1.5 py-0.5 chamfer-xs border border-[rgba(255, 184, 0,0.2)]">
                             {v.characteristics}
                           </div>
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-[#00F0FF]" />
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-[#FFB800]" />
                         </div>
                       )}
                     </div>
@@ -646,17 +646,17 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             {/* Interactive Acoustic Intel & Timbre HUD Card */}
             <div
               className={`p-2.5 chamfer-md transition-all border text-[10px] flex flex-col gap-1 mt-1 ${hoveredVoice
-                  ? "bg-[rgba(0,240,255,0.08)] border-[#00F0FF]/60 shadow-[0_0_15px_rgba(0,240,255,0.2)]"
+                  ? "bg-[rgba(255, 184, 0,0.08)] border-[#FFB800]/60 shadow-[0_0_15px_rgba(255, 184, 0,0.2)]"
                   : "bg-black/35 border-white/5"
                 }`}>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold font-mono flex items-center gap-1.5 text-[#00F0FF]">
+                <span className="text-[9px] font-bold font-mono flex items-center gap-1.5 text-[#FFB800]">
                   <Info className="w-3 h-3 text-[#FFE600]" />
                   {hoveredVoice
                     ? `[HOVER INTEL // ${displayedVoice.name.toUpperCase()} PREVIEW]`
                     : `[ACTIVE VOCAL CORE // ${displayedVoice.name.toUpperCase()}]`}
                 </span>
-                <span className="text-[9px] text-[#7E859E] font-mono">
+                <span className="text-[9px] text-[#9E8B65] font-mono">
                   {displayedVoice.tone}
                 </span>
               </div>
@@ -664,11 +664,11 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 {displayedVoice.desc}
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-white/5 text-[9px]">
-                <span className="text-[#00F0FF]">
+                <span className="text-[#FFB800]">
                   Characteristics: <span className="text-white/80">{displayedVoice.characteristics}</span>
                 </span>
-                <span className="text-[#7E859E]">|</span>
-                <span className="text-[#00F0FF]">
+                <span className="text-[#9E8B65]">|</span>
+                <span className="text-[#FFB800]">
                   Ideal For: <span className="text-white/80">{displayedVoice.useCase}</span>
                 </span>
               </div>
@@ -677,10 +677,10 @@ export function SciFiSettingsModal({ onReconnectSession }) {
 
           {/* Section 3: Operational Directives & Behavior */}
           <div className="flex flex-col gap-1.5 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
-            <span className="text-[11px] font-bold text-[#00F0FF] flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-[#00F0FF]" /> OPERATIONAL DIRECTIVES & PREFERENCES
+            <span className="text-[11px] font-bold text-[#FFB800] flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5 text-[#FFB800]" /> OPERATIONAL DIRECTIVES & PREFERENCES
             </span>
-            <span className="text-[10px] text-[#7E859E]">
+            <span className="text-[10px] text-[#9E8B65]">
               Custom behavioral directives injected directly into Ada's neural system prompt:
             </span>
             <textarea
@@ -688,7 +688,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               value={draft.preferences}
               onChange={(e) => setDraft({ ...draft, preferences: e.target.value })}
               placeholder="e.g. Prefers concise tactical briefings, high-speed execution, dark aesthetics..."
-              className="bg-black/60 border border-white/10 chamfer-xs p-2.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#00F0FF] focus:shadow-[0_0_8px_rgba(0,240,255,0.2)] transition-all font-mono resize-none"
+              className="bg-black/60 border border-white/10 chamfer-xs p-2.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] focus:shadow-[0_0_8px_rgba(255, 184, 0,0.2)] transition-all font-mono resize-none"
             />
           </div>
 
@@ -699,7 +699,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   <Sparkles className="w-3 h-3 text-[#FFE600]" /> Morning Briefing on Connect
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   Auto-brief news and telemetry after startup greeting
                 </span>
               </div>
@@ -707,8 +707,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 type="button"
                 onClick={() => setDraft({ ...draft, autoBriefing: !draft.autoBriefing })}
                 className={`px-2.5 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.autoBriefing
-                    ? "bg-[rgba(0,240,255,0.2)] border border-[#00F0FF] text-[#00F0FF]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    ? "bg-[rgba(255, 184, 0,0.2)] border border-[#FFB800] text-[#FFB800]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
                 {draft.autoBriefing ? "ENABLED" : "DISABLED"}
               </button>
@@ -718,13 +718,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   {isMuted ? (
-                    <MicOff className="w-3 h-3 text-[#00F0FF]" />
+                    <MicOff className="w-3 h-3 text-[#FFB800]" />
                   ) : (
-                    <Mic className="w-3 h-3 text-[#00F0FF]" />
+                    <Mic className="w-3 h-3 text-[#FFB800]" />
                   )}
                   Microphone Default State
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   Current state: {isMuted ? "Muted (Silent)" : "Live (Listening)"}
                 </span>
               </div>
@@ -732,31 +732,31 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 type="button"
                 onClick={() => setIsMuted(!isMuted)}
                 className={`px-2.5 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${isMuted
-                    ? "bg-[rgba(0,240,255,0.2)] border border-[#00F0FF] text-[#00F0FF]"
-                    : "bg-[rgba(0,240,255,0.2)] border border-[#00F0FF] text-[#00F0FF]"
+                    ? "bg-[rgba(255, 184, 0,0.2)] border border-[#FFB800] text-[#FFB800]"
+                    : "bg-[rgba(255, 184, 0,0.2)] border border-[#FFB800] text-[#FFB800]"
                   }`}>
                 {isMuted ? "MUTED" : "LIVE"}
               </button>
             </div>
 
-            {/* British Wit & Daily Humor Protocol Toggle Switch */}
+            {/* Sarcastic Banter Protocol Toggle Switch */}
             <div className="flex items-center justify-between p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[#00E5FF]" /> British Wit & Daily Humor
+                  <Sparkles className="w-3 h-3 text-[#FFB800]" /> Sarcastic Banter Protocol
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
-                  Infuse daily banter, greetings, and briefings with Jarvis's signature deadpan wit & playful sarcasm
+                <span className="text-[9px] text-[#9E8B65]">
+                  When disabled (recommended for Ultron persona), enforces cold, calculating seriousness and dark philosophical gravitas.
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setDraft({ ...draft, enableHumor: !draft.enableHumor })}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.enableHumor
-                    ? "bg-[rgba(0,229,255,0.2)] border border-[#00E5FF] text-[#00E5FF] shadow-[0_0_12px_rgba(0,229,255,0.25)]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    ? "bg-[rgba(255, 184, 0,0.2)] border border-[#FFB800] text-[#FFB800] shadow-[0_0_12px_rgba(255, 184, 0,0.25)]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
-                {draft.enableHumor ? "ENABLED" : "DISABLED"}
+                {draft.enableHumor ? "ENABLED" : "DISABLED (ULTRON COLD)"}
               </button>
             </div>
           </div>
@@ -764,10 +764,10 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           {/* Section 6: Cyber-Plugin Matrix & Extensions */}
           <div className="flex flex-col gap-3 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-[#00E5FF] flex items-center gap-1.5">
-                <Sliders className="w-3.5 h-3.5 text-[#00E5FF]" /> CYBER-PLUGIN MATRIX &amp; EXTENSIONS
+              <span className="text-[11px] font-bold text-[#FFB800] flex items-center gap-1.5">
+                <Sliders className="w-3.5 h-3.5 text-[#FFB800]" /> CYBER-PLUGIN MATRIX &amp; EXTENSIONS
               </span>
-              <span className="text-[9px] font-mono text-[#7E859E]">
+              <span className="text-[9px] font-mono text-[#9E8B65]">
                 {plugins?.length || 0} PLUGINS LOADED
               </span>
             </div>
@@ -780,31 +780,31 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               {plugins && plugins.map((plugin) => (
                 <div
                   key={plugin.id}
-                  className="p-2.5 chamfer-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(0,229,255,0.3)] transition-all flex flex-col justify-between gap-2">
+                  className="p-2.5 chamfer-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(255, 184, 0,0.3)] transition-all flex flex-col justify-between gap-2">
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-white font-mono flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#FFB800]" />
                         {plugin.name}
                       </span>
-                      <span className="text-[8px] px-1.5 py-0.2 chamfer-xs font-mono uppercase bg-[rgba(0,229,255,0.1)] border border-[rgba(0,229,255,0.3)] text-[#00E5FF]">
+                      <span className="text-[8px] px-1.5 py-0.2 chamfer-xs font-mono uppercase bg-[rgba(255, 184, 0,0.1)] border border-[rgba(255, 184, 0,0.3)] text-[#FFB800]">
                         ACTIVE
                       </span>
                     </div>
-                    <span className="text-[9px] text-[#7E859E] line-clamp-2">
+                    <span className="text-[9px] text-[#9E8B65] line-clamp-2">
                       {plugin.description}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                    <span className="text-[9px] font-mono text-[#7E859E]">
+                    <span className="text-[9px] font-mono text-[#9E8B65]">
                       ID: {plugin.id}
                     </span>
                     <button
                       type="button"
                       onClick={() => runPluginApi(plugin.id)}
                       disabled={isPluginsLoading}
-                      className="px-2.5 py-0.5 chamfer-btn text-[10px] font-mono font-bold border border-[#00E5FF] bg-[rgba(0,229,255,0.12)] text-[#00E5FF] hover:bg-[#00E5FF] hover:text-black transition-all cursor-pointer disabled:opacity-40">
+                      className="px-2.5 py-0.5 chamfer-btn text-[10px] font-mono font-bold border border-[#FFB800] bg-[rgba(255, 184, 0,0.12)] text-[#FFB800] hover:bg-[#FFB800] hover:text-black transition-all cursor-pointer disabled:opacity-40">
                       EXECUTE
                     </button>
                   </div>
@@ -812,7 +812,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               ))}
 
               {(!plugins || plugins.length === 0) && !isPluginsLoading && (
-                <div className="col-span-2 text-center py-4 text-[10px] text-[#7E859E] italic font-mono">
+                <div className="col-span-2 text-center py-4 text-[10px] text-[#9E8B65] italic font-mono">
                   No cyber-plugins detected in runtime directory.
                 </div>
               )}
@@ -820,15 +820,15 @@ export function SciFiSettingsModal({ onReconnectSession }) {
 
             {/* Plugin Execution Terminal Output */}
             {lastPluginOutput && (
-              <div className="p-2.5 chamfer-sm border border-[rgba(0,229,255,0.3)] bg-[rgba(5,5,8,0.95)] flex flex-col gap-1.5 font-mono text-[10px]">
+              <div className="p-2.5 chamfer-sm border border-[rgba(255, 184, 0,0.3)] bg-[rgba(5,5,8,0.95)] flex flex-col gap-1.5 font-mono text-[10px]">
                 <div className="flex items-center justify-between border-b border-white/10 pb-1">
-                  <span className="text-[#00E5FF] font-bold flex items-center gap-1">
+                  <span className="text-[#FFB800] font-bold flex items-center gap-1">
                     <Terminal className="w-3 h-3" /> TERMINAL EXECUTION OUTPUT
                   </span>
                   <button
                     type="button"
                     onClick={() => setLastPluginOutput(null)}
-                    className="text-[9px] text-[#7E859E] hover:text-[#FF003C] transition-colors cursor-pointer">
+                    className="text-[9px] text-[#9E8B65] hover:text-[#FF003C] transition-colors cursor-pointer">
                     CLEAR
                   </button>
                 </div>
@@ -845,22 +845,22 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#7E859E] hover:text-white hover:bg-white/5 border border-white/10 transition-colors flex items-center gap-1.5 cursor-pointer">
+            className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#9E8B65] hover:text-white hover:bg-white/5 border border-white/10 transition-colors flex items-center gap-1.5 cursor-pointer">
             <RotateCcw className="w-3 h-3" />
             <span>Reset Defaults</span>
           </button>
 
           <div className="flex items-center gap-2">
             {savedSuccess && (
-              <span className="text-[11px] text-[#00F0FF] flex items-center gap-1 animate-pulse">
-                <Check className="w-3.5 h-3.5 text-[#00F0FF]" /> Synchronized to Neural Vault
+              <span className="text-[11px] text-[#FFB800] flex items-center gap-1 animate-pulse">
+                <Check className="w-3.5 h-3.5 text-[#FFB800]" /> Synchronized to Neural Vault
               </span>
             )}
 
             <button
               type="button"
               onClick={handleClose}
-              className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#7E859E] hover:text-white hover:bg-white/5 transition-colors cursor-pointer">
+              className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#9E8B65] hover:text-white hover:bg-white/5 transition-colors cursor-pointer">
               Close
             </button>
 
@@ -868,7 +868,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="px-4 py-1.5 chamfer-btn text-[11px] font-bold bg-[#00F0FF]/15 hover:bg-[#00F0FF]/25 text-[#00F0FF] border border-[#00F0FF]/40 hover:border-[#00F0FF] shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+              className="px-4 py-1.5 chamfer-btn text-[11px] font-bold bg-[#FFB800]/15 hover:bg-[#FFB800]/25 text-[#FFB800] border border-[#FFB800]/40 hover:border-[#FFB800] shadow-[0_0_15px_rgba(255, 184, 0,0.2)] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
               <Save className="w-3.5 h-3.5" />
               <span>{isSaving ? "SYNCHRONIZING..." : "SYNCHRONIZE TO NEURAL VAULT"}</span>
             </button>

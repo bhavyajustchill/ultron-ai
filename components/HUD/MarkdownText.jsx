@@ -39,7 +39,7 @@ export function renderInlineMarkdown(text, isAda = false) {
       tokens.push(
         <code
           key={`code-${key++}`}
-          className="px-1.5 py-0.5 mx-0.5 chamfer-xs bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.25)] text-[#00F0FF] font-mono text-[10px]"
+          className="px-1.5 py-0.5 mx-0.5 chamfer-xs bg-[rgba(255, 184, 0,0.1)] border border-[rgba(255, 184, 0,0.25)] text-[#FFB800] font-mono text-[10px]"
         >
           {codeContent}
         </code>
@@ -48,7 +48,7 @@ export function renderInlineMarkdown(text, isAda = false) {
       tokens.push(
         <strong
           key={`bi-${key++}`}
-          className={`font-bold italic ${isAda ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
+          className={`font-bold italic ${isAda ? 'text-[#FF8095]' : 'text-[#FFD54F]'}`}
         >
           {matchedStr.slice(3, -3)}
         </strong>
@@ -60,7 +60,7 @@ export function renderInlineMarkdown(text, isAda = false) {
       tokens.push(
         <strong
           key={`b-${key++}`}
-          className={`font-bold ${isAda ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
+          className={`font-bold ${isAda ? 'text-[#FF8095]' : 'text-[#FFD54F]'}`}
         >
           {matchedStr.slice(2, -2)}
         </strong>
@@ -76,7 +76,7 @@ export function renderInlineMarkdown(text, isAda = false) {
       );
     } else if (matchedStr.startsWith('~~') && matchedStr.endsWith('~~')) {
       tokens.push(
-        <del key={`del-${key++}`} className="line-through text-[#7E859E]">
+        <del key={`del-${key++}`} className="line-through text-[#9E8B65]">
           {matchedStr.slice(2, -2)}
         </del>
       );
@@ -89,7 +89,7 @@ export function renderInlineMarkdown(text, isAda = false) {
             href={linkMatch[2]}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#00F0FF] underline hover:text-[#FF003C] transition-colors"
+            className="text-[#FFB800] underline hover:text-[#FF003C] transition-colors"
           >
             {linkMatch[1]}
           </a>
@@ -148,14 +148,14 @@ export function MarkdownText({ content, isAda = false }) {
           return (
             <div
               key={`cb-${pIdx}`}
-              className="my-1.5 chamfer-sm border border-[rgba(0,240,255,0.25)] bg-[rgba(5,5,8,0.92)] overflow-hidden font-mono"
+              className="my-1.5 chamfer-sm border border-[rgba(255, 184, 0,0.25)] bg-[rgba(5,5,8,0.92)] overflow-hidden font-mono"
             >
               {part.lang && (
-                <div className="px-2 py-0.5 text-[9px] text-[#00F0FF] bg-[rgba(0,240,255,0.08)] border-b border-[rgba(0,240,255,0.15)] flex justify-between">
+                <div className="px-2 py-0.5 text-[9px] text-[#FFB800] bg-[rgba(255, 184, 0,0.08)] border-b border-[rgba(255, 184, 0,0.15)] flex justify-between">
                   <span>{part.lang.toUpperCase()}</span>
                 </div>
               )}
-              <pre className="p-2 text-[10px] text-[#80F7FF] overflow-x-auto leading-normal">
+              <pre className="p-2 text-[10px] text-[#FFD54F] overflow-x-auto leading-normal">
                 <code>{part.code.trim()}</code>
               </pre>
             </div>
@@ -202,7 +202,7 @@ export function MarkdownText({ content, isAda = false }) {
           if (trimmed.startsWith('### ')) {
             flushList();
             elements.push(
-              <h4 key={`h3-${lIdx}`} className="font-['Orbitron',sans-serif] font-bold text-xs text-[#00F0FF] my-1 tracking-wider">
+              <h4 key={`h3-${lIdx}`} className="font-['Orbitron',sans-serif] font-bold text-xs text-[#FFB800] my-1 tracking-wider">
                 {renderInlineMarkdown(trimmed.substring(4), isAda)}
               </h4>
             );
@@ -231,7 +231,7 @@ export function MarkdownText({ content, isAda = false }) {
           if (trimmed.startsWith('> ')) {
             flushList();
             elements.push(
-              <blockquote key={`bq-${lIdx}`} className="border-l-2 border-[#FF003C] pl-2 my-1 text-[#7E859E] italic">
+              <blockquote key={`bq-${lIdx}`} className="border-l-2 border-[#FF003C] pl-2 my-1 text-[#9E8B65] italic">
                 {renderInlineMarkdown(trimmed.substring(2), isAda)}
               </blockquote>
             );

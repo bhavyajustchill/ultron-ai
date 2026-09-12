@@ -96,28 +96,28 @@ export function MobilePairingModal({ isOpen, onClose }) {
       }`}>
       {/* Sci-Fi Shutter Unfold / Collapse Modal Container */}
       <div
-        className={`relative w-full max-w-md p-6 chamfer-xl border border-[rgba(0,229,255,0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(0,229,255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col gap-4 text-[#F0F2F8] select-none font-mono overflow-hidden ${
+        className={`relative w-full max-w-md p-6 chamfer-xl border border-[rgba(255, 184, 0,0.25)] bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(255, 184, 0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col gap-4 text-[#F0F2F8] select-none font-mono overflow-hidden ${
           isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
         }`}>
         {/* Holographic Top Accent Gradient Line */}
-        <div className="mx-2 -mt-2 h-0.5 w-[calc(100%-16px)] bg-gradient-to-r from-[#00E5FF] via-[#70E8FF] to-[#00E5FF] animate-pulse" />
+        <div className="mx-2 -mt-2 h-0.5 w-[calc(100%-16px)] bg-gradient-to-r from-[#FFB800] via-[#FFD54F] to-[#FFB800] animate-pulse" />
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(0,240,255,0.2)] pb-3">
+        <div className="flex items-center justify-between border-b border-[rgba(255, 184, 0,0.2)] pb-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 chamfer-xs bg-[#00F0FF]/10 text-[#00F0FF]">
+            <div className="p-1.5 chamfer-xs bg-[#FFB800]/10 text-[#FFB800]">
               <Smartphone className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-['Orbitron',sans-serif] font-bold tracking-wider text-[#00F0FF]">
+              <h2 className="text-sm font-['Orbitron',sans-serif] font-bold tracking-wider text-[#FFB800]">
                 MOBILE REMOTE RELAY (PWA)
               </h2>
-              <p className="text-[10px] text-[#7E859E]">Local WiFi Peer-to-Peer Pairing Protocol</p>
+              <p className="text-[10px] text-[#9E8B65]">Local WiFi Peer-to-Peer Pairing Protocol</p>
             </div>
           </div>
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
             title="Close Window (Esc)">
             <X className="w-5 h-5" />
           </button>
@@ -126,13 +126,13 @@ export function MobilePairingModal({ isOpen, onClose }) {
         {/* QR Code Container */}
         <div className="flex flex-col items-center justify-center p-4 chamfer-md bg-[rgba(5,5,8,0.9)] border border-[rgba(255,255,255,0.08)] relative">
           {isPairingLoading ? (
-            <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-[#00F0FF]">
+            <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-[#FFB800]">
               <RefreshCw className="w-8 h-8 animate-spin" />
               <span className="text-xs">Scanning Local LAN Interfaces...</span>
             </div>
           ) : mobilePairingData?.qrSvg ? (
             <div
-              className="w-56 h-56 flex items-center justify-center p-2 chamfer-sm bg-[#0A0B10] border border-[#00F0FF]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)] [&>svg]:w-full [&>svg]:h-full"
+              className="w-56 h-56 flex items-center justify-center p-2 chamfer-sm bg-[#0A0B10] border border-[#FFB800]/30 shadow-[0_0_20px_rgba(255, 184, 0,0.2)] [&>svg]:w-full [&>svg]:h-full"
               dangerouslySetInnerHTML={{ __html: mobilePairingData.qrSvg }}
             />
           ) : (
@@ -154,21 +154,21 @@ export function MobilePairingModal({ isOpen, onClose }) {
 
         {/* Network Endpoint Info */}
         <div className="flex flex-col gap-1.5 text-xs">
-          <div className="flex justify-between items-center text-[10px] text-[#7E859E]">
+          <div className="flex justify-between items-center text-[10px] text-[#9E8B65]">
             <span className="flex items-center gap-1">
-              <Wifi className="w-3 h-3 text-[#00F0FF]" />
+              <Wifi className="w-3 h-3 text-[#FFB800]" />
               <span>DIRECT LAN ADDRESS</span>
             </span>
-            <span className="text-[#00F0FF]">{mobilePairingData?.localIp || "Detecting..."}</span>
+            <span className="text-[#FFB800]">{mobilePairingData?.localIp || "Detecting..."}</span>
           </div>
 
-          <div className="flex items-center gap-1.5 p-2 chamfer-xs bg-[rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.1)] text-[11px] text-[#00F0FF] truncate">
+          <div className="flex items-center gap-1.5 p-2 chamfer-xs bg-[rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.1)] text-[11px] text-[#FFB800] truncate">
             <span className="truncate flex-1 select-all font-mono">
               {mobilePairingData?.mobileUrl || "Generating link..."}
             </span>
             <button
               onClick={handleCopy}
-              className="p-1.5 chamfer-xs bg-[#00F0FF]/10 hover:bg-[#00F0FF]/20 text-[#00F0FF] transition-all cursor-pointer"
+              className="p-1.5 chamfer-xs bg-[#FFB800]/10 hover:bg-[#FFB800]/20 text-[#FFB800] transition-all cursor-pointer"
               title="Copy mobile pairing URL">
               {copied ? (
                 <Check className="w-3.5 h-3.5 text-[#00FF66]" />
@@ -185,14 +185,14 @@ export function MobilePairingModal({ isOpen, onClose }) {
             href={mobilePairingData?.mobileUrl || "/mobile"}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 py-2 chamfer-btn bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black transition-all font-mono text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(0,240,255,0.2)]">
+            className="flex-1 py-2 chamfer-btn bg-[rgba(255, 184, 0,0.15)] border border-[#FFB800] text-[#FFB800] hover:bg-[#FFB800] hover:text-black transition-all font-mono text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(255, 184, 0,0.2)]">
             <ExternalLink className="w-3.5 h-3.5" />
             <span>LAUNCH MOBILE VIEW</span>
           </a>
 
           <button
             onClick={loadMobilePairing}
-            className="p-2 chamfer-btn border border-[rgba(255,255,255,0.15)] hover:border-[#00F0FF] text-[#7E859E] hover:text-[#00F0FF] transition-colors cursor-pointer"
+            className="p-2 chamfer-btn border border-[rgba(255,255,255,0.15)] hover:border-[#FFB800] text-[#9E8B65] hover:text-[#FFB800] transition-colors cursor-pointer"
             title="Refresh network interfaces">
             <RefreshCw className="w-4 h-4" />
           </button>

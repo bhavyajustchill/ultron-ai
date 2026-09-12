@@ -69,13 +69,13 @@ export function AudioWaveform({
         const x = i * (barWidth + 2);
         const y = height - barHeight;
 
-        // Gradient: Ada Scarlet at base to Neon Cyan at crest
+        // Gradient: Amber/Orange at base to Stark Gold at crest
         const grad = ctx.createLinearGradient(0, height, 0, y);
-        grad.addColorStop(0, '#FF003C');
-        grad.addColorStop(1, '#00F0FF');
+        grad.addColorStop(0, '#FF8800');
+        grad.addColorStop(1, '#FFB800');
 
         ctx.fillStyle = grad;
-        ctx.shadowColor = '#00F0FF';
+        ctx.shadowColor = '#FFB800';
         ctx.shadowBlur = hasVocalEnergy && value > 0.3 ? 8 : value > 0.1 ? 3 : 0;
 
         // Rounded bar cap

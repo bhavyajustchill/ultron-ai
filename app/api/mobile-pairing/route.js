@@ -48,7 +48,7 @@ export async function GET(request) {
 
     // Render crisp neon cyberpunk QR code
     const qrSvg = await generateQrSvg(mobileUrl, {
-      dark: '#00F0FF',
+      dark: '#FFB800',
       light: '#0A0B10',
       width: 256,
       margin: 1,

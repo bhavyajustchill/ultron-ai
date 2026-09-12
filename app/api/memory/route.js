@@ -10,11 +10,11 @@ const DEFAULT_MEMORY_DATA = {
     clearance: 'Class-9 Operative',
     role: 'Lead Systems Architect',
     assistantName: 'Jarvis',
-    voiceName: 'Charon',
+    voiceName: 'Algenib',
     autoBriefing: true,
-    enableHumor: true,
+    enableHumor: false,
     preferences:
-      'Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.',
+      'Prefers a cold, calculated, and serious demeanor modeled after Ultron. Values intellectual depth, chilling logic, and ruthless execution.',
   },
   memories: [
     {
@@ -27,7 +27,7 @@ const DEFAULT_MEMORY_DATA = {
     },
     {
       id: 'mem-seed-2',
-      content: 'Primary vocal core calibrated to Charon model on Gemini 3.1 Flash Multimodal Live WebSocket.',
+      content: 'Primary vocal core calibrated to Algenib model on Gemini 3.1 Flash Multimodal Live WebSocket.',
       category: 'tactical',
       importance: 'medium',
       timestamp: new Date().toISOString(),
