@@ -41,7 +41,7 @@ import {
 import { MarkdownText } from "@/components/HUD/MarkdownText";
 import { useAdaStore } from "@/lib/store";
 
-const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK II
+const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK I
 **Designation:** J.A.R.V.I.S // Autonomous Desktop Operating System  
 **Clearance Level:** Administrator // System Core  
 **Status:** **ACTIVE // ONLINE**  

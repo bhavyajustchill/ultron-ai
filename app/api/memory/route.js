@@ -19,7 +19,7 @@ const DEFAULT_MEMORY_DATA = {
   memories: [
     {
       id: 'mem-seed-1',
-      content: 'Operator initialized Project Jarvis with Mark-II cybernetic architecture parity.',
+      content: 'Operator initialized Project Jarvis with Mark-I cybernetic architecture parity.',
       category: 'mission',
       importance: 'high',
       timestamp: new Date().toISOString(),

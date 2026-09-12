@@ -1,4 +1,4 @@
-# Universal AI Agent & IDE Workspace Configuration — Project J.A.R.V.I.S Mark II
+# Universal AI Agent & IDE Workspace Configuration — Project J.A.R.V.I.S Mark I
 
 ## 1. System Context Routing & Knowledge Mesh
 

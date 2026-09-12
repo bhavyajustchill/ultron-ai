@@ -28,14 +28,14 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "J.A.R.V.I.S // Mark II Autonomous System",
+  title: "J.A.R.V.I.S // Mark I Autonomous System",
   description:
     "Next-Gen Cybernetic Desktop Assistant with Quantum Arc Reactor Core & Gemini Live Voice Engine",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "JARVIS Mark II",
+    title: "JARVIS Mark I",
   },
 };
 

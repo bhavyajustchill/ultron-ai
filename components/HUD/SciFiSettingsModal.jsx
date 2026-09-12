@@ -505,7 +505,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
               <div className="text-[10px] text-[#7E859E] font-mono">models/gemini-3.1-flash-live-preview</div>
               <p className="text-[11px] text-[#A6AFC2] leading-snug">
-                Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project J.A.R.V.I.S Mark II.
+                Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project J.A.R.V.I.S Mark I.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-white/5 text-[9px] font-mono">
                 <span className="text-[#00F0FF]">Latency: &lt; 500ms bidirectional</span>

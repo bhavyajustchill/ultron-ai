@@ -170,7 +170,7 @@ export default function MobileRemotePage() {
               MOBILE RELAY
             </span>
           </div>
-          <span className="text-[9px] text-[#7E859E]">Mark II Companion Link</span>
+          <span className="text-[9px] text-[#7E859E]">Mark I Companion Link</span>
         </div>
 
         <div className="flex items-center gap-2 text-xs">

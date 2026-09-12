@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
-    name: 'J.A.R.V.I.S // Mark II Autonomous System',
-    short_name: 'JARVIS Mark II',
+    name: 'J.A.R.V.I.S // Mark I Autonomous System',
+    short_name: 'JARVIS Mark I',
     description:
       'Next-Gen Cybernetic Desktop Assistant with Quantum Arc Reactor Core & Gemini Live Voice Engine',
     start_url: '/',
