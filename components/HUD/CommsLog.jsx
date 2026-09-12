@@ -120,7 +120,7 @@ export function CommsLog({ sendTextMessage }) {
         ref={scrollRef}
         className="flex-1 flex flex-col gap-2.5 p-3 font-mono text-xs overflow-y-auto pr-1.5 min-h-0">
         {commsLog.map((item) => {
-          const isJarvis = item.sender === "jarvis" || item.sender === "ada";
+          const isUltron = item.sender === "ultron" || item.sender === "jarvis" || item.sender === "ada";
           const isUser = item.sender === "user";
           const isSystem = item.sender === "system";
 
@@ -128,7 +128,7 @@ export function CommsLog({ sendTextMessage }) {
             <div
               key={item.id}
               className={`p-2.5 chamfer-sm border transition-all ${
-                isJarvis
+                isUltron
                   ? "bg-[rgba(255,184,0,0.06)] border-l-2 border-l-[#FFB800] border-[rgba(255,184,0,0.25)] shadow-[0_0_12px_rgba(255,184,0,0.08)]"
                   : isUser
                     ? "bg-[rgba(255,150,0,0.08)] border-l-2 border-l-[#FFAA00] border-[rgba(255,150,0,0.25)]"
@@ -136,10 +136,10 @@ export function CommsLog({ sendTextMessage }) {
               }`}>
               <div className="flex items-center justify-between text-[10px] mb-1">
                 <div className="flex items-center gap-1.5 font-semibold">
-                  {isJarvis && (
+                  {isUltron && (
                     <>
                       <Bot className="w-3 h-3 text-[#FFB800]" />
-                      <span className="text-[#FFB800] tracking-wider">JARVIS // ASSISTANT</span>
+                      <span className="text-[#FFB800] tracking-wider">ULTRON // SYSTEM</span>
                     </>
                   )}
                   {isUser && (
@@ -161,9 +161,9 @@ export function CommsLog({ sendTextMessage }) {
               {/* Message Payload Body */}
               <div
                 className={`leading-relaxed text-xs break-words select-text ${
-                  isJarvis ? "text-[#F0F2F8]" : isUser ? "text-[#FFF8E7]" : "text-[#9E8B65]"
+                  isUltron ? "text-[#F0F2F8]" : isUser ? "text-[#FFF8E7]" : "text-[#9E8B65]"
                 }`}>
-                <MarkdownText content={item.text} isAda={isJarvis} />
+                <MarkdownText content={item.text} isAda={isUltron} />
               </div>
             </div>
           );

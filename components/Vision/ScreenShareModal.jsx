@@ -245,7 +245,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
   const handleTransmitSnapshot = () => {
     const success = captureAndTransmitFrame();
     if (success) {
-      addCommsMessage("system", `Tactical snapshot transmitted to J.A.R.V.I.S`);
+      addCommsMessage("system", `Tactical snapshot transmitted to Ultron`);
     } else {
       setErrorMsg("Failed to transmit frame. Ensure live session is connected.");
     }
@@ -401,7 +401,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
                 SCREEN INTERROGATION
               </h3>
               <p className="text-[10px] text-[#9E8B65] mt-0.5 font-mono leading-relaxed">
-                Feed active desktop or window to J.A.R.V.I.S
+                Feed active desktop or window to Ultron
               </p>
             </div>
             <button
@@ -443,7 +443,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
               <button
                 onClick={handleTransmitSnapshot}
                 className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(255, 184, 0,0.1)] border border-[#FFB800] text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.2)] text-[10px] font-mono font-semibold transition-all cursor-pointer"
-                title="Transmit current screen frame to J.A.R.V.I.S">
+                title="Transmit current screen frame to Ultron">
                 <Camera className="w-2.5 h-2.5" />
                 <span>SNAPSHOT</span>
               </button>

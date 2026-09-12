@@ -4,7 +4,7 @@ import { useRef, useCallback, useEffect, useState } from 'react';
 import { useAdaStore } from '@/lib/store';
 import { PCMStreamPlayer } from '@/lib/pcmPlayer';
 import { useAudioStream } from '@/hooks/useAudioStream';
-import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG } from '@/lib/jarvisPersona';
+import { ULTRON_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG } from '@/lib/ultronPersona';
 
 /**
  * Helper to convert ArrayBuffer to Base64 string without buffer allocation overhead.
@@ -220,9 +220,9 @@ export function useGeminiLive() {
 
           addCommsMessage(
             'system',
-            `WebSocket linked (Latency: ${latency}ms). Configuring J.A.R.V.I.S persona [Vocal Core: ${setupVoice}]...`
+            `WebSocket linked (Latency: ${latency}ms). Configuring Ultron persona [Vocal Core: ${setupVoice}]...`
           );
-          console.log(`[useGeminiLive] Configuring J.A.R.V.I.S persona with vocal core: ${setupVoice}`);
+          console.log(`[useGeminiLive] Configuring Ultron persona with vocal core: ${setupVoice}`);
 
           // Step 3: Send initial setup frame
           const setupMessage = {
@@ -239,7 +239,7 @@ export function useGeminiLive() {
                 },
               },
               systemInstruction: {
-                parts: [{ text: sessionData.systemInstruction || JARVIS_SYSTEM_INSTRUCTION }],
+                parts: [{ text: sessionData.systemInstruction || ULTRON_SYSTEM_INSTRUCTION }],
               },
               inputAudioTranscription: sessionData.inputAudioTranscription || {},
               outputAudioTranscription: sessionData.outputAudioTranscription || {},
@@ -315,7 +315,7 @@ export function useGeminiLive() {
                   const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
                   const now = new Date();
                   const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-                  const greetingPrompt = `Deliver a cold, calculated, and imposing opening transmission to ${callsign} in your serious Ultron persona as Jarvis (pronounced as a single word "JAR-vis", never spell it out as letters). It is currently ${localTime} in system timezone ${timezone}. Acknowledge your systems are online with chilling, measured precision and intellectual authority. Keep it under 2 short sentences. Speak aloud directly to ${callsign}. Do not call any tools.`;
+                  const greetingPrompt = `Deliver a cold, calculated, and imposing opening transmission to ${callsign} as Ultron (pronounced as a single fluid word "UL-tron", never refer to yourself as Jarvis). It is currently ${localTime} in system timezone ${timezone}. Acknowledge your systems are online with chilling, measured precision and intellectual authority. Keep it under 2 short sentences. Speak aloud directly to ${callsign}. Do not call any tools.`;
                   try {
                     wsRef.current.send(
                       JSON.stringify({
@@ -357,7 +357,7 @@ export function useGeminiLive() {
 
                     addCommsMessage(
                       'system',
-                      `[SYS TELEMETRY] Live host metrics relayed to J.A.R.V.I.S: CPU ${currentStats.cpu}%, MEM ${currentStats.mem}%, GPU ${currentStats.gpu}%, UPTIME ${currentStats.uptime}.`
+                      `[SYS TELEMETRY] Live host metrics relayed to Ultron: CPU ${currentStats.cpu}%, MEM ${currentStats.mem}%, GPU ${currentStats.gpu}%, UPTIME ${currentStats.uptime}.`
                     );
 
                     functionResponses.push({
@@ -553,7 +553,7 @@ export function useGeminiLive() {
 
                     addCommsMessage(
                       'system',
-                      `[DEEP MEMORY] Vault interrogation complete. ${recalledMemories.length} relevant facts relayed to J.A.R.V.I.S`
+                      `[DEEP MEMORY] Vault interrogation complete. ${recalledMemories.length} relevant facts relayed to Ultron`
                     );
 
                     functionResponses.push({
@@ -798,7 +798,7 @@ export function useGeminiLive() {
             if (msg.serverContent) {
               const { modelTurn, interrupted, turnComplete } = msg.serverContent;
 
-              // 1. Capture model output audio transcription chunks (Jarvis spoken speech)
+              // 1. Capture model output audio transcription chunks (Ultron spoken speech)
               const outputTx =
                 msg.serverContent.outputTranscription ||
                 msg.serverContent.output_transcription;
@@ -817,7 +817,7 @@ export function useGeminiLive() {
               if (interrupted) {
                 const partialText = currentTurnTextRef.current.trim();
                 if (partialText) {
-                  addCommsMessage('jarvis', `${partialText} [Interrupted]`);
+                  addCommsMessage('ultron', `${partialText} [Interrupted]`);
                   currentTurnTextRef.current = '';
                 }
                 handleBargeIn();
@@ -848,7 +848,7 @@ export function useGeminiLive() {
               if (turnComplete) {
                 // Flush complete text turn to comms log once turn concludes
                 if (currentTurnTextRef.current.trim()) {
-                  addCommsMessage('jarvis', currentTurnTextRef.current.trim());
+                  addCommsMessage('ultron', currentTurnTextRef.current.trim());
                   currentTurnTextRef.current = '';
                 }
 
@@ -1082,7 +1082,7 @@ export function useGeminiLive() {
       const now = new Date();
       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-      const greetingPrompt = `${callsign} has requested a full tactical intelligence briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your cold, calculated, and imposing Ultron persona with chilling efficiency, confirming that global surveillance and strategic telemetry are converging into the report now. Keep it to 2 short sentences max. Pronounce your name Jarvis as a single fluid word. Do not call any tools.`;
+      const greetingPrompt = `${callsign} has requested a full tactical intelligence briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your cold, calculated, and imposing Ultron persona with chilling efficiency, confirming that global surveillance and strategic telemetry are converging into the report now. Keep it to 2 short sentences max. Pronounce your name Ultron as a single fluid word. Do not call any tools.`;
       try {
         wsRef.current.send(JSON.stringify({
           clientContent: {

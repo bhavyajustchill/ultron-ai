@@ -1,9 +1,8 @@
-# ⚡ SYSTEM ARCHITECTURE — PROJECT A.D.A
+# ⚡ SYSTEM ARCHITECTURE — PROJECT ULTRON
 
-**Codename:** Cyber-Grid / Architecture Blueprint  
-**Stack:** Next.js 16 (App Router) + React Three Fiber (Three.js) + JavaScript (JSX) + Web Audio API + Gemini Live WS  
-**Active 3D Model:** [`adawong.glb`](./adawong.glb) (7.29 MB, 10 Skinned Meshes, 220-Joint Rig)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Codename:** Project ULTRON // Cyber-Grid Architecture Blueprint  
+**Stack:** Next.js 16 (App Router + Turbopack) + Three.js + Pure JavaScript (JSX) + Web Audio API + Gemini 3.1 Live WebSocket  
+**Active 3D Core:** Holographic 3D Ultron Orb (`ultronOrbScene.js`) with MediaPipe Vision (`handTracker.js`)  
 
 ---
 
@@ -11,13 +10,13 @@
 
 The system consists of four distinct architectural layers:
 
-1. **Client Holographic Surface (Next.js 16 + Three.js + Web Audio + JSX):** Renders the authentic `adawong.glb` model with real-time skeletal gaze tracking, audio-driven lip animation, Web Audio mic ingestion (`AudioWorkletNode`), low-latency 24kHz PCM playback (`pcmPlayer.js`), and the Cyberpunk HUD.
+1. **Client Holographic Surface (Next.js 16 + Three.js + Web Audio + JSX):** Renders the authentic 3D Ultron Orb with real-time multi-state kinetics (IDLE, THINKING, SPEAKING), speech-driven volumetric core dilation, Web Audio mic ingestion (`AudioWorkletNode`), low-latency 24kHz PCM playback (`pcmPlayer.js`), and the Cyberpunk Stark Gold HUD.
 2. **Autonomous Proactive & Briefing Engine:** Operates client-side and edge background monitors including:
    - **Two-Phase Morning Briefing:** Dispatches instant spoken greeting (<1s) upon WebSocket setup, followed by parallel headline news delivery.
    - **Proactive 2.0 Idle Checker:** Gated silence evaluator (15 min idle) triggering unprompted voice check-ins with rotating context.
    - **Session Continuity Manager:** Buffers conversation turns, invokes summarization on exit, and consumes last-session memory on next boot.
-3. **Secure WebSocket Gateway & Edge Proxy (Next.js 16 App Router):** Maintains secure, low-latency WebSocket communication with Google's Gemini 2.5 Multimodal Live API, handling session tokens, tool definitions, and system prompts.
-4. **Host OS Automation & Intelligence Engine:** Local companion bridge routes (`/api/os-control`, `/api/system-telemetry`, `/api/web-search`) and automation modules (Playwright browser automation, Dev Agent in `~/Desktop/AdaProjects`, and Windows Task Scheduler).
+3. **Secure WebSocket Gateway & Edge Proxy (Next.js 16 App Router):** Maintains secure, low-latency WebSocket communication with Google's Gemini 3.1 Multimodal Live API, handling session tokens, tool definitions, and system prompts.
+4. **Host OS Automation & Intelligence Engine:** Local companion bridge routes (`/api/os-control`, `/api/system-telemetry`, `/api/web-search`, `/api/weather`) and automation modules (Playwright browser automation, Dev Agent, and OS system execution).
 
 ```mermaid
 flowchart TB

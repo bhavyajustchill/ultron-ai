@@ -1,7 +1,6 @@
-# 🛡️ AI CODING RULES & GUARDRAILS — PROJECT A.D.A
+# 🛡️ AI CODING RULES & GUARDRAILS — PROJECT ULTRON
 **Codename:** Protocol-Rules // Engineering Standards  
-**Scope:** Next.js 16, React 19, JavaScript (JSX), React Three Fiber, Web Audio API  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Scope:** Next.js 16, React 19, JavaScript (JSX), Three.js, Web Audio API  
 
 ---
 

@@ -31,7 +31,7 @@ function HologramLoadingFallback() {
   );
 }
 
-function JarvisViewportComponent({
+function UltronViewportComponent({
   pcmPlayer,
   getInputByteFrequencyData,
   onToggleListening,
@@ -53,7 +53,7 @@ function JarvisViewportComponent({
   // Audio energy computation callback
   const getAudioEnergy = useCallback(() => {
     let energy = 0;
-    // 1. Jarvis speaking output energy
+    // 1. Ultron speaking output energy
     if (pcmPlayer && typeof pcmPlayer.getEnergy === "function") {
       energy = Math.max(energy, pcmPlayer.getEnergy() || 0);
     }
@@ -120,7 +120,7 @@ function JarvisViewportComponent({
         sceneRef.current = null;
       };
     } catch (err) {
-      console.error("[JarvisViewport] Ultron Orb initialization error:", err);
+      console.error("[UltronViewport] Ultron Orb initialization error:", err);
       setHasError(true);
     }
   }, [getAudioEnergy]);
@@ -285,6 +285,7 @@ function JarvisViewportComponent({
   );
 }
 
-export const JarvisViewport = React.memo(JarvisViewportComponent);
-export const AdaViewport = JarvisViewport;
-export default JarvisViewport;
+export const UltronViewport = React.memo(UltronViewportComponent);
+export const JarvisViewport = UltronViewport;
+export const AdaViewport = UltronViewport;
+export default UltronViewport;

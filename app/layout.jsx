@@ -28,14 +28,14 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "J.A.R.V.I.S // Mark I Autonomous System",
+  title: "ULTRON // Autonomous Intelligence System",
   description:
-    "Next-Gen Cybernetic Desktop Assistant with Quantum Arc Reactor Core & Gemini Live Voice Engine",
+    "Autonomous Cybernetic Super-Intelligence System with Holographic 3D Core & Gemini Live Voice Engine",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "JARVIS Mark I",
+    title: "ULTRON",
   },
 };
 

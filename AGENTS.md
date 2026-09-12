@@ -1,4 +1,4 @@
-# Universal AI Agent & IDE Workspace Configuration — Project J.A.R.V.I.S Mark I
+# Universal AI Agent & IDE Workspace Configuration — Project ULTRON
 
 ## 1. System Context Routing & Knowledge Mesh
 
@@ -22,14 +22,14 @@ All compatible AI agents must enforce these fundamental technical guardrails acr
 2. **Language Dialect:** **Pure JavaScript & JSX exclusively (`.jsx`, `.js`)**.
    - Strictly **NO TypeScript / NO TSX** (`.ts`, `.tsx` files are forbidden).
    - Standard prop destructuring and optional JSDoc comments for types.
-3. **3D Visual Core:** **React Three Fiber (R3F) + Three.js** rendering the interactive holographic Arc Reactor Orb (`ArcReactorOrb.jsx`).
-   - Zero object instantiation (`Vector3`, `Euler`, `Matrix4`) inside `useFrame()`.
+3. **3D Visual Core:** **Three.js** rendering the interactive holographic Ultron Orb (`ultronOrbScene.js`).
+   - Zero object instantiation (`Vector3`, `Euler`, `Matrix4`) inside the `animate()` render loop.
 4. **Real-time Voice Core:** **Gemini 3.1 Multimodal Live WebSocket API** (`models/gemini-3.1-flash-live-preview`).
    - Browser mic downsampling: 48kHz ➔ 16kHz Int16 PCM via `AudioWorkletNode` (`audio-worklet-processor.js`).
    - Output playback: 24kHz raw PCM jitter-buffered gapless scheduling via `pcmPlayer.js`.
-   - Default male voice core: **Charon** (Refined British timbre).
+   - Default male voice core: **Algenib** (Steady, authoritative, cold and calculated delivery).
    - Instant barge-in: Call `stopAndFlush()` within 50ms upon user interruption.
-5. **Aesthetics:** Cyberpunk Tactical HUD (Electric Aqua-Cyan `#00E5FF`, Neon Cyan `#00F0FF`, Carbon `#010E16`, Orbitron & JetBrains Mono fonts).
+5. **Aesthetics:** Cyberpunk Stark Gold HUD (Stark Gold `#FFB800`, Deep Space Carbon `#080602`, Orbitron, JetBrains Mono & Rajdhani fonts).
 
 ---
 

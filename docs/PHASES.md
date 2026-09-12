@@ -1,9 +1,8 @@
-# 🚀 IMPLEMENTATION PHASES — PROJECT A.D.A
+# 🚀 IMPLEMENTATION PHASES — PROJECT ULTRON
 
-**Codename:** Deployment Roadmap // Operative-Wong  
-**Architecture:** Next.js 16 + Three.js (R3F) + JavaScript (JSX) + Gemini Live WebSockets  
-**Active 3D Model:** [`adawong.glb`](./adawong.glb) (7.29 MB, 10 Meshes, 220 Joints)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Codename:** Deployment Roadmap // Project ULTRON  
+**Architecture:** Next.js 16 + Three.js + JavaScript (JSX) + Gemini 3.1 Live WebSockets  
+**Active 3D Core:** Holographic 3D Ultron Orb (`ultronOrbScene.js`)  
 
 ---
 

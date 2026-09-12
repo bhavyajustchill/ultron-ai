@@ -1,13 +1,12 @@
-# 🩸 DESIGN & UI SPECIFICATION — PROJECT A.D.A
-**Visual Philosophy:** Cyberpunk Syndicate Tactical HUD // Neo-Noir Operative  
-**Active 3D Model:** [`adawong.glb`](./adawong.glb) (7.29 MB, 10 Meshes, Authentic RE Game Asset)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+# ⚡ DESIGN & UI SPECIFICATION — PROJECT ULTRON
+**Visual Philosophy:** Cyberpunk Stark Gold HUD // Autonomous Super-Intelligence  
+**Active 3D Core:** Holographic 3D Ultron Orb (`ultronOrbScene.js`) with Stark Gold Bloom & MediaPipe Hand Tracking  
 
 ---
 
 ## 1. Color Palette & Cyberpunk Tokens
 
-The visual design channels Ada Wong’s signature crimson elegance infused with high-tech syndicate surveillance aesthetics.
+The visual design channels Ultron's commanding Stark Gold elegance infused with high-tech autonomous system diagnostics.
 
 ```css
 :root {

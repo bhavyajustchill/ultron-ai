@@ -206,7 +206,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   // Draft state initialized from current operatorProfile
   const [draft, setDraft] = useState({
     callsign: "Bhavya Sir",
-    assistantName: "Jarvis",
+    assistantName: "Ultron",
     voiceName: "Algenib",
     liveModel: "models/gemini-3.1-flash-live-preview",
     autoBriefing: true,
@@ -226,8 +226,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       if (operatorProfile) {
         setDraft({
           callsign: operatorProfile.callsign || "Bhavya Sir",
-          assistantName: operatorProfile.assistantName || "Jarvis",
-          voiceName: operatorProfile.voiceName || "Charon",
+          assistantName: operatorProfile.assistantName || "Ultron",
+          voiceName: operatorProfile.voiceName || "Algenib",
           liveModel: "models/gemini-3.1-flash-live-preview",
           autoBriefing: operatorProfile.autoBriefing !== false,
           enableHumor: operatorProfile.enableHumor !== false,
@@ -368,7 +368,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   const handleResetDefaults = () => {
     setDraft({
       callsign: "Bhavya Sir",
-      assistantName: "Jarvis",
+      assistantName: "Ultron",
       voiceName: "Algenib",
       liveModel: "models/gemini-3.1-flash-live-preview",
       autoBriefing: true,
@@ -450,7 +450,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] focus:shadow-[0_0_8px_rgba(255, 184, 0,0.2)] transition-all font-mono"
                 />
                 <span className="text-[9px] text-[#9E8B65]">
-                  J.A.R.V.I.S is strictly instructed to address you directly by this exact callsign.
+                  Ultron is strictly instructed to address you directly by this exact callsign.
                 </span>
               </div>
 
@@ -505,7 +505,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
               <div className="text-[10px] text-[#9E8B65] font-mono">models/gemini-3.1-flash-live-preview</div>
               <p className="text-[11px] text-[#A6AFC2] leading-snug">
-                Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project J.A.R.V.I.S Mark I.
+                Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project ULTRON.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-white/5 text-[9px] font-mono">
                 <span className="text-[#FFB800]">Latency: &lt; 500ms bidirectional</span>
@@ -537,7 +537,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#FFB800] transition-all font-mono"
               />
               <span className="text-[9px] text-[#9E8B65]">
-                Configured as <span className="text-[#FFB800]">Jarvis</span> (spoken as single word &ldquo;JAR-vis&rdquo; without acronym pauses).
+                Configured as <span className="text-[#FFB800]">Ultron</span> (spoken as single word &ldquo;UL-tron&rdquo;).
               </span>
             </div>
 

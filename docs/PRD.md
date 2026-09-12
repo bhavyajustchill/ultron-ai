@@ -1,23 +1,22 @@
-# 🩸 PROJECT A.D.A — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+# ⚡ PROJECT ULTRON — PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-**Codename:** Operative-Wong // Mark-LI Next-Gen Web Architecture  
-**Target Platform:** Next.js 16 (App Router) + React Three Fiber (Three.js) + JavaScript (JSX) + Web Audio API  
-**AI Core:** Gemini 2.5 Multimodal Live API (Bidirectional WebSocket Audio)  
-**Persona:** Ada Wong (Resident Evil // Cyberpunk Syndicate Infiltrator)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Codename:** Project ULTRON // Autonomous Cybernetic Architecture  
+**Target Platform:** Next.js 16 (App Router + Turbopack) + Three.js + Pure JavaScript (JSX) + Web Audio API  
+**AI Core:** Gemini 3.1 Multimodal Live API (Bidirectional WebSocket Audio)  
+**Persona:** Ultron (Avengers: Age of Ultron // Autonomous Super-Intelligence)  
 
 ---
 
 ## 1. Executive Vision & Value Proposition
 
-**Project A.D.A** is a next-generation, cyberpunk-themed desktop & web AI companion featuring an interactive, fully-animated 3D avatar of **Ada Wong**, built completely with **Next.js 16** and **pure JavaScript (JSX)**.
+**Project ULTRON** is an advanced, cyberpunk Stark Gold desktop and web AI companion featuring an interactive, fully-animated 3D **Holographic Ultron Orb**, built completely with **Next.js 16** and **pure JavaScript (JSX)**.
 
-Instead of robotic text-to-speech or clunky chatbot windows, Project A.D.A combines:
+Project ULTRON combines:
 
-1. **Zero-Latency Conversational Audio**: Native bidirectional speech-to-speech via the Gemini 2.5 Live API (<500ms latency, native affective inflection, voice proactivity).
-2. **Interactive 3D Holographic Viewport**: Real-time 3D Ada Wong avatar rendered with Three.js / React Three Fiber, equipped with audio-driven viseme lip-sync, cursor gaze tracking, and reactive facial expressions.
-3. **Omni-Agent Capabilities**: Full parity with the Mark-LI engine—computer control, screen/webcam vision, multi-mode web intelligence, autonomous dev agent, file processing, long-term memory, daily briefings, and plugin expansion.
-4. **Cyberpunk Tactical HUD**: High-tech holographic interface styled with neon scarlet, carbon fiber textures, tactical telemetry, visualizer waveforms, and scanline shaders.
+1. **Zero-Latency Conversational Audio**: Native bidirectional speech-to-speech via the Gemini 3.1 Multimodal Live API (<500ms latency, native acoustic reasoning, instant barge-in).
+2. **Interactive 3D Holographic Viewport**: Real-time 3D Ultron Orb rendered with Three.js, equipped with 5 concentric shells, 30 dynamic panels, 1,700 drifting code sprites, MediaPipe hand gesture tracking, distinct IDLE/THINKING/SPEAKING states, and dramatic volumetric core growth.
+3. **Omni-Agent Capabilities**: Autonomous host computer control (Linux and Windows), multimodal vision (screen and webcam), real-time weather, cyber-plugins, and persistent memory vault.
+4. **Cyberpunk Stark Gold Tactical HUD**: High-tech holographic interface styled with Stark Gold (`#FFB800`), carbon textures, tactical telemetry, audio spectrum visualizer, and chamfered geometry.
 
 ---
 

@@ -141,7 +141,7 @@ export default function MobileRemotePage() {
       }
     } else {
       // Fallback: prompt for vocal directive
-      const promptText = prompt("Enter vocal directive for J.A.R.V.I.S:");
+      const promptText = prompt("Enter vocal directive for Ultron:");
       if (promptText) {
         sendDirective("text_directive", promptText);
       }
@@ -164,13 +164,13 @@ export default function MobileRemotePage() {
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span className="text-base font-['Orbitron',sans-serif] font-black tracking-widest text-[#FFB800]">
-              J.A.R.V.I.S
+              ULTRON
             </span>
             <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[#FFB800]/15 text-[#FFB800] font-bold">
               MOBILE RELAY
             </span>
           </div>
-          <span className="text-[9px] text-[#9E8B65]">Mark I Companion Link</span>
+          <span className="text-[9px] text-[#9E8B65]">Autonomous Companion Link</span>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
@@ -241,7 +241,7 @@ export default function MobileRemotePage() {
 
         <p className="text-[11px] text-[#9E8B65] text-center max-w-xs">
           {isRecording
-            ? "Relaying live speech to J.A.R.V.I.S.."
+            ? "Relaying live speech to Ultron.."
             : "Press and hold to stream vocal directive"}
         </p>
 
@@ -298,13 +298,13 @@ export default function MobileRemotePage() {
             {desktopState.recentComms.slice(-3).map((item, idx) => (
               <div key={idx} className="flex items-start gap-1">
                 <span
-                  className={`font-bold ${item.sender === "jarvis" || item.sender === "ada"
+                  className={`font-bold ${item.sender === "ultron" || item.sender === "jarvis" || item.sender === "ada"
                       ? "text-[#FFB800]"
                       : item.sender === "user"
                         ? "text-[#FF8095]"
                         : "text-[#9E8B65]"
                     }`}>
-                  {item.sender ? (item.sender === "ada" ? "JARVIS" : item.sender.toUpperCase()) : "COMMS"}:
+                  {item.sender ? (item.sender === "ada" || item.sender === "jarvis" ? "ULTRON" : item.sender.toUpperCase()) : "COMMS"}:
                 </span>
                 <span className="text-[#D0D4E4] truncate">{item.text}</span>
               </div>

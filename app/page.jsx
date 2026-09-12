@@ -27,7 +27,7 @@ import {
 import { useAdaStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
 import { ApiKeyModal } from "@/components/HUD/ApiKeyModal";
-import { JarvisViewport } from "@/components/Canvas3D/JarvisViewport";
+import { UltronViewport } from "@/components/Canvas3D/UltronViewport";
 import { ScreenShareModal } from "@/components/Vision/ScreenShareModal";
 import { WebCamPiP } from "@/components/Vision/WebCamPiP";
 import { MobilePairingModal } from "@/components/HUD/MobilePairingModal";
@@ -243,7 +243,7 @@ export default function Home() {
     switch (status) {
       case "SPEAKING":
         return {
-          text: "JARVIS // TRANSMITTING",
+          text: "ULTRON // TRANSMITTING",
           color:
             "text-[#FFB800] border-[#FFB800] bg-[rgba(255,184,0,0.15)] shadow-[0_0_15px_rgba(255,184,0,0.4)]",
           dot: "bg-[#FFB800] animate-ping",
@@ -298,17 +298,17 @@ export default function Home() {
       {/* Background Radial Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(255,184,0,0.08),rgba(8,6,2,0.98))] pointer-events-none" />
 
-      {/* TOP MIDDLE BRANDING: J.A.R.V.I.S // JUST A RATHER VERY INTELLIGENT SYSTEM */}
+      {/* TOP MIDDLE BRANDING: U.L.T.R.O.N // AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] animate-pulse shadow-[0_0_12px_#FFB800]" />
           <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(255,184,0,0.45)]">
-            J.A.R.V.I.S
+            U.L.T.R.O.N
           </h1>
           <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] animate-pulse shadow-[0_0_12px_#FFB800]" />
         </div>
         <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[#FFB800] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(255,184,0,0.35)] whitespace-nowrap">
-          JUST A RATHER VERY INTELLIGENT SYSTEM
+          AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM
         </span>
       </div>
 
@@ -421,7 +421,7 @@ export default function Home() {
 
       {/* FULLSCREEN 3D HOLOGRAPHIC VIEWPORT */}
       <div className="absolute inset-0 z-0 w-full h-full">
-        <JarvisViewport
+        <UltronViewport
           pcmPlayer={pcmPlayer}
           getInputByteFrequencyData={getInputByteFrequencyData}
           onToggleListening={toggleMute}
@@ -468,9 +468,9 @@ export default function Home() {
             onChange={(e) => setTextInput(e.target.value)}
             placeholder={
               isMuted
-                ? "MIC MUTED // Type directive to J.A.R.V.I.S.. [Enter]"
+                ? "MIC MUTED // Type directive to Ultron.. [Enter]"
                 : isConnected
-                  ? "Transmit directive or query to J.A.R.V.I.S.. [Enter]"
+                  ? "Transmit directive or query to Ultron.. [Enter]"
                   : "Type directive or click Connect... [Enter]"
             }
             className="flex-1 bg-transparent text-sm sm:text-base font-mono text-[#F0F2F8] placeholder-[rgba(158,139,101,0.6)] px-1 py-1 outline-none min-w-0 tracking-wide"
@@ -524,7 +524,7 @@ export default function Home() {
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
                 : "border-[rgba(255,184,0,0.5)] bg-[rgba(255,184,0,0.1)] text-[#FFB800] hover:bg-[rgba(255,184,0,0.25)] hover:border-[#FFB800] shadow-[0_0_8px_rgba(255,184,0,0.2)]"
                 }`}
-              title="Instantly stop J.A.R.V.I.S's playback within 50ms (Barge-in)">
+              title="Instantly stop Ultron's playback within 50ms (Barge-in)">
               <Square className="w-3.5 h-3.5 fill-current" />
               <span className="hidden sm:inline">INTERRUPT</span>
             </button>

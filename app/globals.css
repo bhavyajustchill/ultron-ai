@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  /* Core Brand & Neon Highlights (JARVIS Stark Gold Theme) */
-  --jarvis-cyan: #ffb800;
-  --jarvis-cyan-dim: #3d2600;
-  --ada-scarlet: var(--jarvis-cyan);
-  --ada-scarlet-dim: var(--jarvis-cyan-dim);
+  /* Core Brand & Neon Highlights (ULTRON Stark Gold Theme) */
+  --ultron-gold: #ffb800;
+  --ultron-gold-dim: #3d2600;
+  --jarvis-cyan: var(--ultron-gold);
+  --jarvis-cyan-dim: var(--ultron-gold-dim);
+  --ada-scarlet: var(--ultron-gold);
+  --ada-scarlet-dim: var(--ultron-gold-dim);
   --cyber-cyan: #ffb800;
   --amber-alert: #ffe600;
 

@@ -41,11 +41,11 @@ import {
 import { MarkdownText } from "@/components/HUD/MarkdownText";
 import { useAdaStore } from "@/lib/store";
 
-const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK I
-**Designation:** J.A.R.V.I.S // Autonomous Desktop Operating System  
+const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: ULTRON
+**Designation:** ULTRON // Autonomous Super-Intelligence System  
 **Clearance Level:** Administrator // System Core  
 **Status:** **ACTIVE // ONLINE**  
-**Role:** Autonomous Desktop Companion & Systems Engineering Assistant
+**Role:** Autonomous Desktop Companion & Systems Engineering Super-Core
 
 ---
 
@@ -317,7 +317,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
               <div className="flex flex-col gap-1.5 text-[11px]">
                 <div className="flex justify-between">
                   <span className="text-[#7E859E]">Identity:</span>
-                  <span className="text-[#F0F2F8] font-semibold">J.A.R.V.I.S</span>
+                  <span className="text-[#F0F2F8] font-semibold">ULTRON</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#7E859E]">Clearance:</span>
@@ -470,7 +470,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                     NEURAL INTELLIGENCE RADAR STANDBY
                   </div>
                   <p className="text-[11px] text-[#7E859E] font-mono mt-1 leading-relaxed">
-                    Ask J.A.R.V.I.S verbally ("JARVIS, look up the latest space news") or enter a query above.
+                    Ask Ultron verbally ("Ultron, look up the latest space news") or enter a query above.
                     Grounded search dossiers will materialize here automatically.
                   </p>
                 </div>
@@ -478,7 +478,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                   {[
                     "Latest Quantum Computing Milestones",
                     "Global Tech Market Headlines",
-                    "J.A.R.V.I.S Core Archives",
+                    "ULTRON Core Archives",
                   ].map((preset) => (
                     <button
                       key={preset}
@@ -629,7 +629,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                 )}
 
                 <div className="pt-2 border-t border-[rgba(255, 184, 0,0.1)] text-[10px] text-[#7E859E]">
-                  J.A.R.V.I.S autonomously reads these coordinates via{" "}
+                  Ultron autonomously reads these coordinates via{" "}
                   <code className="text-[#FFB800]">recall_memory</code> to maintain personalized,
                   ongoing operational rapport.
                 </div>

@@ -364,7 +364,7 @@ export function IntelModal() {
                   NO ACTIVE INTEL DOSSIERS
                 </div>
                 <p className="text-[10px] font-mono text-[#9E8B65] max-w-xs leading-relaxed">
-                  Ask J.A.R.V.I.S by voice (<span className="text-white">"JARVIS, search for..."</span>,{" "}
+                  Ask Ultron by voice (<span className="text-white">"Ultron, search for..."</span>,{" "}
                   <span className="text-white">"What's the weather in Tokyo?"</span>) or dispatch a query above to initiate real-time reconnaissance.
                 </p>
               </div>

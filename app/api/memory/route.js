@@ -9,7 +9,7 @@ const DEFAULT_MEMORY_DATA = {
     callsign: 'Operator',
     clearance: 'Class-9 Operative',
     role: 'Lead Systems Architect',
-    assistantName: 'Jarvis',
+    assistantName: 'Ultron',
     voiceName: 'Algenib',
     autoBriefing: true,
     enableHumor: false,
@@ -19,7 +19,7 @@ const DEFAULT_MEMORY_DATA = {
   memories: [
     {
       id: 'mem-seed-1',
-      content: 'Operator initialized Project Jarvis with Mark-I cybernetic architecture parity.',
+      content: 'Operator initialized Project Ultron with autonomous cybernetic architecture parity.',
       category: 'mission',
       importance: 'high',
       timestamp: new Date().toISOString(),
@@ -35,7 +35,7 @@ const DEFAULT_MEMORY_DATA = {
     },
     {
       id: 'mem-seed-3',
-      content: 'Operator prefers immediate direct speech from Jarvis without meta-commentary or preambles.',
+      content: 'Operator prefers immediate direct speech from Ultron without meta-commentary or preambles.',
       category: 'preference',
       importance: 'critical',
       timestamp: new Date().toISOString(),

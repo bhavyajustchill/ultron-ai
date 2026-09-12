@@ -218,7 +218,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         captureAndTransmitFrame();
       }, visionInterval);
       setIsStreaming(true);
-      addCommsMessage("system", `Webcam optical telemetry streaming to J.A.R.V.I.S`);
+      addCommsMessage("system", `Webcam optical telemetry streaming to Ultron`);
     }
   };
 
@@ -226,7 +226,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
   const handleSnapshot = () => {
     const sent = captureAndTransmitFrame();
     if (sent) {
-      addCommsMessage("system", "Operator optical snapshot transmitted to J.A.R.V.I.S");
+      addCommsMessage("system", "Operator optical snapshot transmitted to Ultron");
     }
   };
 
@@ -394,7 +394,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
             onClick={handleSnapshot}
             disabled={!isWebcamActive}
             className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(255, 184, 0,0.1)] border border-[#FFB800] text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.2)] text-[10px] font-mono transition-all cursor-pointer disabled:opacity-40"
-            title="Send optical snapshot to J.A.R.V.I.S">
+            title="Send optical snapshot to Ultron">
             <Camera className="w-2.5 h-2.5" />
             <span>SNAPSHOT</span>
           </button>
@@ -406,7 +406,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
                 ? "border-[#FFB800] bg-[rgba(255, 184, 0,0.2)] text-[#FFB800]"
                 : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[#F0F2F8] hover:border-[#FFB800]"
               }`}
-            title="Continuous frame stream to J.A.R.V.I.S">
+            title="Continuous frame stream to Ultron">
             {isStreaming ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
             <span>{isStreaming ? "STOP" : "STREAM"}</span>
           </button>

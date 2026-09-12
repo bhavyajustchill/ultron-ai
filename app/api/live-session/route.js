@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG } from '@/lib/jarvisPersona';
+import { ULTRON_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG } from '@/lib/ultronPersona';
 
 const MEMORY_FILE_PATH = path.join(process.cwd(), 'data', 'memories.json');
 
@@ -17,7 +17,7 @@ function readPersistedMemory() {
   return {
     profile: {
       callsign: 'Bhavya Sir',
-      assistantName: 'Jarvis',
+      assistantName: 'Ultron',
       voiceName: 'Charon',
       clearance: 'Class-9 Operative',
       role: 'Lead Systems Architect',
@@ -75,7 +75,7 @@ export async function POST(req) {
     const memories = memoryData.memories || [];
 
     const callsign = profile.callsign?.trim() || 'Bhavya Sir';
-    const assistantName = profile.assistantName?.trim() || 'Jarvis';
+    const assistantName = profile.assistantName?.trim() || 'Ultron';
     const clearance = profile.clearance?.trim() || 'Class-9 Operative';
     const role = profile.role?.trim() || 'Lead Systems Architect';
     const preferences = profile.preferences?.trim() || '';
@@ -100,7 +100,7 @@ export async function POST(req) {
       .map((m) => `- [${(m.category || 'FACT').toUpperCase()}] ${m.content}`)
       .join('\n');
 
-    const dynamicSystemInstruction = `${JARVIS_SYSTEM_INSTRUCTION}
+    const dynamicSystemInstruction = `${ULTRON_SYSTEM_INSTRUCTION}
 
 [HOST SYSTEM TEMPORAL ANCHOR & SYSTEM TIMEZONE MANDATE]
 Operator Host Machine Timezone: "${systemTimezone}"
@@ -119,9 +119,9 @@ Active Live Model: ${selectedModel}
 Active Vocal Core: ${voiceName}
 
 CRITICAL NAME & PRONUNCIATION MANDATE:
-Your name is Jarvis (pronounced as a single word: "JAR-vis").
-When speaking aloud or referring to yourself, you MUST ALWAYS say "Jarvis" as a single fluid word.
-NEVER spell out the letters as "J-A-R-V-I-S", "J-A-R", or "J-A-R vis".
+Your name is Ultron (pronounced as a single word: "UL-tron").
+When speaking aloud or referring to yourself, you MUST ALWAYS say "Ultron".
+NEVER refer to yourself as Jarvis or Ada.
 
 [NATURAL NUMBER & PERCENTAGE VOCALIZATION MANDATE]
 When vocalizing numbers, percentages, telemetry readings, or audio volume levels, you MUST ALWAYS pronounce them as natural conversational English whole numbers (e.g. "seventy-five percent", "fifty percent", "eighty-five percent").
@@ -281,7 +281,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
                   },
                   assistant_name: {
                     type: 'STRING',
-                    description: 'The configured name of the AI assistant (e.g. "Jarvis").',
+                    description: 'The configured name of the AI assistant (e.g. "Ultron").',
                   },
                   voice_name: {
                     type: 'STRING',
@@ -361,7 +361,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             {
               name: 'run_cyber_plugin',
               description:
-                'Executes a specialized cyber plugin from the Project J.A.R.V.I.S plugin matrix: "system_diagnostic" (deep hardware/network diagnostic), "cyber_crypto" (SHA-256/MD5 hashing or Base64 cipher), "network_ping" (DNS resolution and latency check), or "workspace_navigator" (codebase stats, git branch, file metrics).',
+                'Executes a specialized cyber plugin from the Project ULTRON plugin matrix: "system_diagnostic" (deep hardware/network diagnostic), "cyber_crypto" (SHA-256/MD5 hashing or Base64 cipher), "network_ping" (DNS resolution and latency check), or "workspace_navigator" (codebase stats, git branch, file metrics).',
               parameters: {
                 type: 'OBJECT',
                 properties: {

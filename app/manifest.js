@@ -1,9 +1,9 @@
 export default function manifest() {
   return {
-    name: 'J.A.R.V.I.S // Mark I Autonomous System',
-    short_name: 'JARVIS Mark I',
+    name: 'ULTRON // Autonomous Intelligence System',
+    short_name: 'ULTRON',
     description:
-      'Next-Gen Cybernetic Desktop Assistant with Quantum Arc Reactor Core & Gemini Live Voice Engine',
+      'Autonomous Cybernetic Super-Intelligence System with Holographic 3D Core & Gemini Live Voice Engine',
     start_url: '/',
     display: 'standalone',
     orientation: 'any',
