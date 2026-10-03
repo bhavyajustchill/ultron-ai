@@ -24,9 +24,11 @@ import {
   Play,
   Square,
   Terminal,
+  Ear,
 } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
+import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 
 const PREBUILT_VOICES = [
   {
@@ -212,6 +214,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     liveModel: GEMINI_LIVE_MODEL,
     autoBriefing: true,
     enableHumor: true,
+    wakeWordEnabled: true,
+    wakePhrase: DEFAULT_WAKE_PHRASE,
     clearance: "Class-9 Operative",
     role: "Lead Systems Architect",
     preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
@@ -232,6 +236,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           liveModel: GEMINI_LIVE_MODEL,
           autoBriefing: operatorProfile.autoBriefing !== false,
           enableHumor: operatorProfile.enableHumor !== false,
+          wakeWordEnabled: operatorProfile.wakeWordEnabled !== false,
+          wakePhrase: operatorProfile.wakePhrase || DEFAULT_WAKE_PHRASE,
           clearance: operatorProfile.clearance || "Class-9 Operative",
           role: operatorProfile.role || "Lead Systems Architect",
           preferences: operatorProfile.preferences || "",
@@ -334,7 +340,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     setIsSaving(true);
     const previousVoice = operatorProfile?.voiceName;
     try {
-      await updateProfileApi(draft);
+      await updateProfileApi({ ...draft, wakePhrase: draft.wakePhrase.trim() || DEFAULT_WAKE_PHRASE });
       setSavedSuccess(true);
       addCommsMessage(
         "system",
@@ -374,6 +380,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       liveModel: GEMINI_LIVE_MODEL,
       autoBriefing: true,
       enableHumor: true,
+      wakeWordEnabled: true,
+      wakePhrase: DEFAULT_WAKE_PHRASE,
       clearance: "Class-9 Operative",
       role: "Lead Systems Architect",
       preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
@@ -759,6 +767,38 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   }`}>
                 {draft.enableHumor ? "ENABLED" : "DISABLED"}
               </button>
+            </div>
+
+            {/* Standby Wake Phrase */}
+            <div className="flex flex-col gap-2 p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                    <Ear className="w-3 h-3 text-[#00E5FF]" /> Standby Wake Phrase
+                  </span>
+                  <span className="text-[9px] text-[#7E859E]">
+                    While offline, saying the phrase links Jarvis back up. Uses the browser&apos;s speech service (Chrome / Edge) only during standby.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDraft({ ...draft, wakeWordEnabled: !draft.wakeWordEnabled })}
+                  className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.wakeWordEnabled
+                      ? "bg-[rgba(0,229,255,0.2)] border border-[#00E5FF] text-[#00E5FF] shadow-[0_0_12px_rgba(0,229,255,0.25)]"
+                      : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    }`}>
+                  {draft.wakeWordEnabled ? "ENABLED" : "DISABLED"}
+                </button>
+              </div>
+              <input
+                type="text"
+                value={draft.wakePhrase}
+                disabled={!draft.wakeWordEnabled}
+                onChange={(e) => setDraft({ ...draft, wakePhrase: e.target.value.slice(0, 40) })}
+                placeholder={DEFAULT_WAKE_PHRASE}
+                className="w-full bg-black/50 border border-[rgba(0,229,255,0.25)] focus:border-[#00E5FF] outline-none px-2.5 py-1.5 chamfer-xs text-xs text-white font-mono disabled:opacity-40"
+                aria-label="Wake phrase"
+              />
             </div>
           </div>
 

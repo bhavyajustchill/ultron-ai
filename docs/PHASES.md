@@ -211,5 +211,9 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] glTF / GLB holo-viewer (`ModelViewerPanel.jsx`): own R3F canvas, auto-framing, orbit controls, auto-rotate toggle, first-clip animation playback, mesh / triangle / material / animation stats; served by the sandboxed, same-origin, model-types-only `/api/model-file/[...segments]` route (relative glTF buffers resolve); opened by `view_3d_model` or by uploading a model.
   - [x] Shared `FloatingPanel.jsx` shell and persona guideline 20.
   - [ ] Live verification with the operator's API key and a real Spotify desktop install.
-- [ ] **7.6 Custom Wake Phrase** — feature 4: offline in-browser wake-word listener with a configurable phrase.
+- [ ] **7.6 Custom Wake Phrase (`DEC-156`)** — feature 4:
+  - [x] `lib/wakePhrase.js` fuzzy matcher (ordered words, interchangeable greetings, one-letter tolerance on longer words) and `useWakePhrase` standby listener on the browser Web Speech API (Chrome / Edge), armed only after the link has been offline for 1.5 s, self-restarting with back-off, released on wake.
+  - [x] Configurable in Settings (enable toggle + phrase, persisted to the profile) and by voice (`update_operator_profile` `wake_phrase`); phrase injected into the system prompt; HUD chip shows listening / unsupported / blocked / retrying.
+  - [x] `enter_standby` live tool: Jarvis signs off and the link closes once his farewell finishes playing; persona guideline 21.
+  - [ ] Live verification with a real microphone in Chrome / Edge.
 - [ ] **7.7 Terminal & Desktop Input Control** — features 17, 5: terminal command runner with on-screen confirmation gate; mouse, keyboard, and window control on GNOME Wayland.

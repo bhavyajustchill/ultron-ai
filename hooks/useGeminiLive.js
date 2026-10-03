@@ -6,6 +6,7 @@ import { PCMStreamPlayer } from '@/lib/pcmPlayer';
 import { useAudioStream } from '@/hooks/useAudioStream';
 import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
 import { modelFileUrl, openModelViewer, playYouTubeQuery } from '@/lib/mediaClient';
+import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
 
 // Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
 const MAX_RECONNECT_ATTEMPTS = 5;
@@ -69,6 +70,7 @@ export function useGeminiLive() {
   const groundingRef = useRef({ queries: new Set(), sources: new Map() });
   const connectSessionRef = useRef(null);
   const projectPollersRef = useRef(new Map());
+  const standbyRequestedRef = useRef(false);
 
   const {
     status,
@@ -237,6 +239,21 @@ export function useGeminiLive() {
     goAwayPendingRef.current = false;
     connectSessionRef.current?.(apiKeyRef.current, voiceRef.current, { resume: true });
   }, []);
+
+  // Close the link once Jarvis has finished his farewell (enter_standby tool)
+  const enterStandbyWhenQuiet = useCallback(() => {
+    const startedAt = Date.now();
+    const poll = () => {
+      const isSpeaking = isTurnActiveRef.current || pcmPlayerRef.current?.activeSources?.size > 0;
+      if (isSpeaking && Date.now() - startedAt < 20000) {
+        setTimeout(poll, 300);
+        return;
+      }
+      disconnectSession();
+      addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Jarvis back online.');
+    };
+    setTimeout(poll, 800); // grace period in case the farewell starts as a fresh turn
+  }, [disconnectSession, addCommsMessage]);
 
   // Deliver a system notice to Jarvis as a user turn once he is idle (queued while offline)
   const notifyJarvis = useCallback(
@@ -917,12 +934,14 @@ export function useGeminiLive() {
                     const clearance = call.args?.clearance?.trim();
                     const preferences = call.args?.preferences?.trim();
                     const liveModel = call.args?.live_model?.trim();
+                    const wakePhrase = call.args?.wake_phrase?.trim();
 
                     const updates = {};
                     if (callsign) updates.callsign = callsign;
                     if (assistantName) updates.assistantName = assistantName;
                     if (voiceName) updates.voiceName = voiceName;
                     if (liveModel) updates.liveModel = liveModel;
+                    if (wakePhrase) updates.wakePhrase = wakePhrase.slice(0, 40);
                     if (role) updates.role = role;
                     if (clearance) updates.clearance = clearance;
                     if (preferences) updates.preferences = preferences;
@@ -1053,6 +1072,22 @@ export function useGeminiLive() {
                           success: pluginResult.success,
                           duration_ms: pluginResult.executionDurationMs,
                           output: pluginResult.output || pluginResult.error,
+                        },
+                      },
+                      id: call.id,
+                    });
+                  }
+
+                  if (call.name === 'enter_standby') {
+                    standbyRequestedRef.current = true;
+                    const phrase = useAdaStore.getState().operatorProfile?.wakePhrase || DEFAULT_WAKE_PHRASE;
+                    addCommsMessage('system', '[WAKE] Standby requested. Closing the link after Jarvis signs off...');
+                    functionResponses.push({
+                      response: {
+                        output: {
+                          status: 'STANDBY_SCHEDULED',
+                          wake_phrase: phrase,
+                          message: `Say a brief farewell now; the link closes when you finish speaking. The operator can wake you with "${phrase}".`,
                         },
                       },
                       id: call.id,
@@ -1438,6 +1473,12 @@ export function useGeminiLive() {
                 if (goAwayPendingRef.current) {
                   resumeAfterGoAway();
                 }
+
+                // Farewell delivered after enter_standby: drop the link once playback drains
+                if (standbyRequestedRef.current) {
+                  standbyRequestedRef.current = false;
+                  enterStandbyWhenQuiet();
+                }
               }
             }
           } catch (err) {
@@ -1510,6 +1551,7 @@ export function useGeminiLive() {
       scheduleReconnect,
       resumeAfterGoAway,
       watchProjectJob,
+      enterStandbyWhenQuiet,
       setStatus,
       addCommsMessage,
       setLatencyMs,

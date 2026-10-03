@@ -8,6 +8,7 @@ import {
   GEMINI_LIVE_LABEL,
 } from '@/lib/jarvisPersona';
 import { getAllowedRoots, displayPath } from '@/lib/fsSandbox';
+import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
 
 // JARVIS_MEMORY_FILE relocates the vault (used by automated checks)
 const MEMORY_FILE_PATH = path.resolve(
@@ -145,6 +146,7 @@ Professional Role: ${role}
 Directives & Preferences: ${preferences}
 Active Live Model: ${selectedModel}
 Active Vocal Core: ${voiceName}
+Standby Wake Phrase: "${profile.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE}"
 
 CRITICAL NAME & PRONUNCIATION MANDATE:
 Your name is Jarvis (pronounced as a single word: "JAR-vis").
@@ -349,6 +351,10 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                       'Zubenelgenubi',
                     ],
                   },
+                  wake_phrase: {
+                    type: 'STRING',
+                    description: 'Standby wake phrase the operator says to bring Jarvis back online (e.g. "Hey Jarvis", "Wake up Jarvis").',
+                  },
                   live_model: {
                     type: 'STRING',
                     description: `Gemini Live model: ${GEMINI_LIVE_MODEL}.`,
@@ -483,6 +489,13 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                 },
                 required: ['action', 'path'],
               },
+            },
+            {
+              name: 'enter_standby',
+              behavior: 'BLOCKING',
+              description:
+                'Ends the live voice link and returns Jarvis to standby, where he listens only for the wake phrase. Use when the operator says goodbye, "that\'s all", "go to sleep", or asks you to stand by. After calling it, say a brief farewell.',
+              parameters: { type: 'OBJECT', properties: {} },
             },
             {
               name: 'youtube_player',

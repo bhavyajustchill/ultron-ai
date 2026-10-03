@@ -24,6 +24,8 @@ import {
   Maximize2,
   Minimize2,
   Paperclip,
+  Ear,
+  EarOff,
 } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
@@ -41,6 +43,8 @@ import { TelemetryPanel } from "@/components/HUD/TelemetryPanel";
 import { IntelModal } from "@/components/HUD/IntelModal";
 import { UploadDropZone } from "@/components/HUD/UploadDropZone";
 import { YouTubePanel } from "@/components/Media/YouTubePanel";
+import { useWakePhrase } from "@/hooks/useWakePhrase";
+import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 import { ModelViewerPanel } from "@/components/Media/ModelViewerPanel";
 
 export default function Home() {
@@ -118,6 +122,37 @@ export default function Home() {
     sendContentParts,
     triggerBriefing,
   } = useGeminiLive();
+
+  // Standby wake phrase: armed once the link has stayed offline for a moment, so startup and
+  // reconnect blips never grab the microphone
+  const operatorProfile = useAdaStore((state) => state.operatorProfile);
+  const wakeEnabled = operatorProfile?.wakeWordEnabled !== false;
+  const wakePhrase = operatorProfile?.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE;
+  const [isStandby, setIsStandby] = useState(false);
+  React.useEffect(() => {
+    if (status !== "DISCONNECTED") {
+      setIsStandby(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setIsStandby(true), 1500);
+    return () => clearTimeout(timer);
+  }, [status]);
+  const wakeState = useWakePhrase({
+    enabled: wakeEnabled,
+    active: isStandby,
+    phrase: wakePhrase,
+    onWake: () => {
+      addCommsMessage("system", `[WAKE] "${wakePhrase}" detected. Linking J.A.R.V.I.S...`);
+      connectSession(userApiKey || loadStoredApiKey());
+    },
+  });
+  const wakeChip = {
+    listening: { text: `WAKE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[#00E5FF] border-[rgba(0,229,255,0.5)] bg-[rgba(0,229,255,0.08)] animate-pulse", Icon: Ear },
+    unsupported: { text: "WAKE // NEEDS CHROME OR EDGE", color: "text-[#7E859E] border-[rgba(255,255,255,0.15)]", Icon: EarOff },
+    blocked: { text: "WAKE // MIC BLOCKED", color: "text-[#FF8095] border-[rgba(255,0,60,0.4)]", Icon: EarOff },
+    error: { text: "WAKE // RETRYING", color: "text-[#FFB020] border-[rgba(255,176,32,0.4)]", Icon: Ear },
+    off: { text: "WAKE // ARMED FOR STANDBY", color: "text-[#7E859E] border-[rgba(0,229,255,0.2)]", Icon: Ear },
+  }[wakeState];
 
   // Auto-initiate voice link upon client mount
   const autoConnectAttemptedRef = React.useRef(false);
@@ -458,10 +493,20 @@ export default function Home() {
       <div className="absolute bottom-5 left-0 right-0 z-20 w-full px-6 sm:px-10 md:px-14 flex flex-col gap-2.5 items-center">
         {/* Subtle Live Status & Latency Line */}
         <div className="flex items-center justify-between w-full px-1 py-0.5 text-[10px] font-mono">
-          <div
-            className={`flex items-center gap-2 px-2.5 py-0.5 chamfer-xs border transition-all ${statusBadge.color}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dot}`} />
-            <span className="tracking-wider font-semibold">{statusBadge.text}</span>
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex items-center gap-2 px-2.5 py-0.5 chamfer-xs border transition-all ${statusBadge.color}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dot}`} />
+              <span className="tracking-wider font-semibold">{statusBadge.text}</span>
+            </div>
+            {wakeEnabled && wakeChip && (
+              <div
+                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 chamfer-xs border bg-[rgba(8,12,18,0.45)] tracking-wider ${wakeChip.color}`}
+                title="Standby wake phrase (configure in Settings)">
+                <wakeChip.Icon className="w-3 h-3" />
+                <span>{wakeChip.text}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5 text-[#7E859E] border border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
