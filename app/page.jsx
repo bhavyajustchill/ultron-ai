@@ -23,6 +23,7 @@ import {
   Globe,
   Maximize2,
   Minimize2,
+  Paperclip,
 } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
@@ -38,6 +39,7 @@ import { SciFiMemoryVaultModal } from "@/components/HUD/SciFiMemoryVaultModal";
 import { CommsLog } from "@/components/HUD/CommsLog";
 import { TelemetryPanel } from "@/components/HUD/TelemetryPanel";
 import { IntelModal } from "@/components/HUD/IntelModal";
+import { UploadDropZone } from "@/components/HUD/UploadDropZone";
 
 export default function Home() {
   const {
@@ -111,6 +113,7 @@ export default function Home() {
     getInputByteFrequencyData,
     sendTextMessage,
     sendVideoFrame,
+    sendContentParts,
     triggerBriefing,
   } = useGeminiLive();
 
@@ -556,6 +559,15 @@ export default function Home() {
               <span className="hidden sm:inline">MEMORIES</span>
             </button>
 
+            {/* File Uplink Button (drag-and-drop works anywhere on the HUD too) */}
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("jarvis-open-upload"))}
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer"
+              title="Upload files to J.A.R.V.I.S (or drag and drop anywhere)">
+              <Paperclip className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">UPLOAD</span>
+            </button>
+
             {/* API Key Modal Button */}
             <button
               onClick={() => setIsKeyModalOpen(true)}
@@ -658,6 +670,9 @@ export default function Home() {
 
       {/* Floating Freely-Movable Neural Intel & Reconnaissance Modal */}
       <IntelModal />
+
+      {/* Window-Wide Drag-and-Drop File Uplink */}
+      <UploadDropZone onSendParts={sendContentParts} />
     </main>
   );
 }

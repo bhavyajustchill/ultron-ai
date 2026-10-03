@@ -11,14 +11,18 @@
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@react-three/postprocessing": "^3.1.1",
+    "docx": "^9.8.1",
     "loudness": "^0.4.2",
     "lucide-react": "^1.42.0",
+    "mammoth": "^1.13.0",
     "next": "^16.3.8",
+    "pdf-lib": "^1.17.1",
     "postprocessing": "^6.39.4",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "three": "^0.185.1",
+    "unpdf": "^1.8.1",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

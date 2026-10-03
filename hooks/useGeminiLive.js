@@ -46,6 +46,7 @@ export function useGeminiLive() {
   const isSetupCompleteRef = useRef(false);
   const startTimeRef = useRef(0);
   const pendingTextRef = useRef(null);
+  const pendingPartsRef = useRef(null);
   // Briefing state machine: 'IDLE' | 'PHASE1' | 'PHASE2'
   const briefingStateRef = useRef('IDLE');
   const briefingTimeoutRef = useRef(null);
@@ -188,6 +189,7 @@ export function useGeminiLive() {
 
     isSetupCompleteRef.current = false;
     pendingTextRef.current = null;
+    pendingPartsRef.current = null;
     setStatus('DISCONNECTED');
     addCommsMessage('system', 'Live session link terminated.');
   }, [resetLinkState, stopMic, setStatus, addCommsMessage]);
@@ -255,9 +257,14 @@ export function useGeminiLive() {
         isTurnActiveRef.current = false;
         cancelledToolIdsRef.current.clear();
       } else {
+        // Tearing down a stale socket must not drop directives queued for this connection
+        const queuedText = pendingTextRef.current;
+        const queuedParts = pendingPartsRef.current;
         if (wsRef.current) {
           disconnectSession();
         }
+        pendingTextRef.current = queuedText;
+        pendingPartsRef.current = queuedParts;
         resetLinkState();
       }
 
@@ -431,17 +438,24 @@ export function useGeminiLive() {
                 });
               }
 
-              // Transmit queued text directive if sent while connecting
-              if (pendingTextRef.current) {
-                const queuedText = pendingTextRef.current;
+              // Transmit queued text directive / upload parts if sent while connecting
+              if (pendingTextRef.current || pendingPartsRef.current) {
+                const queuedParts = [];
+                if (pendingTextRef.current) {
+                  const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                  queuedParts.push({ text: `[Time: ${timeNow}] ${pendingTextRef.current}` });
+                }
+                if (pendingPartsRef.current) {
+                  queuedParts.push(...pendingPartsRef.current);
+                }
                 pendingTextRef.current = null;
-                const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                pendingPartsRef.current = null;
                 const queuedMessage = {
                   clientContent: {
                     turns: [
                       {
                         role: 'user',
-                        parts: [{ text: `[Time: ${timeNow}] ${queuedText}` }],
+                        parts: queuedParts,
                       },
                     ],
                     turnComplete: true,
@@ -964,11 +978,19 @@ export function useGeminiLive() {
                     });
                   }
 
-                  if (call.name === 'file_operations' || call.name === 'organize_folder') {
+                  if (
+                    call.name === 'file_operations' ||
+                    call.name === 'organize_folder' ||
+                    call.name === 'create_document'
+                  ) {
                     const args = call.args || {};
-                    const action = call.name === 'organize_folder' ? 'organize_folder' : args.action || '';
+                    const action = call.name === 'file_operations' ? args.action || '' : call.name;
                     const actionLabel =
-                      call.name === 'organize_folder' ? `ORGANIZE ${(args.mode || 'preview').toUpperCase()}` : action.toUpperCase();
+                      call.name === 'organize_folder'
+                        ? `ORGANIZE ${(args.mode || 'preview').toUpperCase()}`
+                        : call.name === 'create_document'
+                          ? `CREATE ${(args.format || 'pdf').toUpperCase()} DOCUMENT`
+                          : action.toUpperCase();
 
                     addCommsMessage(
                       'system',
@@ -1322,6 +1344,59 @@ export function useGeminiLive() {
     [addCommsMessage, setStatus, connectSession]
   );
 
+  // Send a multi-part user turn (e.g. uploaded images or document text) over the live link,
+  // queueing it and establishing the link first when offline
+  const sendContentParts = useCallback(
+    (parts) => {
+      if (!parts || parts.length === 0) return false;
+
+      if (pcmPlayerRef.current) {
+        pcmPlayerRef.current.initContext();
+      }
+
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && isSetupCompleteRef.current) {
+        try {
+          wsRef.current.send(
+            JSON.stringify({
+              clientContent: {
+                turns: [{ role: 'user', parts }],
+                turnComplete: true,
+              },
+            })
+          );
+          setStatus('THINKING');
+          return true;
+        } catch (err) {
+          console.error('[useGeminiLive] Failed to send content parts:', err);
+          addCommsMessage('system', `Transmission error: ${err.message}`);
+          return false;
+        }
+      }
+
+      pendingPartsRef.current = [...(pendingPartsRef.current || []), ...parts];
+
+      // Auto re-sync in progress: the resumed session delivers the queued parts
+      if (isEstablishedRef.current) {
+        addCommsMessage('system', 'Link re-syncing. Transmitting upload upon sync...');
+        return true;
+      }
+
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+        const activeKey = useAdaStore.getState().userApiKey || useAdaStore.getState().loadStoredApiKey();
+        if (!activeKey) {
+          pendingPartsRef.current = null;
+          addCommsMessage('system', 'Gemini API Key required to link live session. Please enter your key in the prompt.');
+          useAdaStore.getState().setIsKeyModalOpen(true);
+          return false;
+        }
+        addCommsMessage('system', 'Link offline. Establishing secure channel for queued upload...');
+        connectSession(activeKey);
+      }
+      return true;
+    },
+    [addCommsMessage, setStatus, connectSession]
+  );
+
   // Transmit real-time visual frame (JPEG/PNG) to Gemini Live session
   const sendVideoFrame = useCallback(
     (base64Data, mimeType = 'image/jpeg') => {
@@ -1425,6 +1500,7 @@ export function useGeminiLive() {
     getInputByteFrequencyData,
     sendTextMessage,
     sendVideoFrame,
+    sendContentParts,
     triggerBriefing,
   };
 }

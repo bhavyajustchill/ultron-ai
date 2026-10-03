@@ -4,6 +4,8 @@ import path from 'path';
 import { resolveSafePath, displayPath, SandboxError } from '@/lib/fsSandbox';
 import { planOrganize, applyOrganize, undoLastOrganize } from '@/lib/folderOrganizer';
 import { openWithDefaultApp, openInCodeEditor } from '@/lib/desktopLauncher';
+import { DOCUMENT_RENDERERS } from '@/lib/documentForge';
+import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 
 // JARVIS_FS_JOURNAL relocates backups / undo manifests (used by automated checks)
 const JOURNAL_DIR = process.env.JARVIS_FS_JOURNAL || path.join(process.cwd(), 'data', 'fs-journal');
@@ -160,6 +162,40 @@ const ACTIONS = {
     };
   },
 
+  async create_document({ target, body }) {
+    const requestedFormat = (body.format || path.extname(target).slice(1) || 'pdf').toLowerCase();
+    const render = DOCUMENT_RENDERERS[requestedFormat];
+    if (!render) throw new FsOpError(`Unsupported document format "${requestedFormat}". Use pdf or docx.`);
+    const markdown = requireText(body.content, 'content');
+
+    // Make the extension match the format, re-checking the sandbox for the final name
+    const finalTarget = path.extname(target).toLowerCase() === `.${requestedFormat}`
+      ? target
+      : resolveSafePath(`${target}.${requestedFormat}`);
+
+    let backupPath = null;
+    if (fs.existsSync(finalTarget)) {
+      if (!body.overwrite) {
+        throw new FsOpError(
+          `${displayPath(finalTarget)} already exists. Set overwrite to replace it (the old version is backed up).`
+        );
+      }
+      requireFile(finalTarget);
+      backupPath = backupFile(finalTarget);
+    } else {
+      fs.mkdirSync(path.dirname(finalTarget), { recursive: true });
+    }
+
+    const buffer = await render({ title: body.title, markdown });
+    fs.writeFileSync(finalTarget, buffer);
+    return {
+      path: displayPath(finalTarget),
+      message: `Created ${requestedFormat.toUpperCase()} document ${displayPath(finalTarget)} (${Math.max(1, Math.round(buffer.length / 1024))} KB).`,
+      ...(backupPath ? { backup: backupPath } : {}),
+      next_step: OFFER_TO_OPEN,
+    };
+  },
+
   async open_path({ target, body }) {
     if (!fs.existsSync(target)) throw new FsOpError(`${displayPath(target)} does not exist.`);
     const inEditor = body.app === 'code';
@@ -225,6 +261,9 @@ const ACTIONS = {
  * There is intentionally no delete action.
  */
 export async function POST(req) {
+  const blocked = rejectCrossSiteRequest(req);
+  if (blocked) return blocked;
+
   let body = {};
   try {
     body = await req.json();

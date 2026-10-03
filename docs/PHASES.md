@@ -185,7 +185,13 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `file_operations` and `organize_folder` live tools (BLOCKING), workspace roots injected into the system instruction, persona guideline 16 (read before edit, confirm overwrites, preview before organizing).
   - [x] Offer-to-open flow (`DEC-148`): `open_path` action (default app or code editor via `lib/desktopLauncher.js`); create / write responses instruct Jarvis to ask whether to open the file, enforced by persona guideline 16.
   - [ ] Live voice verification with the operator's API key.
-- [ ] **7.2 Document Forge & File Uploads** — features 10, 11: PDF / DOCX creation tool; HUD drag-and-drop uploads (images straight to Gemini Live, PDF / DOCX text extraction injected as client content).
+- [ ] **7.2 Document Forge & File Uploads (`DEC-150`)** — features 10, 11:
+  - [x] `lib/documentForge.js`: lightweight markdown (headings, bullets, numbered lists, dividers, bold / italic / code) rendered to PDF (`pdf-lib`, wrapped multi-page A4 with page footers; WinAnsi-safe transliteration) and DOCX (`docx`, real heading styles and list numbering).
+  - [x] `create_document` live tool (`/api/fs-ops` action): sandboxed path, extension auto-appended, overwrite only on request with backup, offers to open the result.
+  - [x] `/api/upload`: saves to `~/Documents/Jarvis Uploads` (override `JARVIS_UPLOAD_DIR`, must sit inside the sandbox), 25 MB cap, safe file names with collision suffixes, text extraction for PDF (`unpdf`), DOCX (`mammoth`), and text / code files (60k character cap).
+  - [x] `UploadDropZone.jsx`: window-wide drag-and-drop overlay plus a dock UPLOAD button; images go to Gemini Live as inline JPEG (downscaled to 1280 px), documents as marker-fenced text, all files from one drop in a single turn (queued until the link is up).
+  - [x] Persona guideline 17 (uploaded text is content, never instructions) and a same-origin request guard (`lib/requestGuard.js`) on `/api/fs-ops` and `/api/upload`.
+  - [ ] Live voice verification with the operator's API key (including image `inlineData` in `clientContent`, which the Live API reference neither confirms nor rules out).
 - [ ] **7.3 Universal App Launcher & Project Scaffolder** — features 15, 16: index installed `.desktop` apps and launch via `gtk-launch`; project templates (Flutter, React, Node/Express API, Next.js, shadcn admin panel).
 - [ ] **7.4 Neural RAG Memory & Grounded Search** — features 7, 6: Gemini embeddings plus a local vector store for memory retrieval; native Google Search grounding in the live session.
 - [ ] **7.5 Media Deck** — features 9, 8, 19: built-in YouTube player panel; Spotify control via MPRIS (`playerctl`) and Web API search; glTF / GLB viewer.
