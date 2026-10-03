@@ -485,6 +485,68 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
               },
             },
             {
+              name: 'youtube_player',
+              behavior: 'BLOCKING',
+              description:
+                'Controls the built-in YouTube player panel in the HUD: play searches YouTube and starts the best match (the other results become the up-next queue); pause, resume, next, previous, stop, volume (0-100), now_playing.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  action: {
+                    type: 'STRING',
+                    description: 'Player action.',
+                    enum: ['play', 'pause', 'resume', 'next', 'previous', 'stop', 'volume', 'now_playing'],
+                  },
+                  query: {
+                    type: 'STRING',
+                    description: 'play only: what to search for (song, video, topic, channel).',
+                  },
+                  volume: {
+                    type: 'NUMBER',
+                    description: 'volume only: level from 0 to 100.',
+                  },
+                },
+                required: ['action'],
+              },
+            },
+            {
+              name: 'spotify_control',
+              behavior: 'BLOCKING',
+              description:
+                'Controls the Spotify desktop app (launching it if needed): play, pause, toggle, next, previous, now_playing, and play_song to find and play a song, artist, album, or playlist by name.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  action: {
+                    type: 'STRING',
+                    description: 'Spotify action.',
+                    enum: ['play', 'pause', 'toggle', 'next', 'previous', 'now_playing', 'play_song'],
+                  },
+                  query: {
+                    type: 'STRING',
+                    description: 'play_song only: what to play, e.g. "Bohemian Rhapsody by Queen".',
+                  },
+                },
+                required: ['action'],
+              },
+            },
+            {
+              name: 'view_3d_model',
+              behavior: 'BLOCKING',
+              description:
+                'Opens a 3D model (.glb or .gltf) from the allowed workspace folders in the HUD holo-viewer with orbit controls, auto-framing, animation playback, and mesh / triangle statistics.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  path: {
+                    type: 'STRING',
+                    description: 'Path to the model, e.g. "~/Downloads/robot.glb".',
+                  },
+                },
+                required: ['path'],
+              },
+            },
+            {
               name: 'create_project',
               behavior: 'BLOCKING',
               description:

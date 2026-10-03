@@ -205,6 +205,11 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] Persona guideline 19; `JARVIS_MEMORY_FILE` / `JARVIS_MEMORY_VECTORS` / `JARVIS_GEMINI_API_BASE` overrides for isolated checks.
   - [x] `web_search` dossiers grounded via Gemini + Google Search (`lib/groundedSearch.js`, `DEC-154`) with DuckDuckGo as fallback; removed the fabricated "verified" placeholder result returned when every engine failed.
   - [ ] Live voice verification with the operator's API key (grounding with function calling on 3.8 Live, real embedding quality).
-- [ ] **7.5 Media Deck** — features 9, 8, 19: built-in YouTube player panel; Spotify control via MPRIS (`playerctl`) and Web API search; glTF / GLB viewer.
+- [ ] **7.5 Media Deck (`DEC-155`)** — features 9, 8, 19:
+  - [x] Built-in YouTube player: keyless search (`/api/youtube`, results-page `ytInitialData`; Data API when `YOUTUBE_API_KEY` is set), draggable `YouTubePanel.jsx` with IFrame-API control, up-next queue with auto-advance, volume slider, and ducking while Jarvis speaks; `youtube_player` live tool.
+  - [x] Spotify via MPRIS over D-Bus (`lib/spotifyControl.js`, `gdbus`): play / pause / toggle / next / previous / now playing, launching the app when needed; `play_song` plays the exact track with free Spotify Web API client credentials, otherwise opens the in-app search; `spotify_control` live tool.
+  - [x] glTF / GLB holo-viewer (`ModelViewerPanel.jsx`): own R3F canvas, auto-framing, orbit controls, auto-rotate toggle, first-clip animation playback, mesh / triangle / material / animation stats; served by the sandboxed, same-origin, model-types-only `/api/model-file/[...segments]` route (relative glTF buffers resolve); opened by `view_3d_model` or by uploading a model.
+  - [x] Shared `FloatingPanel.jsx` shell and persona guideline 20.
+  - [ ] Live verification with the operator's API key and a real Spotify desktop install.
 - [ ] **7.6 Custom Wake Phrase** — feature 4: offline in-browser wake-word listener with a configurable phrase.
 - [ ] **7.7 Terminal & Desktop Input Control** — features 17, 5: terminal command runner with on-screen confirmation gate; mouse, keyboard, and window control on GNOME Wayland.

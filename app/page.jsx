@@ -40,6 +40,8 @@ import { CommsLog } from "@/components/HUD/CommsLog";
 import { TelemetryPanel } from "@/components/HUD/TelemetryPanel";
 import { IntelModal } from "@/components/HUD/IntelModal";
 import { UploadDropZone } from "@/components/HUD/UploadDropZone";
+import { YouTubePanel } from "@/components/Media/YouTubePanel";
+import { ModelViewerPanel } from "@/components/Media/ModelViewerPanel";
 
 export default function Home() {
   const {
@@ -673,6 +675,10 @@ export default function Home() {
 
       {/* Window-Wide Drag-and-Drop File Uplink */}
       <UploadDropZone onSendParts={sendContentParts} />
+
+      {/* Media Deck: Built-in YouTube Player & 3D Model Holo-Viewer */}
+      <YouTubePanel />
+      <ModelViewerPanel />
     </main>
   );
 }

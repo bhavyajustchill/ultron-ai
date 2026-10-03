@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { UploadCloud } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
+import { openModelViewer } from "@/lib/mediaClient";
 
 const MAX_IMAGE_SIDE = 1280;
 
@@ -61,7 +62,8 @@ async function buildParts(file, upload) {
   }
 
   if (upload.kind === "model") {
-    return [{ text: `${header} It is a 3D model file.` }];
+    openModelViewer(upload.path, upload.name);
+    return [{ text: `${header} It is a 3D model and is now displayed in the HUD holo-viewer.` }];
   }
 
   return [{ text: `${header} Its contents cannot be read directly.` }];

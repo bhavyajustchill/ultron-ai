@@ -5,6 +5,7 @@ import { useAdaStore } from '@/lib/store';
 import { PCMStreamPlayer } from '@/lib/pcmPlayer';
 import { useAudioStream } from '@/hooks/useAudioStream';
 import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
+import { modelFileUrl, openModelViewer, playYouTubeQuery } from '@/lib/mediaClient';
 
 // Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
 const MAX_RECONNECT_ATTEMPTS = 5;
@@ -1056,6 +1057,83 @@ export function useGeminiLive() {
                       },
                       id: call.id,
                     });
+                  }
+
+                  if (call.name === 'youtube_player') {
+                    const args = call.args || {};
+                    const action = args.action || 'play';
+                    const store = useAdaStore.getState();
+                    const { youtube } = store;
+                    const describeVideo = (video) => ({ title: video.title, channel: video.channel, duration: video.duration, live: video.live });
+                    let output;
+
+                    if (action === 'play') {
+                      addCommsMessage('system', `[MEDIA] Searching YouTube for "${args.query || ''}"...`);
+                      try {
+                        const { video, message } = await playYouTubeQuery(args.query || '');
+                        output = video ? { status: 'PLAYING', ...describeVideo(video) } : { status: 'NOT_FOUND', message };
+                      } catch (err) {
+                        output = { status: 'FAILED', message: err.message };
+                      }
+                    } else if (!youtube.isOpen || youtube.queue.length === 0) {
+                      output = { status: 'IDLE', message: 'Nothing is loaded in the HUD YouTube player.' };
+                    } else if (action === 'pause' || action === 'resume') {
+                      store.sendYouTubeCommand(action === 'pause' ? 'pause' : 'play');
+                      output = { status: action === 'pause' ? 'PAUSED' : 'PLAYING', ...describeVideo(youtube.queue[youtube.index]) };
+                    } else if (action === 'next' || action === 'previous') {
+                      const index = Math.min(Math.max(youtube.index + (action === 'next' ? 1 : -1), 0), youtube.queue.length - 1);
+                      store.setYouTube({ index, isPlaying: true });
+                      output = { status: 'PLAYING', ...describeVideo(youtube.queue[index]) };
+                    } else if (action === 'volume') {
+                      const level = Math.min(100, Math.max(0, Math.round(Number(args.volume) || 0)));
+                      store.sendYouTubeCommand('volume', level);
+                      output = { status: 'OK', volume: level };
+                    } else if (action === 'stop') {
+                      store.setYouTube({ isOpen: false });
+                      output = { status: 'STOPPED' };
+                    } else {
+                      output = { status: youtube.isPlaying ? 'PLAYING' : 'PAUSED', ...describeVideo(youtube.queue[youtube.index]) };
+                    }
+
+                    addCommsMessage('system', `[MEDIA] YouTube ${action.toUpperCase()}: ${output.title || output.message || output.status}`);
+                    functionResponses.push({ response: { output }, id: call.id });
+                  }
+
+                  if (call.name === 'spotify_control') {
+                    const args = call.args || {};
+                    addCommsMessage('system', `[MEDIA] Spotify ${(args.action || '').toUpperCase()}${args.query ? ` ("${args.query}")` : ''}...`);
+                    let spotifyResult = { success: false, message: 'Failed to contact the Spotify bridge.' };
+                    try {
+                      const res = await fetch('/api/spotify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: args.action, query: args.query }),
+                      });
+                      spotifyResult = await res.json();
+                    } catch (err) {
+                      console.error('[useGeminiLive] Spotify control error:', err);
+                    }
+                    addCommsMessage('system', `[MEDIA] ${spotifyResult.success ? 'Spotify' : 'Spotify failed'}: ${spotifyResult.message}`);
+                    functionResponses.push({ response: { output: spotifyResult }, id: call.id });
+                  }
+
+                  if (call.name === 'view_3d_model') {
+                    const modelPath = (call.args?.path || '').trim();
+                    let output;
+                    try {
+                      const res = await fetch(modelFileUrl(modelPath), { method: 'HEAD' });
+                      if (res.ok) {
+                        openModelViewer(modelPath);
+                        output = { status: 'OPENED', path: modelPath, message: 'The model is displayed in the HUD holo-viewer.' };
+                      } else {
+                        const reasons = { 403: 'outside the allowed folders', 404: 'not found', 415: 'not a .glb or .gltf model' };
+                        output = { status: 'FAILED', message: `Cannot open "${modelPath}": ${reasons[res.status] || `error ${res.status}`}.` };
+                      }
+                    } catch (err) {
+                      output = { status: 'FAILED', message: err.message };
+                    }
+                    addCommsMessage('system', `[MEDIA] 3D viewer: ${output.message}`);
+                    functionResponses.push({ response: { output }, id: call.id });
                   }
 
                   if (call.name === 'create_project') {
