@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchLiveWeather } from '../weather/route';
+import { groundedSearch } from '@/lib/groundedSearch';
 
 /**
  * Clean and decode DuckDuckGo redirect URLs
@@ -128,6 +129,8 @@ async function fetchInstantAnswer(query) {
 /**
  * GET /api/web-search?query=...&mode=...
  * Performs real-time web search and returns structured intelligence cards.
+ * Primary engine: Gemini with Google Search grounding (key from the x-gemini-api-key header
+ * or GEMINI_API_KEY); fallbacks: DuckDuckGo HTML, then the DuckDuckGo Instant Answer API.
  */
 export async function GET(req) {
   try {
@@ -189,8 +192,30 @@ export async function GET(req) {
       }
     }
 
-    // 1. Try DuckDuckGo HTML Search
+    // 1. Grounded Gemini search (Google Search tool) when a key is available
+    const apiKey = req.headers.get('x-gemini-api-key') || process.env.GEMINI_API_KEY || '';
+    if (apiKey) {
+      try {
+        const grounded = await groundedSearch(query, mode, apiKey);
+        return NextResponse.json({
+          success: true,
+          query,
+          mode,
+          engine: 'gemini-grounded',
+          count: grounded.results.length,
+          timestamp: new Date().toLocaleTimeString(),
+          summary: grounded.summary,
+          results: grounded.results,
+          search_queries: grounded.queries,
+        });
+      } catch (groundedErr) {
+        console.warn('[/api/web-search] Grounded search failed, falling back to DuckDuckGo:', groundedErr.message);
+      }
+    }
+
+    // 2. DuckDuckGo HTML Search
     let results = [];
+    let engine = 'duckduckgo';
     try {
       const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(
         mode === 'news' ? `${query} latest news` : query
@@ -214,21 +239,24 @@ export async function GET(req) {
       console.warn('[web-search] HTML parser failed, using fallback:', htmlErr.message);
     }
 
-    // 2. Fallback to Instant Answer API if HTML parsed zero results
+    // 3. Fallback to Instant Answer API if HTML parsed zero results
     if (results.length === 0) {
       results = await fetchInstantAnswer(query);
+      engine = 'duckduckgo-instant';
     }
 
-    // 3. Fallback dummy result if offline or network blocked
+    // Nothing retrieved: say so plainly rather than inventing a result Jarvis would repeat as fact
     if (results.length === 0) {
-      results = [
-        {
-          title: `Intel Briefing: ${query}`,
-          snippet: `Live reconnaissance for "${query}" retrieved verified mission parameters. Current sector feeds indicate ongoing operational interest.`,
-          url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-          source: 'Syndicate Archives',
-        },
-      ];
+      return NextResponse.json({
+        success: true,
+        query,
+        mode,
+        engine: 'none',
+        count: 0,
+        timestamp: new Date().toLocaleTimeString(),
+        summary: `No live web results could be retrieved for "${query}" right now${apiKey ? '' : ' (connect a Gemini API key to enable grounded Google Search)'}.`,
+        results: [],
+      });
     }
 
     // Compose concise takeaway summary for Ada to speak
@@ -243,6 +271,7 @@ export async function GET(req) {
       success: true,
       query,
       mode,
+      engine,
       count: results.length,
       timestamp: new Date().toLocaleTimeString(),
       summary,

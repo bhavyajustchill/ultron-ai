@@ -203,6 +203,7 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `/api/memory` GET ranks semantically when a key arrives via `x-gemini-api-key` (or `GEMINI_API_KEY`), falling back to keyword search with the reason; `recall_memory` sends the session key and relays relevance scores.
   - [x] Built-in Google Search grounding (`googleSearch` tool) in the live session; cited sources and queries logged to the Intel drawer without popping it open; automatic retry without grounding if the model refuses that tool at setup.
   - [x] Persona guideline 19; `JARVIS_MEMORY_FILE` / `JARVIS_MEMORY_VECTORS` / `JARVIS_GEMINI_API_BASE` overrides for isolated checks.
+  - [x] `web_search` dossiers grounded via Gemini + Google Search (`lib/groundedSearch.js`, `DEC-154`) with DuckDuckGo as fallback; removed the fabricated "verified" placeholder result returned when every engine failed.
   - [ ] Live voice verification with the operator's API key (grounding with function calling on 3.8 Live, real embedding quality).
 - [ ] **7.5 Media Deck** — features 9, 8, 19: built-in YouTube player panel; Spotify control via MPRIS (`playerctl`) and Web API search; glTF / GLB viewer.
 - [ ] **7.6 Custom Wake Phrase** — feature 4: offline in-browser wake-word listener with a configurable phrase.

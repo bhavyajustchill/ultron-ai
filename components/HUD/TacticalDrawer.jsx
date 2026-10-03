@@ -188,8 +188,10 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
     addCommsMessage("system", `[INTEL DESK] Executing web reconnaissance for: "${query}"...`);
 
     try {
+      const searchKey = useAdaStore.getState().userApiKey;
       const res = await fetch(
         `/api/web-search?query=${encodeURIComponent(query)}&mode=${encodeURIComponent(searchMode)}`,
+        { headers: searchKey ? { "x-gemini-api-key": searchKey } : {} }
       );
       if (res.ok) {
         const data = await res.json();

@@ -749,8 +749,10 @@ export function useGeminiLive() {
                     };
 
                     try {
+                      const searchKey = apiKeyRef.current || useAdaStore.getState().userApiKey || '';
                       const res = await fetch(
-                        `/api/web-search?query=${encodeURIComponent(query)}&mode=${encodeURIComponent(mode)}`
+                        `/api/web-search?query=${encodeURIComponent(query)}&mode=${encodeURIComponent(mode)}`,
+                        { headers: searchKey ? { 'x-gemini-api-key': searchKey } : {} }
                       );
                       if (res.ok) {
                         const data = await res.json();
@@ -1298,7 +1300,10 @@ export function useGeminiLive() {
 
                       let newsSummary = '';
                       try {
-                        const newsRes = await fetch('/api/web-search?query=top+world+news+today&mode=news');
+                        const newsKey = apiKeyRef.current || useAdaStore.getState().userApiKey || '';
+                        const newsRes = await fetch('/api/web-search?query=top+world+news+today&mode=news', {
+                          headers: newsKey ? { 'x-gemini-api-key': newsKey } : {},
+                        });
                         if (newsRes.ok) {
                           const newsData = await newsRes.json();
                           newsSummary = newsData.summary || '';
