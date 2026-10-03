@@ -135,7 +135,8 @@
   - [x] Pin all live tools to `behavior: 'BLOCKING'` (3.8 defaults to `NON_BLOCKING`), echo function names in tool responses, and drop responses for `toolCallCancellation` ids.
   - [x] Enable sliding-window `contextWindowCompression` to lift the 15-minute audio session cap.
   - [x] Session resumption: track `sessionResumptionUpdate` handles, swap sockets on `goAway` at the next idle turn, and auto re-sync dropped links with exponential backoff (0.5s → 8s, 5 attempts) behind a `RECONNECTING` HUD status pill.
-  - [ ] Live voice verification with the operator's API key (greeting, tool call, barge-in, voice switch, >15 min session).
+  - [x] Live API verification (`DEC-159`): full setup accepted on `v1beta`, spoken greeting (first audio ~655 ms), typed turns, BLOCKING tool round-trip, resumable session handles, and the real HUD connecting end-to-end in Chrome.
+  - [ ] Operator microphone checks: spoken barge-in, voice switch, and a >15 min session (GoAway swap).
 > **Roadmap note (2026-10-04, `DEC-147`):** Items 6.2–6.8 come from the original Project J.A.R.V.I.S roadmap. Where they overlap `features.txt` they are folded into Phase 7; the rest is **deferred** until Phase 7 completes.
 
 - [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Deferred)_
@@ -178,20 +179,21 @@
 
 Already shipped from `features.txt`: custom interface (1), free AI (2), realistic voice (3), open websites (14), humor (20). Partially shipped and completed below: personality / name / wake phrase (4), computer control (5), web search (6), memory (7), Spotify (8), open apps (15).
 
-- [ ] **7.1 Sandboxed Workspace File Operations (`DEC-147`)** — features 12, 13, 18:
+- [x] **7.1 Sandboxed Workspace File Operations (`DEC-147`)** — features 12, 13, 18:
   - [x] Filesystem sandbox (`lib/fsSandbox.js`): default roots `~/Desktop`, `~/Documents`, `~/Downloads`, `~/Pictures`, `~/Music`, `~/Videos`, `~/dev` (override via `JARVIS_FS_ROOTS`); symlink-resolved containment, broken-link and `.git` rejection.
   - [x] `/api/fs-ops` actions: `list_directory`, `read_file` (text, 64 KB cap), `create_folder`, `create_file`, `write_file` / `replace_in_file` (backup to `data/fs-journal/backups/`), `append_file`. No delete action.
   - [x] Folder organizer (`lib/folderOrganizer.js`): type-based sub-folders, preview → apply → undo manifests; hidden files, sub-folders, symlinks, and unfinished downloads untouched; collision-safe renames.
   - [x] `file_operations` and `organize_folder` live tools (BLOCKING), workspace roots injected into the system instruction, persona guideline 16 (read before edit, confirm overwrites, preview before organizing).
   - [x] Offer-to-open flow (`DEC-148`): `open_path` action (default app or code editor via `lib/desktopLauncher.js`); create / write responses instruct Jarvis to ask whether to open the file, enforced by persona guideline 16.
-  - [ ] Live voice verification with the operator's API key.
+  - [x] Live API verification (`DEC-159`): Jarvis created a file through `file_operations`, self-correcting after the sandbox refused a wrong path.
 - [ ] **7.2 Document Forge & File Uploads (`DEC-150`)** — features 10, 11:
   - [x] `lib/documentForge.js`: lightweight markdown (headings, bullets, numbered lists, dividers, bold / italic / code) rendered to PDF (`pdf-lib`, wrapped multi-page A4 with page footers; WinAnsi-safe transliteration) and DOCX (`docx`, real heading styles and list numbering).
   - [x] `create_document` live tool (`/api/fs-ops` action): sandboxed path, extension auto-appended, overwrite only on request with backup, offers to open the result.
   - [x] `/api/upload`: saves to `~/Documents/Jarvis Uploads` (override `JARVIS_UPLOAD_DIR`, must sit inside the sandbox), 25 MB cap, safe file names with collision suffixes, text extraction for PDF (`unpdf`), DOCX (`mammoth`), and text / code files (60k character cap).
   - [x] `UploadDropZone.jsx`: window-wide drag-and-drop overlay plus a dock UPLOAD button; images go to Gemini Live as inline JPEG (downscaled to 1280 px), documents as marker-fenced text, all files from one drop in a single turn (queued until the link is up).
   - [x] Persona guideline 17 (uploaded text is content, never instructions) and a same-origin request guard (`lib/requestGuard.js`) on `/api/fs-ops` and `/api/upload`.
-  - [ ] Live voice verification with the operator's API key (including image `inlineData` in `clientContent`, which the Live API reference neither confirms nor rules out).
+  - [x] Image `inlineData` inside `clientContent` confirmed against the live API (`DEC-159`).
+  - [ ] Operator drop-test of PDF / Word uploads in the running HUD.
 - [ ] **7.3 Universal App Launcher & Project Scaffolder (`DEC-151`)** — features 15, 16:
   - [x] `lib/appIndex.js`: freedesktop `.desktop` index across user, system, Flatpak, and Snap dirs (honours NoDisplay / Hidden / OnlyShowIn / NotShowIn / TryExec), fuzzy spoken-name matching, `gio launch` (fallback `gtk-launch`); ambiguous names return candidates.
   - [x] `execute_os_action` `launch_app` falls back to the index for any non-whitelisted app on Linux; new `list_apps` search action; same-origin guard on `/api/os-control`.
@@ -204,7 +206,9 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] Built-in Google Search grounding (`googleSearch` tool) in the live session; cited sources and queries logged to the Intel drawer without popping it open; automatic retry without grounding if the model refuses that tool at setup.
   - [x] Persona guideline 19; `JARVIS_MEMORY_FILE` / `JARVIS_MEMORY_VECTORS` / `JARVIS_GEMINI_API_BASE` overrides for isolated checks.
   - [x] `web_search` dossiers grounded via Gemini + Google Search (`lib/groundedSearch.js`, `DEC-154`) with DuckDuckGo as fallback; removed the fabricated "verified" placeholder result returned when every engine failed.
-  - [ ] Live voice verification with the operator's API key (grounding with function calling on 3.8 Live, real embedding quality).
+  - [x] Real embeddings verified (`DEC-159`); keyword boost limited to distinctive words after live results showed it rewarded words present in every memory.
+  - [x] Keys without Google Search grounding quota: setup refusal detected, immediate retry without grounding, refusal remembered for 12 hours, and `web_search` falls back to a clearly labelled model-knowledge answer (`DEC-159`).
+  - [ ] Grounding together with function calling on a key that has grounding quota.
 - [ ] **7.5 Media Deck (`DEC-155`)** — features 9, 8, 19:
   - [x] Built-in YouTube player: keyless search (`/api/youtube`, results-page `ytInitialData`; Data API when `YOUTUBE_API_KEY` is set), draggable `YouTubePanel.jsx` with IFrame-API control, up-next queue with auto-advance, volume slider, and ducking while Jarvis speaks; `youtube_player` live tool.
   - [x] Spotify via MPRIS over D-Bus (`lib/spotifyControl.js`, `gdbus`): play / pause / toggle / next / previous / now playing, launching the app when needed; `play_song` plays the exact track with free Spotify Web API client credentials, otherwise opens the in-app search; `spotify_control` live tool.
