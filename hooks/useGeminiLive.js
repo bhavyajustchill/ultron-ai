@@ -963,6 +963,46 @@ export function useGeminiLive() {
                       id: call.id,
                     });
                   }
+
+                  if (call.name === 'file_operations' || call.name === 'organize_folder') {
+                    const args = call.args || {};
+                    const action = call.name === 'organize_folder' ? 'organize_folder' : args.action || '';
+                    const actionLabel =
+                      call.name === 'organize_folder' ? `ORGANIZE ${(args.mode || 'preview').toUpperCase()}` : action.toUpperCase();
+
+                    addCommsMessage(
+                      'system',
+                      `[FILE OPS] ${actionLabel}${args.path ? ` ("${args.path}")` : ''}...`
+                    );
+
+                    let fsResult = {
+                      success: false,
+                      message: 'Failed to contact the local file operations bridge.',
+                    };
+
+                    try {
+                      const res = await fetch('/api/fs-ops', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...args, action }),
+                      });
+                      fsResult = await res.json();
+                    } catch (err) {
+                      console.error('[useGeminiLive] File operation error:', err);
+                    }
+
+                    addCommsMessage(
+                      'system',
+                      `[FILE OPS] ${fsResult.success ? 'Done' : 'Failed'}: ${fsResult.message}`
+                    );
+
+                    functionResponses.push({
+                      response: {
+                        output: fsResult,
+                      },
+                      id: call.id,
+                    });
+                  }
                 }
 
                 if (functionResponses.length > 0) {
@@ -1114,11 +1154,11 @@ export function useGeminiLive() {
                         console.warn('[useGeminiLive] News fetch failed, briefing without live intel:', err);
                       }
 
+                      const { operatorProfile } = useAdaStore.getState();
                       const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
                       const now = new Date();
                       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-                      const { operatorProfile } = useAdaStore.getState();
                       const enableHumor = operatorProfile?.enableHumor !== false;
                       const briefingPrompt = newsSummary
                         ? `Deliver a concise tactical news summary to ${callsign}${enableHumor ? ' in your signature dry British wit' : ' with composed, refined professionalism'

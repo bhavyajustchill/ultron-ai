@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 /scripts
+
+# Jarvis file-operation backups and organize undo manifests
+/data/fs-journal/

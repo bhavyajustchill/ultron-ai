@@ -1,0 +1,243 @@
+import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
+import { resolveSafePath, displayPath, SandboxError } from '@/lib/fsSandbox';
+import { planOrganize, applyOrganize, undoLastOrganize } from '@/lib/folderOrganizer';
+
+const JOURNAL_DIR = path.join(process.cwd(), 'data', 'fs-journal');
+const BACKUP_DIR = path.join(JOURNAL_DIR, 'backups');
+const MAX_READ_BYTES = 64 * 1024; // keeps file reads well inside the live session context window
+const MAX_WRITE_BYTES = 1024 * 1024;
+const MAX_LIST_ENTRIES = 200;
+const PREVIEW_SAMPLE_SIZE = 10;
+
+class FsOpError extends Error {}
+
+function requireText(value, field) {
+  if (typeof value !== 'string') throw new FsOpError(`"${field}" text is required for this action.`);
+  if (Buffer.byteLength(value, 'utf-8') > MAX_WRITE_BYTES) {
+    throw new FsOpError(`"${field}" exceeds the ${MAX_WRITE_BYTES / 1024} KB write limit.`);
+  }
+  return value;
+}
+
+function requireFile(target) {
+  if (!fs.existsSync(target)) throw new FsOpError(`${displayPath(target)} does not exist.`);
+  if (!fs.statSync(target).isFile()) throw new FsOpError(`${displayPath(target)} is not a file.`);
+}
+
+function requireFolder(target) {
+  if (!fs.existsSync(target)) throw new FsOpError(`${displayPath(target)} does not exist.`);
+  if (!fs.statSync(target).isDirectory()) throw new FsOpError(`${displayPath(target)} is not a folder.`);
+}
+
+function readTextFile(target) {
+  const buffer = fs.readFileSync(target);
+  if (buffer.subarray(0, 8192).includes(0)) {
+    throw new FsOpError(`${displayPath(target)} looks like a binary file and cannot be read as text.`);
+  }
+  return buffer;
+}
+
+/**
+ * Copies a file into the journal before it is overwritten, logging where it came from.
+ */
+function backupFile(target) {
+  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  const backupPath = path.join(/*turbopackIgnore: true*/ BACKUP_DIR, `${Date.now()}-${path.basename(target)}`);
+  fs.copyFileSync(target, backupPath);
+  fs.appendFileSync(
+    path.join(BACKUP_DIR, 'log.jsonl'),
+    `${JSON.stringify({ original: target, backup: backupPath, at: new Date().toISOString() })}\n`,
+    'utf-8'
+  );
+  return backupPath;
+}
+
+const ACTIONS = {
+  list_directory({ target }) {
+    requireFolder(target);
+    const entries = fs
+      .readdirSync(target, { withFileTypes: true })
+      .filter((entry) => !entry.name.startsWith('.'))
+      .map((entry) => {
+        const type = entry.isDirectory() ? 'folder' : entry.isSymbolicLink() ? 'link' : 'file';
+        const size = type === 'file' ? fs.statSync(path.join(target, entry.name)).size : undefined;
+        return { name: entry.name, type, ...(size !== undefined ? { size_bytes: size } : {}) };
+      })
+      .sort((a, b) => (b.type === 'folder') - (a.type === 'folder') || a.name.localeCompare(b.name));
+    return {
+      message: `${displayPath(target)} contains ${entries.length} visible item(s).`,
+      entries: entries.slice(0, MAX_LIST_ENTRIES),
+      truncated: entries.length > MAX_LIST_ENTRIES,
+    };
+  },
+
+  read_file({ target }) {
+    requireFile(target);
+    const buffer = readTextFile(target);
+    const truncated = buffer.length > MAX_READ_BYTES;
+    return {
+      message: `Read ${displayPath(target)} (${buffer.length} bytes${truncated ? `, first ${MAX_READ_BYTES / 1024} KB returned` : ''}).`,
+      content: buffer.subarray(0, MAX_READ_BYTES).toString('utf-8'),
+      truncated,
+    };
+  },
+
+  create_folder({ target }) {
+    if (fs.existsSync(target)) {
+      requireFolder(target);
+      return { message: `Folder ${displayPath(target)} already exists.` };
+    }
+    fs.mkdirSync(target, { recursive: true });
+    return { message: `Created folder ${displayPath(target)}.` };
+  },
+
+  create_file({ target, body }) {
+    const content = body.content === undefined ? '' : requireText(body.content, 'content');
+    if (fs.existsSync(target)) {
+      throw new FsOpError(`${displayPath(target)} already exists. Use write_file to replace it.`);
+    }
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content, { encoding: 'utf-8', flag: 'wx' });
+    return { message: `Created ${displayPath(target)}.` };
+  },
+
+  write_file({ target, body }) {
+    const content = requireText(body.content, 'content');
+    let backupPath = null;
+    if (fs.existsSync(target)) {
+      requireFile(target);
+      backupPath = backupFile(target);
+    } else {
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+    }
+    fs.writeFileSync(target, content, 'utf-8');
+    return {
+      message: backupPath
+        ? `Replaced ${displayPath(target)}; the previous version was backed up.`
+        : `Wrote new file ${displayPath(target)}.`,
+      ...(backupPath ? { backup: backupPath } : {}),
+    };
+  },
+
+  append_file({ target, body }) {
+    const content = requireText(body.content, 'content');
+    if (fs.existsSync(target)) requireFile(target);
+    else fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.appendFileSync(target, content, 'utf-8');
+    return { message: `Appended ${Buffer.byteLength(content, 'utf-8')} bytes to ${displayPath(target)}.` };
+  },
+
+  replace_in_file({ target, body }) {
+    requireFile(target);
+    const find = requireText(body.find, 'find');
+    const replace = requireText(body.replace ?? '', 'replace');
+    if (!find) throw new FsOpError('"find" text cannot be empty.');
+
+    const original = readTextFile(target).toString('utf-8');
+    const occurrences = original.split(find).length - 1;
+    if (occurrences === 0) throw new FsOpError(`The text to replace was not found in ${displayPath(target)}.`);
+    if (occurrences > 1 && !body.replace_all) {
+      throw new FsOpError(
+        `The text to replace appears ${occurrences} times in ${displayPath(target)}. Quote a more specific passage or set replace_all.`
+      );
+    }
+
+    const backupPath = backupFile(target);
+    const updated = body.replace_all ? original.split(find).join(replace) : original.replace(find, () => replace);
+    fs.writeFileSync(target, updated, 'utf-8');
+    return {
+      message: `Updated ${occurrences} occurrence(s) in ${displayPath(target)}; the previous version was backed up.`,
+      backup: backupPath,
+    };
+  },
+
+  organize_folder({ target, body }) {
+    const mode = body.mode || 'preview';
+
+    if (mode === 'undo') {
+      const result = undoLastOrganize(JOURNAL_DIR, target);
+      if (!result) {
+        throw new FsOpError(`There is no organize run to undo${target ? ` for ${displayPath(target)}` : ''}.`);
+      }
+      return {
+        message: `Undid the last organize of ${displayPath(result.folder)}: ${result.restored} file(s) restored${result.missing ? `, ${result.missing} no longer found` : ''}.`,
+        restored: result.restored,
+        missing: result.missing,
+      };
+    }
+
+    requireFolder(target);
+    const plan = planOrganize(target);
+    const breakdown = Object.entries(plan.summary)
+      .sort((a, b) => b[1] - a[1])
+      .map(([category, count]) => `${count} into ${category}`)
+      .join(', ');
+
+    if (plan.moves.length === 0) {
+      return { message: `${displayPath(target)} has no loose files to organize.`, summary: {} };
+    }
+
+    if (mode === 'preview') {
+      return {
+        message: `Preview for ${displayPath(target)}: ${plan.moves.length} file(s) would move (${breakdown}). Nothing has been moved yet.`,
+        summary: plan.summary,
+        left_in_place: plan.skipped,
+        sample_moves: plan.moves.slice(0, PREVIEW_SAMPLE_SIZE).map((m) => ({
+          file: path.basename(m.from),
+          to: displayPath(m.to),
+        })),
+      };
+    }
+
+    if (mode !== 'apply') throw new FsOpError(`Unknown organize mode "${mode}".`);
+    const manifest = applyOrganize(plan, JOURNAL_DIR);
+    return {
+      message: `Organized ${displayPath(target)}: moved ${manifest.moves.length} file(s) (${breakdown}). This can be undone.`,
+      moved: manifest.moves.length,
+      summary: plan.summary,
+    };
+  },
+};
+
+/**
+ * Next.js 16 App Router Route Handler: POST /api/fs-ops
+ * Sandboxed workspace file operations for Jarvis's `file_operations` and `organize_folder` tools.
+ * There is intentionally no delete action.
+ */
+export async function POST(req) {
+  let body = {};
+  try {
+    body = await req.json();
+  } catch {
+    // Empty or invalid body
+  }
+
+  const action = body?.action || '';
+  const handler = ACTIONS[action];
+  if (!handler) {
+    return NextResponse.json(
+      { success: false, action, message: `Unknown file action "${action}".` },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Undo may omit the path to reverse the most recent organize anywhere
+    const target = action === 'organize_folder' && body.mode === 'undo' && !body.path
+      ? undefined
+      : resolveSafePath(body.path);
+    const result = handler({ target, body });
+    return NextResponse.json({ success: true, action, ...(target ? { path: displayPath(target) } : {}), ...result });
+  } catch (error) {
+    if (error instanceof SandboxError || error instanceof FsOpError) {
+      return NextResponse.json({ success: false, action, message: error.message });
+    }
+    console.error(`[/api/fs-ops] ${action} failed:`, error);
+    return NextResponse.json(
+      { success: false, action, message: `File operation failed: ${error.message}` },
+      { status: 500 }
+    );
+  }
+}

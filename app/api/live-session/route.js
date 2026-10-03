@@ -7,6 +7,7 @@ import {
   GEMINI_LIVE_MODEL,
   GEMINI_LIVE_LABEL,
 } from '@/lib/jarvisPersona';
+import { getAllowedRoots, displayPath } from '@/lib/fsSandbox';
 
 const MEMORY_FILE_PATH = path.join(process.cwd(), 'data', 'memories.json');
 
@@ -122,6 +123,8 @@ export async function POST(req) {
       .map((m) => `- [${(m.category || 'FACT').toUpperCase()}] ${m.content}`)
       .join('\n');
 
+    const workspaceRoots = getAllowedRoots().map(displayPath).join(', ');
+
     const dynamicSystemInstruction = `${JARVIS_SYSTEM_INSTRUCTION}
 
 [HOST SYSTEM TEMPORAL ANCHOR & SYSTEM TIMEZONE MANDATE]
@@ -169,7 +172,11 @@ You are instructed to maintain a direct, professional, and composed demeanor.
 [DEEP MEMORY VAULT REHYDRATION - ACTIVE KNOWLEDGE]
 The following facts, preferences, and mission directives are already committed to your persistent memory vault. You already possess this knowledge:
 ${memoryBullets || '- No prior directives recorded.'}
-Always acknowledge and act upon this knowledge seamlessly in conversation without needing to call 'recall_memory' first.`;
+Always acknowledge and act upon this knowledge seamlessly in conversation without needing to call 'recall_memory' first.
+
+[WORKSPACE FILE ACCESS]
+You may create, read, edit, and organize files ONLY inside these folders: ${workspaceRoots || 'none configured'}.
+Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). Anything outside these folders will be refused.`;
 
     const generationConfig = {
       ...GEMINI_LIVE_CONFIG.generationConfig,
@@ -419,6 +426,72 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
                   },
                 },
                 required: ['plugin_id'],
+              },
+            },
+            {
+              name: 'file_operations',
+              behavior: 'BLOCKING',
+              description:
+                'Creates, reads, and edits files and folders inside the operator\'s allowed workspace folders. Actions: list_directory (folder contents), read_file (text only), create_folder, create_file (fails if the file exists), write_file (replaces the whole file; previous version is backed up), append_file (adds text to the end), replace_in_file (exact find-and-replace; previous version is backed up). There is no delete action.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  action: {
+                    type: 'STRING',
+                    description: 'The file action to perform.',
+                    enum: [
+                      'list_directory',
+                      'read_file',
+                      'create_folder',
+                      'create_file',
+                      'write_file',
+                      'append_file',
+                      'replace_in_file',
+                    ],
+                  },
+                  path: {
+                    type: 'STRING',
+                    description:
+                      'Target file or folder path. Use "~" for the home folder (e.g. "~/Desktop/project-notes/todo.md").',
+                  },
+                  content: {
+                    type: 'STRING',
+                    description: 'Text content for create_file, write_file, or append_file.',
+                  },
+                  find: {
+                    type: 'STRING',
+                    description: 'replace_in_file only: the exact existing text to replace, copied from read_file output.',
+                  },
+                  replace: {
+                    type: 'STRING',
+                    description: 'replace_in_file only: the replacement text (empty string removes the found text).',
+                  },
+                  replace_all: {
+                    type: 'BOOLEAN',
+                    description: 'replace_in_file only: replace every occurrence instead of requiring exactly one match.',
+                  },
+                },
+                required: ['action', 'path'],
+              },
+            },
+            {
+              name: 'organize_folder',
+              behavior: 'BLOCKING',
+              description:
+                'Sorts the loose top-level files of a folder (e.g. "~/Downloads") into sub-folders by type: Images, Videos, Audio, Documents, Spreadsheets, Presentations, Archives, Code, Installers, Fonts, 3D Models, Others. Sub-folders, hidden files, and unfinished downloads are left alone. ALWAYS run mode "preview" first, tell the operator the plan, and run mode "apply" only after they explicitly confirm. Mode "undo" reverses the most recent organize.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  path: {
+                    type: 'STRING',
+                    description: 'Folder to organize (e.g. "~/Downloads"). Optional for mode "undo".',
+                  },
+                  mode: {
+                    type: 'STRING',
+                    description: 'preview (default, moves nothing), apply (moves files), or undo (reverses the last organize).',
+                    enum: ['preview', 'apply', 'undo'],
+                  },
+                },
               },
             },
           ],

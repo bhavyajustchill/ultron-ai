@@ -13,6 +13,9 @@
 [Phase 0: Scaffolding] ➔ [Phase 1: Voice Engine] ➔ [Phase 2: 3D Lip-Sync]
                                                           │
 [Phase 6: Mark-LI Parity] 🠔 [Phase 5: Polish/PWA] 🠔 [Phase 4: Agent Tools]  🠔 [Phase 3: Cyber HUD]
+        │
+        ▼
+[Phase 7: J.A.R.V.I.S Feature Matrix (features.txt)]  ◀ ACTIVE
 ```
 
 ---
@@ -119,51 +122,71 @@
   - [x] Pre-fetch top world news headlines in parallel via DuckDuckGo/Grounding while Phase 1 audio plays.
   - [x] Automatically deliver spoken news summary upon Phase 1 completion and populate the HUD Intel Drawer with headline dossiers.
   - [x] Respect `localStorage` microphone mute preference: greet via audio while maintaining mic muted state.
-- [ ] **6.1.5 Mark-LIII Settings Suite & Dynamic Neural Memory Ingestion:**
-  - [ ] Implement Left-Sidebar Settings tab (`SETTINGS` / `⚙`) in `TelemetryPanel.jsx` with header shortcut button.
-  - [ ] Provide configurable Operative Identity inputs: Name to Call (`callsign` e.g. "Bhavya Sir"), Role, Clearance, and Directives.
-  - [ ] Provide Assistant Customization: Assistant Codename and Gemini Prebuilt Voice Selector (`Aoede`, `Charon`, `Fenrir`, `Kore`, `Puck`).
-  - [ ] Add automation toggles for Morning Briefing auto-trigger and default mic mute.
-  - [ ] Dynamically inject profile, strict address mandates, and active long-term memories into Gemini Live's `systemInstruction` on `/api/live-session`.
-  - [ ] Register and handle `update_operator_profile` live tool for autonomous voice-driven identity updates.
-  - [ ] Persist settings atomically to `data/memories.json` and sync Zustand store.
+- [x] **6.1.5 Mark-LIII Settings Suite & Dynamic Neural Memory Ingestion:** _(Shipped as `SciFiSettingsModal.jsx` behind the header ⚙ button rather than a sidebar tab; the voice selector now covers 16 male Gemini voices.)_
+  - [x] Implement Left-Sidebar Settings tab (`SETTINGS` / `⚙`) in `TelemetryPanel.jsx` with header shortcut button.
+  - [x] Provide configurable Operative Identity inputs: Name to Call (`callsign` e.g. "Bhavya Sir"), Role, Clearance, and Directives.
+  - [x] Provide Assistant Customization: Assistant Codename and Gemini Prebuilt Voice Selector (`Aoede`, `Charon`, `Fenrir`, `Kore`, `Puck`).
+  - [x] Add automation toggles for Morning Briefing auto-trigger and default mic mute.
+  - [x] Dynamically inject profile, strict address mandates, and active long-term memories into Gemini Live's `systemInstruction` on `/api/live-session`.
+  - [x] Register and handle `update_operator_profile` live tool for autonomous voice-driven identity updates.
+  - [x] Persist settings atomically to `data/memories.json` and sync Zustand store.
 - [ ] **6.1.6 Gemini 3.8 Live Core Migration & Resilient Voice Link (`DEC-146`):**
   - [x] Switch the live model to `models/gemini-3.8-live` on the documented `v1beta` WebSocket endpoint, centralized in `GEMINI_LIVE_MODEL` / `GEMINI_LIVE_LABEL` (`lib/jarvisPersona.js`).
   - [x] Pin all live tools to `behavior: 'BLOCKING'` (3.8 defaults to `NON_BLOCKING`), echo function names in tool responses, and drop responses for `toolCallCancellation` ids.
   - [x] Enable sliding-window `contextWindowCompression` to lift the 15-minute audio session cap.
   - [x] Session resumption: track `sessionResumptionUpdate` handles, swap sockets on `goAway` at the next idle turn, and auto re-sync dropped links with exponential backoff (0.5s → 8s, 5 attempts) behind a `RECONNECTING` HUD status pill.
   - [ ] Live voice verification with the operator's API key (greeting, tool call, barge-in, voice switch, >15 min session).
-- [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:**
+> **Roadmap note (2026-10-04, `DEC-147`):** Items 6.2–6.8 come from the original Project A.D.A roadmap. Where they overlap `features.txt` they are folded into Phase 7; the rest is **deferred** until Phase 7 completes.
+
+- [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Deferred)_
   - [ ] Buffer active session dialog turns in `useAdaStore` / session state.
   - [ ] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`.
   - [ ] Implement `pop_last_session()` on startup to inject the previous session's context into Ada's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
   - [ ] Implement silent spoken language detection: automatically record operator language in identity profile and adapt subsequent greetings.
-- [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):**
+- [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Deferred)_
   - [ ] Implement `ProactiveEngine` timer evaluating operator silence duration (15 min silence gate, 20 min cooldown).
   - [ ] Rotating prompt builder cycling between:
     - _Focus 1:_ Operator's active projects & goals in memory.
     - _Focus 2:_ Time of day & operator wellbeing (late-night check-in, rest reminder).
     - _Focus 3:_ Relevant tactical suggestions or technical tips.
   - [ ] Smart silence gating: abort trigger if Ada is speaking or if operator spoke within last 30 seconds.
-- [ ] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):**
+- [ ] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Folded into 7.1 folder organization and 7.7 input control; wallpaper deferred)_
   - [ ] Upgrade `/api/os-control` with robust local Node.js `child_process` / PowerShell execution handlers.
   - [ ] Keyboard typing and hotkey execution (`Ctrl+C`, `Ctrl+V`, `Alt+Tab`, `Enter`).
   - [ ] Mouse automation: coordinate click, double-click, right-click, and mouse scrolling.
   - [ ] Window focus, maximize, minimize, and process termination.
   - [ ] Desktop operations: set wallpaper from local path or URL, desktop icon organization by file type or date.
-- [ ] **6.5 Browser Automation Engine (Playwright Integration):**
+- [ ] **6.5 Browser Automation Engine (Playwright Integration):** _(Deferred)_
   - [ ] Create dedicated browser automation module supporting Chrome, Edge, and Brave with real user profiles.
   - [ ] Implement voice-controlled actions: go to URL, smart search, CSS/semantic click, form input, element extraction, scrolling, and full-page screenshots.
-- [ ] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:**
+- [ ] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:** _(Folded into 7.2 uploads and 7.3/7.7 scaffolding and terminal; self-healing loop deferred)_
   - [ ] Drag-and-drop file upload zone on the HUD supporting images (OCR, resize, compress), PDFs (extract text, summarize), CSV/Excel (filter, stats), and audio/video (transcribe, trim).
   - [ ] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/AdaProjects`.
   - [ ] Self-healing execution loop: execute code, capture terminal stdout/stderr, parse tracebacks, and automatically repair errors up to 5 attempts.
-- [ ] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:**
+- [ ] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Deferred)_
   - [ ] Topic monitoring service checking user-defined topics daily via DuckDuckGo search.
   - [ ] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
   - [ ] Telemetry threshold monitor: speak verbal warnings when CPU temperature exceeds 85°C or RAM usage exceeds 92%.
-- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:**
+- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube folded into 7.5; Windows Task Scheduler, Steam, and Flights deferred)_
   - [ ] Integrate Windows Task Scheduler (`schtasks.exe`) to schedule native OS toast notifications for reminders.
   - [ ] Game updater tool: Steam AppID lookup, update check, and scheduled off-peak downloads with auto-shutdown.
   - [ ] Voice-driven YouTube playback control and Google Flights price lookup.
 
+---
+
+## Phase 7: J.A.R.V.I.S Feature Matrix (`features.txt`)
+
+Already shipped from `features.txt`: custom interface (1), free AI (2), realistic voice (3), open websites (14), humor (20). Partially shipped and completed below: personality / name / wake phrase (4), computer control (5), web search (6), memory (7), Spotify (8), open apps (15).
+
+- [ ] **7.1 Sandboxed Workspace File Operations (`DEC-147`)** — features 12, 13, 18:
+  - [x] Filesystem sandbox (`lib/fsSandbox.js`): default roots `~/Desktop`, `~/Documents`, `~/Downloads`, `~/Pictures`, `~/Music`, `~/Videos`, `~/dev` (override via `JARVIS_FS_ROOTS`); symlink-resolved containment, broken-link and `.git` rejection.
+  - [x] `/api/fs-ops` actions: `list_directory`, `read_file` (text, 64 KB cap), `create_folder`, `create_file`, `write_file` / `replace_in_file` (backup to `data/fs-journal/backups/`), `append_file`. No delete action.
+  - [x] Folder organizer (`lib/folderOrganizer.js`): type-based sub-folders, preview → apply → undo manifests; hidden files, sub-folders, symlinks, and unfinished downloads untouched; collision-safe renames.
+  - [x] `file_operations` and `organize_folder` live tools (BLOCKING), workspace roots injected into the system instruction, persona guideline 16 (read before edit, confirm overwrites, preview before organizing).
+  - [ ] Live voice verification with the operator's API key.
+- [ ] **7.2 Document Forge & File Uploads** — features 10, 11: PDF / DOCX creation tool; HUD drag-and-drop uploads (images straight to Gemini Live, PDF / DOCX text extraction injected as client content).
+- [ ] **7.3 Universal App Launcher & Project Scaffolder** — features 15, 16: index installed `.desktop` apps and launch via `gtk-launch`; project templates (Flutter, React, Node/Express API, Next.js, shadcn admin panel).
+- [ ] **7.4 Neural RAG Memory & Grounded Search** — features 7, 6: Gemini embeddings plus a local vector store for memory retrieval; native Google Search grounding in the live session.
+- [ ] **7.5 Media Deck** — features 9, 8, 19: built-in YouTube player panel; Spotify control via MPRIS (`playerctl`) and Web API search; glTF / GLB viewer.
+- [ ] **7.6 Custom Wake Phrase** — feature 4: offline in-browser wake-word listener with a configurable phrase.
+- [ ] **7.7 Terminal & Desktop Input Control** — features 17, 5: terminal command runner with on-screen confirmation gate; mouse, keyboard, and window control on GNOME Wayland.
