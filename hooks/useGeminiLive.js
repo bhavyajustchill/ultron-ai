@@ -7,6 +7,7 @@ import { useAudioStream } from '@/hooks/useAudioStream';
 import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
 import { modelFileUrl, openModelViewer, playYouTubeQuery } from '@/lib/mediaClient';
 import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
+import { runCommandWithApproval } from '@/lib/terminalClient';
 
 // Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
 const MAX_RECONNECT_ATTEMPTS = 5;
@@ -1076,6 +1077,43 @@ export function useGeminiLive() {
                       },
                       id: call.id,
                     });
+                  }
+
+                  if (call.name === 'run_terminal_command') {
+                    const args = call.args || {};
+                    addCommsMessage('system', `[TERMINAL] Jarvis requests: \`${args.command || ''}\``);
+                    let output;
+                    try {
+                      output = await runCommandWithApproval(
+                        {
+                          command: args.command,
+                          cwd: args.working_directory,
+                          reason: args.reason,
+                          background: args.background,
+                        },
+                        (line) => addCommsMessage('system', line)
+                      );
+                    } catch (err) {
+                      output = { status: 'FAILED', message: err.message };
+                    }
+                    functionResponses.push({ response: { output }, id: call.id });
+                  }
+
+                  if (call.name === 'desktop_input') {
+                    const { action, ...params } = call.args || {};
+                    let inputResult = { success: false, message: 'Failed to contact the desktop control bridge.' };
+                    try {
+                      const res = await fetch('/api/input', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action, ...params }),
+                      });
+                      inputResult = await res.json();
+                    } catch (err) {
+                      console.error('[useGeminiLive] Desktop input error:', err);
+                    }
+                    addCommsMessage('system', `[DESKTOP] ${(action || '').toUpperCase()}: ${inputResult.message}`);
+                    functionResponses.push({ response: { output: inputResult }, id: call.id });
                   }
 
                   if (call.name === 'enter_standby') {

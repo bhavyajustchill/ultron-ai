@@ -46,6 +46,7 @@ import { YouTubePanel } from "@/components/Media/YouTubePanel";
 import { useWakePhrase } from "@/hooks/useWakePhrase";
 import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 import { ModelViewerPanel } from "@/components/Media/ModelViewerPanel";
+import { CommandConfirmModal } from "@/components/HUD/CommandConfirmModal";
 
 export default function Home() {
   const {
@@ -724,6 +725,9 @@ export default function Home() {
       {/* Media Deck: Built-in YouTube Player & 3D Model Holo-Viewer */}
       <YouTubePanel />
       <ModelViewerPanel />
+
+      {/* Terminal Command Authorization Gate */}
+      <CommandConfirmModal />
     </main>
   );
 }

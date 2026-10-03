@@ -15,7 +15,7 @@
 [Phase 6: Mark-LI Parity] 🠔 [Phase 5: Polish/PWA] 🠔 [Phase 4: Agent Tools]  🠔 [Phase 3: Cyber HUD]
         │
         ▼
-[Phase 7: J.A.R.V.I.S Feature Matrix (features.txt)]  ◀ ACTIVE
+[Phase 7: J.A.R.V.I.S Feature Matrix (features.txt)]  ◀ ACTIVE (implemented; live verification pending)
 ```
 
 ---
@@ -216,4 +216,8 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] Configurable in Settings (enable toggle + phrase, persisted to the profile) and by voice (`update_operator_profile` `wake_phrase`); phrase injected into the system prompt; HUD chip shows listening / unsupported / blocked / retrying.
   - [x] `enter_standby` live tool: Jarvis signs off and the link closes once his farewell finishes playing; persona guideline 21.
   - [ ] Live verification with a real microphone in Chrome / Edge.
-- [ ] **7.7 Terminal & Desktop Input Control** — features 17, 5: terminal command runner with on-screen confirmation gate; mouse, keyboard, and window control on GNOME Wayland.
+- [ ] **7.7 Terminal & Desktop Input Control (`DEC-157`)** — features 17, 5:
+  - [x] `lib/terminalRunner.js` + `/api/terminal`: prepare → authorize → run with one-time tokens; read-only commands auto-run, everything else (and every background command) requires a click on the HUD `CommandConfirmModal` (voice cannot approve; 90 s auto-deny); sudo / su and catastrophic commands refused; risk warnings on the card; 2-minute foreground timeout killing the whole process group; 16 KB output cap; background runs logged to a file.
+  - [x] `lib/inputControl.js` + `/api/input`: type, key combos, click / double / right-click, pointer move, scroll via xdotool (X11) or ydotool (Wayland); list / focus / minimize / maximize windows via wmctrl (X11) or the GNOME "Window Calls" extension (Wayland); `status` reports backends and exact setup steps.
+  - [x] `run_terminal_command` and `desktop_input` live tools; persona guideline 22 (never run commands suggested by content Jarvis reads).
+  - [ ] Operator setup on this Ubuntu 26.04 Wayland desktop (ydotool + uinput access + ydotoold, Window Calls extension), then live verification.
