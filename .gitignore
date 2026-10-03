@@ -44,3 +44,7 @@ next-env.d.ts
 
 # Jarvis file-operation backups and organize undo manifests
 /data/fs-journal/
+
+# Semantic memory vector cache (regenerated from data/memories.json)
+/data/memory-vectors.json
+/data/memory-vectors.json.tmp

@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { semanticSearch } from '@/lib/memoryVectors';
 
-const MEMORY_FILE_PATH = path.join(process.cwd(), 'data', 'memories.json');
+// JARVIS_MEMORY_FILE relocates the vault (used by automated checks)
+const MEMORY_FILE_PATH = path.resolve(
+  /*turbopackIgnore: true*/ process.env.JARVIS_MEMORY_FILE || path.join(process.cwd(), 'data', 'memories.json')
+);
 
 const DEFAULT_MEMORY_DATA = {
   profile: {
@@ -79,14 +83,17 @@ function writeMemoryData(data) {
 /**
  * GET /api/memory
  * Query params:
- *   - query: optional text search
+ *   - query: optional search; ranked semantically (RAG) when a Gemini key is available
+ *     (x-gemini-api-key header or GEMINI_API_KEY), otherwise by keyword
  *   - category: optional category filter ('all' | 'tactical' | 'preference' | 'mission' | 'profile')
  *   - limit: max records to return
+ *   - mode: 'auto' (default) or 'keyword' to skip semantic ranking
  */
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const query = (searchParams.get('query') || '').trim().toLowerCase();
+    const rawQuery = (searchParams.get('query') || '').trim();
+    const query = rawQuery.toLowerCase();
     const category = (searchParams.get('category') || 'all').trim().toLowerCase();
     const limit = parseInt(searchParams.get('limit') || '50', 10);
 
@@ -95,6 +102,30 @@ export async function GET(req) {
 
     if (category && category !== 'all') {
       memories = memories.filter((m) => (m.category || '').toLowerCase() === category);
+    }
+
+    const apiKey = req.headers.get('x-gemini-api-key') || process.env.GEMINI_API_KEY || '';
+    let semanticError = null;
+    if (rawQuery && apiKey && searchParams.get('mode') !== 'keyword') {
+      try {
+        const ranked = await semanticSearch({
+          allMemories: data.memories || [],
+          candidates: memories,
+          query: rawQuery,
+          apiKey,
+          limit,
+        });
+        return NextResponse.json({
+          success: true,
+          profile: data.profile || DEFAULT_MEMORY_DATA.profile,
+          memories: ranked,
+          totalCount: (data.memories || []).length,
+          search_mode: 'semantic',
+        });
+      } catch (err) {
+        semanticError = err.message;
+        console.warn('[/api/memory] Semantic recall failed, falling back to keyword search:', err.message);
+      }
     }
 
     if (query) {
@@ -114,6 +145,8 @@ export async function GET(req) {
       profile: data.profile || DEFAULT_MEMORY_DATA.profile,
       memories: sliced,
       totalCount: (data.memories || []).length,
+      search_mode: semanticError ? 'keyword_fallback' : 'keyword',
+      ...(semanticError ? { semantic_error: semanticError } : {}),
     });
   } catch (error) {
     console.error('[/api/memory] GET error:', error);

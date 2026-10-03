@@ -9,7 +9,10 @@ import {
 } from '@/lib/jarvisPersona';
 import { getAllowedRoots, displayPath } from '@/lib/fsSandbox';
 
-const MEMORY_FILE_PATH = path.join(process.cwd(), 'data', 'memories.json');
+// JARVIS_MEMORY_FILE relocates the vault (used by automated checks)
+const MEMORY_FILE_PATH = path.resolve(
+  /*turbopackIgnore: true*/ process.env.JARVIS_MEMORY_FILE || path.join(process.cwd(), 'data', 'memories.json')
+);
 
 function readPersistedMemory() {
   try {
@@ -240,7 +243,7 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
               name: 'web_search',
               behavior: 'BLOCKING',
               description:
-                'Searches the live web for breaking news headlines, market data, technical research, flight status, or general facts. For weather and temperatures, use get_weather instead.',
+                'Runs a web search and shows the results as a dossier in the HUD Intel drawer: use it for news briefings, research the operator wants to read, or when they ask to see sources. For a quick factual answer you can rely on your built-in Google Search instead. For weather, use get_weather.',
               parameters: {
                 type: 'OBJECT',
                 properties: {
@@ -261,7 +264,7 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
               name: 'recall_memory',
               behavior: 'BLOCKING',
               description:
-                'Retrieves stored memory facts, Operator profile attributes, mission objectives, and past tactical directives from persistent long-term memory.',
+                'Retrieves stored memory facts, Operator profile attributes, mission objectives, and past tactical directives from persistent long-term memory. Recall is semantic: describe what you are looking for in natural language (e.g. "what database does the operator prefer") and results come back ranked by relevance.',
               parameters: {
                 type: 'OBJECT',
                 properties: {
@@ -570,6 +573,8 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
             },
           ],
         },
+        // Gemini's built-in Google Search grounding for quick factual answers
+        { googleSearch: {} },
       ],
       status: 'READY_TO_CONNECT',
     });

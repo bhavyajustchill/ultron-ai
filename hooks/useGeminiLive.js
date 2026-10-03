@@ -65,6 +65,7 @@ export function useGeminiLive() {
   const goAwayTimerRef = useRef(null);
   const isTurnActiveRef = useRef(false);
   const cancelledToolIdsRef = useRef(new Set());
+  const groundingRef = useRef({ queries: new Set(), sources: new Map() });
   const connectSessionRef = useRef(null);
   const projectPollersRef = useRef(new Map());
 
@@ -309,6 +310,7 @@ export function useGeminiLive() {
     async (customApiKey, overrideVoice, options = {}) => {
       const isResume = Boolean(options.resume && sessionDataRef.current);
       const resumeHandle = isResume ? resumeHandleRef.current : null;
+      const withoutSearch = Boolean(options.withoutSearch);
 
       if (isResume) {
         // Silently retire the previous socket without tearing down mic or playback
@@ -395,6 +397,10 @@ export function useGeminiLive() {
 
           if (sessionData.profile) {
             useAdaStore.getState().setOperatorProfile(sessionData.profile);
+          }
+
+          if (withoutSearch && sessionData.tools) {
+            sessionData = { ...sessionData, tools: sessionData.tools.filter((tool) => !tool.googleSearch) };
           }
 
           // Cache config so a dropped link can be resumed without re-negotiating
@@ -795,8 +801,10 @@ export function useGeminiLive() {
                     };
 
                     try {
+                      const recallKey = apiKeyRef.current || useAdaStore.getState().userApiKey || '';
                       const res = await fetch(
-                        `/api/memory?query=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`
+                        `/api/memory?query=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`,
+                        { headers: recallKey ? { 'x-gemini-api-key': recallKey } : {} }
                       );
                       if (res.ok) {
                         const data = await res.json();
@@ -814,11 +822,12 @@ export function useGeminiLive() {
                       category: m.category,
                       importance: m.importance,
                       timestamp: m.timestamp,
+                      ...(m.relevance !== undefined ? { relevance: m.relevance } : {}),
                     }));
 
                     addCommsMessage(
                       'system',
-                      `[DEEP MEMORY] Vault interrogation complete. ${recalledMemories.length} relevant facts relayed to J.A.R.V.I.S`
+                      `[DEEP MEMORY] Vault interrogation complete (${memoryData.search_mode === 'semantic' ? 'semantic recall' : 'keyword match'}). ${recalledMemories.length} relevant facts relayed to J.A.R.V.I.S`
                     );
 
                     functionResponses.push({
@@ -827,6 +836,7 @@ export function useGeminiLive() {
                           operator_profile: memoryData.profile,
                           memories: recalledMemories,
                           total_recalled: recalledMemories.length,
+                          search_mode: memoryData.search_mode || 'keyword',
                         },
                       },
                       id: call.id,
@@ -1183,6 +1193,15 @@ export function useGeminiLive() {
                 isTurnActiveRef.current = true;
               }
 
+              // Built-in Google Search grounding: remember the queries and cited sources
+              const grounding = msg.serverContent.groundingMetadata;
+              if (grounding) {
+                for (const q of grounding.webSearchQueries || []) groundingRef.current.queries.add(q);
+                for (const chunk of grounding.groundingChunks || []) {
+                  if (chunk.web?.uri) groundingRef.current.sources.set(chunk.web.uri, chunk.web.title || chunk.web.uri);
+                }
+              }
+
               if (interrupted) {
                 isTurnActiveRef.current = false;
                 const partialText = currentTurnTextRef.current.trim();
@@ -1217,6 +1236,22 @@ export function useGeminiLive() {
 
               if (turnComplete) {
                 isTurnActiveRef.current = false;
+
+                const { queries, sources } = groundingRef.current;
+                if (sources.size > 0) {
+                  const searchedFor = [...queries].join(' / ') || 'Google Search grounding';
+                  useAdaStore.getState().addIntelResult(
+                    {
+                      query: searchedFor,
+                      mode: 'grounded',
+                      summary: `Jarvis consulted Google Search (${sources.size} source${sources.size === 1 ? '' : 's'}).`,
+                      results: [...sources].map(([url, title]) => ({ title, snippet: url, source: title, url })),
+                    },
+                    { reveal: false }
+                  );
+                  addCommsMessage('system', `[WEB INTEL] Grounded via Google Search: ${searchedFor} (${sources.size} sources logged to Intel).`);
+                }
+                groundingRef.current = { queries: new Set(), sources: new Map() };
 
                 // Flush complete text turn to comms log once turn concludes
                 if (currentTurnTextRef.current.trim()) {
@@ -1354,6 +1389,17 @@ export function useGeminiLive() {
               reconnectAttemptRef.current = 0;
             }
             scheduleReconnect(event.reason || (event.code ? `code ${event.code}` : ''));
+            return;
+          }
+
+          // Setup refused on a fresh link that requested Google Search grounding: retry once without it
+          const requestedSearch = (sessionData.tools || []).some((tool) => tool.googleSearch);
+          if (!isResume && !withoutSearch && didOpen && failedBeforeSetup && requestedSearch) {
+            addCommsMessage(
+              'system',
+              `[VOICE LINK] Setup refused (${event.reason || `code ${event.code}`}). Retrying without Google Search grounding...`
+            );
+            connectSessionRef.current?.(customApiKey, overrideVoice, { withoutSearch: true });
             return;
           }
 

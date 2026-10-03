@@ -198,7 +198,12 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `lib/projectScaffolder.js` + `/api/projects`: background jobs for flutter, react (Vite), node-express (hand-written Express 5 API with CRUD sample), nextjs, and shadcn-admin (shadcn init + dashboard-01 block + TooltipProvider + home redirect); non-interactive generators, step timeouts, log tail, `git init`.
   - [x] HUD polls jobs, logs progress to the Comms Log, and briefs Jarvis with a `[PROJECT UPDATE]` (delivered when he is idle) so he offers to open the project in VS Code; persona guideline 18.
   - [ ] Live voice verification with the operator's API key.
-- [ ] **7.4 Neural RAG Memory & Grounded Search** — features 7, 6: Gemini embeddings plus a local vector store for memory retrieval; native Google Search grounding in the live session.
+- [ ] **7.4 Neural RAG Memory & Grounded Search (`DEC-152`)** — features 7, 6:
+  - [x] `lib/memoryVectors.js`: Gemini Embedding 2 (768-d, task-instruction prompts) with a local vector cache keyed by memory id + content hash (edits re-embed, deletions prune, model / dimension changes rebuild); cosine ranking with keyword and importance boosts.
+  - [x] `/api/memory` GET ranks semantically when a key arrives via `x-gemini-api-key` (or `GEMINI_API_KEY`), falling back to keyword search with the reason; `recall_memory` sends the session key and relays relevance scores.
+  - [x] Built-in Google Search grounding (`googleSearch` tool) in the live session; cited sources and queries logged to the Intel drawer without popping it open; automatic retry without grounding if the model refuses that tool at setup.
+  - [x] Persona guideline 19; `JARVIS_MEMORY_FILE` / `JARVIS_MEMORY_VECTORS` / `JARVIS_GEMINI_API_BASE` overrides for isolated checks.
+  - [ ] Live voice verification with the operator's API key (grounding with function calling on 3.8 Live, real embedding quality).
 - [ ] **7.5 Media Deck** — features 9, 8, 19: built-in YouTube player panel; Spotify control via MPRIS (`playerctl`) and Web API search; glTF / GLB viewer.
 - [ ] **7.6 Custom Wake Phrase** — feature 4: offline in-browser wake-word listener with a configurable phrase.
 - [ ] **7.7 Terminal & Desktop Input Control** — features 17, 5: terminal command runner with on-screen confirmation gate; mouse, keyboard, and window control on GNOME Wayland.
