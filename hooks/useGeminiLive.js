@@ -12,6 +12,25 @@ import { runCommandWithApproval } from '@/lib/terminalClient';
 // Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_BASE_DELAY_MS = 500;
+// Keys without Google Search grounding quota refuse setups that include it; remember for a while
+const GROUNDING_REFUSED_KEY = 'jarvis_grounding_unavailable_until';
+const GROUNDING_REFUSED_TTL_MS = 12 * 60 * 60 * 1000;
+
+function isGroundingKnownUnavailable() {
+  try {
+    return Date.now() < Number(localStorage.getItem(GROUNDING_REFUSED_KEY) || 0);
+  } catch {
+    return false;
+  }
+}
+
+function rememberGroundingUnavailable() {
+  try {
+    localStorage.setItem(GROUNDING_REFUSED_KEY, String(Date.now() + GROUNDING_REFUSED_TTL_MS));
+  } catch {
+    // Storage unavailable: the fallback still works, it just repeats next time
+  }
+}
 // A link must stay up this long before the backoff counter resets (stops tight loops,
 // e.g. when the server accepts setup and immediately closes on exhausted quota)
 const STABLE_LINK_MS = 30000;
@@ -418,7 +437,7 @@ export function useGeminiLive() {
             useJarvisStore.getState().setOperatorProfile(sessionData.profile);
           }
 
-          if (withoutSearch && sessionData.tools) {
+          if ((withoutSearch || isGroundingKnownUnavailable()) && sessionData.tools) {
             sessionData = { ...sessionData, tools: sessionData.tools.filter((tool) => !tool.googleSearch) };
           }
 
@@ -1554,12 +1573,24 @@ export function useGeminiLive() {
             return;
           }
 
-          // Setup refused on a fresh link that requested Google Search grounding: retry once without it
+          // A rejected key is not a grounding problem: say so and ask for a working key
+          if (!isResume && didOpen && failedBeforeSetup && /api key|api_key|credential|authenticat|permission denied/i.test(event.reason || '')) {
+            stopMic();
+            setStatus('DISCONNECTED');
+            addCommsMessage('system', `[VOICE LINK] Gemini rejected the API key (${event.reason}). Please enter a valid key.`);
+            useJarvisStore.getState().setIsKeyModalOpen(true);
+            return;
+          }
+
+          // Quota refusal on a fresh link that requested Google Search grounding (keys without grounding
+          // quota are refused at setup): retry once without it
           const requestedSearch = (sessionData.tools || []).some((tool) => tool.googleSearch);
-          if (!isResume && !withoutSearch && didOpen && failedBeforeSetup && requestedSearch) {
+          const refusedForQuota = event.code === 1011 || /quota|billing|exceeded|exhausted/i.test(event.reason || '');
+          if (!isResume && !withoutSearch && didOpen && failedBeforeSetup && requestedSearch && refusedForQuota) {
+            rememberGroundingUnavailable();
             addCommsMessage(
               'system',
-              `[VOICE LINK] Setup refused (${event.reason || `code ${event.code}`}). Retrying without Google Search grounding...`
+              `[VOICE LINK] Setup refused (${event.reason || `code ${event.code}`}). Retrying without Google Search grounding (skipped for 12 hours)...`
             );
             connectSessionRef.current?.(customApiKey, overrideVoice, { withoutSearch: true });
             return;

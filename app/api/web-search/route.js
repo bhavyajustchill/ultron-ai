@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchLiveWeather } from '../weather/route';
-import { groundedSearch } from '@/lib/groundedSearch';
+import { groundedSearch, knowledgeAnswer } from '@/lib/groundedSearch';
 
 /**
  * Clean and decode DuckDuckGo redirect URLs
@@ -243,6 +243,26 @@ export async function GET(req) {
     if (results.length === 0) {
       results = await fetchInstantAnswer(query);
       engine = 'duckduckgo-instant';
+    }
+
+    // No live results: fall back to the model's own knowledge, explicitly labelled as not live
+    if (results.length === 0 && apiKey) {
+      try {
+        const answer = await knowledgeAnswer(query, mode, apiKey);
+        return NextResponse.json({
+          success: true,
+          query,
+          mode,
+          engine: 'gemini-knowledge',
+          live: false,
+          count: 0,
+          timestamp: new Date().toLocaleTimeString(),
+          summary: `Live web search is unavailable right now, so this comes from built-in knowledge and may be out of date (say so when answering): ${answer}`,
+          results: [],
+        });
+      } catch (knowledgeErr) {
+        console.warn('[/api/web-search] Knowledge fallback failed:', knowledgeErr.message);
+      }
     }
 
     // Nothing retrieved: say so plainly rather than inventing a result Jarvis would repeat as fact
