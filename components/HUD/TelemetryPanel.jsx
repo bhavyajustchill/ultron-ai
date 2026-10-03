@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Activity, Cpu, Database, Zap, Clock, Server, Terminal, X } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 /**
  * CpuMetricCard — Isolated CPU telemetry badge.
  */
 const CpuMetricCard = React.memo(function CpuMetricCard() {
-  const cpu = useAdaStore((state) => state.systemTelemetry?.cpu ?? 0);
+  const cpu = useJarvisStore((state) => state.systemTelemetry?.cpu ?? 0);
   return (
     <div className="chamfer-sm border border-[rgba(0,229,255,0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(0,229,255,0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(0,229,255,0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center text-xs">
@@ -41,11 +41,11 @@ const CpuMetricCard = React.memo(function CpuMetricCard() {
  * MemMetricCard — Isolated RAM telemetry badge.
  */
 const MemMetricCard = React.memo(function MemMetricCard() {
-  const mem = useAdaStore((state) => state.systemTelemetry?.mem ?? 0);
-  const memUsed = useAdaStore(
+  const mem = useJarvisStore((state) => state.systemTelemetry?.mem ?? 0);
+  const memUsed = useJarvisStore(
     (state) => state.systemTelemetry?.memUsed || state.systemTelemetry?.memUsedGb || "0 GB"
   );
-  const memTotal = useAdaStore(
+  const memTotal = useJarvisStore(
     (state) => state.systemTelemetry?.memTotal || state.systemTelemetry?.memTotalGb || "0 GB"
   );
 
@@ -83,8 +83,8 @@ const MemMetricCard = React.memo(function MemMetricCard() {
  * RenderProfilerBadge — 3D R3F Hardware Frame Profiler badge.
  */
 const RenderProfilerBadge = React.memo(function RenderProfilerBadge() {
-  const fps = useAdaStore((state) => state.renderFps ?? 60);
-  const frameDeltaMs = useAdaStore((state) => state.renderFrameDeltaMs ?? 16.6);
+  const fps = useJarvisStore((state) => state.renderFps ?? 60);
+  const frameDeltaMs = useJarvisStore((state) => state.renderFrameDeltaMs ?? 16.6);
 
   return (
     <div className="chamfer-sm border border-[rgba(0,229,255,0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(0,229,255,0.4)] p-2.5 flex flex-col gap-1.5 shadow-sm">
@@ -118,8 +118,8 @@ const RenderProfilerBadge = React.memo(function RenderProfilerBadge() {
  * NetworkThroughputBadge — Isolated live network speed & bandwidth load badge.
  */
 const NetworkThroughputBadge = React.memo(function NetworkThroughputBadge() {
-  const net = useAdaStore((state) => state.systemTelemetry?.net || "0 KB/s");
-  const netPercent = useAdaStore((state) => state.systemTelemetry?.netPercent ?? 6);
+  const net = useJarvisStore((state) => state.systemTelemetry?.net || "0 KB/s");
+  const netPercent = useJarvisStore((state) => state.systemTelemetry?.netPercent ?? 6);
 
   return (
     <div className="chamfer-sm border border-[rgba(0,229,255,0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(0,229,255,0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(0,229,255,0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
@@ -153,7 +153,7 @@ const NetworkThroughputBadge = React.memo(function NetworkThroughputBadge() {
  * GpuMetricCard — Isolated GPU telemetry badge.
  */
 const GpuMetricCard = React.memo(function GpuMetricCard() {
-  const gpu = useAdaStore((state) => state.systemTelemetry?.gpu ?? 15);
+  const gpu = useJarvisStore((state) => state.systemTelemetry?.gpu ?? 15);
   return (
     <div className="chamfer-sm border border-[rgba(0,229,255,0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(0,229,255,0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(0,229,255,0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center text-xs">
@@ -186,9 +186,9 @@ const GpuMetricCard = React.memo(function GpuMetricCard() {
  * HostStatsCard — Isolated Uptime, Process count, and OS Platform badge.
  */
 const HostStatsCard = React.memo(function HostStatsCard() {
-  const uptime = useAdaStore((state) => state.systemTelemetry?.uptime || "12:00");
-  const proc = useAdaStore((state) => state.systemTelemetry?.proc || "264");
-  const osTag = useAdaStore((state) => state.systemTelemetry?.os || "WIN");
+  const uptime = useJarvisStore((state) => state.systemTelemetry?.uptime || "12:00");
+  const proc = useJarvisStore((state) => state.systemTelemetry?.proc || "264");
+  const osTag = useJarvisStore((state) => state.systemTelemetry?.os || "WIN");
 
   return (
     <div className="chamfer-sm border border-[rgba(0,229,255,0.2)] bg-[rgba(8,16,26,0.55)] p-2.5 flex flex-col gap-2 shadow-[0_0_15px_rgba(0,229,255,0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
@@ -229,7 +229,7 @@ const HostStatsCard = React.memo(function HostStatsCard() {
 
 function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
   const { setSystemTelemetry, setIsSettingsModalOpen, isTelemetryOpen, setIsTelemetryOpen } =
-    useAdaStore();
+    useJarvisStore();
 
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef(null);
@@ -251,8 +251,8 @@ function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-telemetry", handleExternalClose);
-    return () => window.removeEventListener("ada-close-telemetry", handleExternalClose);
+    window.addEventListener("jarvis-close-telemetry", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-telemetry", handleExternalClose);
   }, [isTelemetryOpen, triggerClose]);
 
   // Keyboard shortcut: Escape to close

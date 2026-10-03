@@ -11,7 +11,7 @@ import React from 'react';
  * - ~~strikethrough~~
  * - [label](url)
  */
-export function renderInlineMarkdown(text, isAda = false) {
+export function renderInlineMarkdown(text, isJarvis = false) {
   if (!text) return null;
 
   const tokens = [];
@@ -48,7 +48,7 @@ export function renderInlineMarkdown(text, isAda = false) {
       tokens.push(
         <strong
           key={`bi-${key++}`}
-          className={`font-bold italic ${isAda ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
+          className={`font-bold italic ${isJarvis ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
         >
           {matchedStr.slice(3, -3)}
         </strong>
@@ -60,7 +60,7 @@ export function renderInlineMarkdown(text, isAda = false) {
       tokens.push(
         <strong
           key={`b-${key++}`}
-          className={`font-bold ${isAda ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
+          className={`font-bold ${isJarvis ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
         >
           {matchedStr.slice(2, -2)}
         </strong>
@@ -109,9 +109,9 @@ export function renderInlineMarkdown(text, isAda = false) {
 
 /**
  * MarkdownText — Lightweight, safe, high-performance Markdown renderer
- * tailored specifically for Project A.D.A Cyberpunk Comms Log feed.
+ * tailored specifically for J.A.R.V.I.S Mark II Cyberpunk Comms Log feed.
  */
-export function MarkdownText({ content, isAda = false }) {
+export function MarkdownText({ content, isJarvis = false }) {
   if (!content) return null;
 
   // Split code blocks first
@@ -173,7 +173,7 @@ export function MarkdownText({ content, isAda = false }) {
               elements.push(
                 <ol key={`ol-${elements.length}`} className="list-decimal list-inside space-y-0.5 my-1 pl-1 text-[11px]">
                   {listItems.map((item, i) => (
-                    <li key={i}>{renderInlineMarkdown(item, isAda)}</li>
+                    <li key={i}>{renderInlineMarkdown(item, isJarvis)}</li>
                   ))}
                 </ol>
               );
@@ -181,7 +181,7 @@ export function MarkdownText({ content, isAda = false }) {
               elements.push(
                 <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-0.5 my-1 pl-1 text-[11px]">
                   {listItems.map((item, i) => (
-                    <li key={i}>{renderInlineMarkdown(item, isAda)}</li>
+                    <li key={i}>{renderInlineMarkdown(item, isJarvis)}</li>
                   ))}
                 </ul>
               );
@@ -203,7 +203,7 @@ export function MarkdownText({ content, isAda = false }) {
             flushList();
             elements.push(
               <h4 key={`h3-${lIdx}`} className="font-['Orbitron',sans-serif] font-bold text-xs text-[#00F0FF] my-1 tracking-wider">
-                {renderInlineMarkdown(trimmed.substring(4), isAda)}
+                {renderInlineMarkdown(trimmed.substring(4), isJarvis)}
               </h4>
             );
             return;
@@ -212,7 +212,7 @@ export function MarkdownText({ content, isAda = false }) {
             flushList();
             elements.push(
               <h3 key={`h2-${lIdx}`} className="font-['Orbitron',sans-serif] font-bold text-xs text-[#FF003C] my-1 tracking-wider">
-                {renderInlineMarkdown(trimmed.substring(3), isAda)}
+                {renderInlineMarkdown(trimmed.substring(3), isJarvis)}
               </h3>
             );
             return;
@@ -221,7 +221,7 @@ export function MarkdownText({ content, isAda = false }) {
             flushList();
             elements.push(
               <h2 key={`h1-${lIdx}`} className="font-['Orbitron',sans-serif] font-extrabold text-sm text-[#F0F2F8] my-1 tracking-wider">
-                {renderInlineMarkdown(trimmed.substring(2), isAda)}
+                {renderInlineMarkdown(trimmed.substring(2), isJarvis)}
               </h2>
             );
             return;
@@ -232,7 +232,7 @@ export function MarkdownText({ content, isAda = false }) {
             flushList();
             elements.push(
               <blockquote key={`bq-${lIdx}`} className="border-l-2 border-[#FF003C] pl-2 my-1 text-[#7E859E] italic">
-                {renderInlineMarkdown(trimmed.substring(2), isAda)}
+                {renderInlineMarkdown(trimmed.substring(2), isJarvis)}
               </blockquote>
             );
             return;
@@ -259,7 +259,7 @@ export function MarkdownText({ content, isAda = false }) {
           flushList();
           elements.push(
             <p key={`p-${lIdx}`} className="my-0.5">
-              {renderInlineMarkdown(line, isAda)}
+              {renderInlineMarkdown(line, isJarvis)}
             </p>
           );
         });

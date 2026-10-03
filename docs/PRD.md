@@ -1,138 +1,114 @@
-# 🩸 PROJECT A.D.A — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+# ⚡ PROJECT J.A.R.V.I.S MARK II — PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-**Codename:** Operative-Wong // Mark-LI Next-Gen Web Architecture  
+**Codename:** Mark II // Autonomous Desktop System  
 **Target Platform:** Next.js 16 (App Router) + React Three Fiber (Three.js) + JavaScript (JSX) + Web Audio API  
-**AI Core:** Gemini 3.8 Live API (Bidirectional WebSocket Audio)  
-**Persona:** Ada Wong (Resident Evil // Cyberpunk Syndicate Infiltrator)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**AI Core:** Gemini 3.8 Live API (Bidirectional WebSocket Audio, `models/gemini-3.8-live`)  
+**Persona:** J.A.R.V.I.S — "Just A Rather Very Intelligent System"  
+**Scope Source:** [`features.txt`](../features.txt) (Phase 7 in [`PHASES.md`](./PHASES.md))
 
 ---
 
 ## 1. Executive Vision & Value Proposition
 
-**Project A.D.A** is a next-generation, cyberpunk-themed desktop & web AI companion featuring an interactive, fully-animated 3D avatar of **Ada Wong**, built completely with **Next.js 16** and **pure JavaScript (JSX)**.
+**J.A.R.V.I.S Mark II** is a voice-first desktop and web AI companion with a cyberpunk tactical HUD, built with **Next.js 16** and **pure JavaScript (JSX)**.
 
-Instead of robotic text-to-speech or clunky chatbot windows, Project A.D.A combines:
+Instead of robotic text-to-speech or a chat window, J.A.R.V.I.S combines:
 
-1. **Zero-Latency Conversational Audio**: Native bidirectional speech-to-speech via the Gemini 3.8 Live API (<500ms latency, natural expressive speech, always-on proactive audio).
-2. **Interactive 3D Holographic Viewport**: Real-time 3D Ada Wong avatar rendered with Three.js / React Three Fiber, equipped with audio-driven viseme lip-sync, cursor gaze tracking, and reactive facial expressions.
-3. **Omni-Agent Capabilities**: Full parity with the Mark-LI engine—computer control, screen/webcam vision, multi-mode web intelligence, autonomous dev agent, file processing, long-term memory, daily briefings, and plugin expansion.
-4. **Cyberpunk Tactical HUD**: High-tech holographic interface styled with neon scarlet, carbon fiber textures, tactical telemetry, visualizer waveforms, and scanline shaders.
+1. **Real-Time Conversational Audio**: Native speech-to-speech via the Gemini 3.8 Live API (<500 ms latency, natural expressive speech, always-on proactive audio, session resumption for unlimited-length conversations).
+2. **Holographic Arc Reactor Orb**: A React Three Fiber visual core whose particle sphere, radial dial, radar sweep, and white-hot core react live to listening, thinking, and speaking.
+3. **Omni-Agent Capabilities**: Desktop and file control, project scaffolding, grounded web search, semantic long-term memory, media playback, document creation, vision, and a sandboxed terminal behind on-screen authorization.
+4. **Cyberpunk Tactical HUD**: Glassmorphic electric aqua-cyan interface with telemetry, comms log, intel dossiers, and draggable floating panels.
 
 ---
 
-## 2. User Persona & Atmospheric Tone
+## 2. Persona & Atmospheric Tone
 
-### 2.1 The Persona: Ada Wong
+### 2.1 The Persona: J.A.R.V.I.S
 
-- **Tone & Demeanor:** Enigmatic, composed, razor-sharp, sophisticated, and calmly dominant. Never panicked, never sycophantic.
-- **Vocal Style:** Intimate yet detached, low-pitch, measured cadence, delivering concise tactical advice with dry wit.
-- **Visual Stance:** Armed with tactical gear and high-collar crimson trench dress; subtle confident smirk (`mouthSmileLeft: 0.15`), focused gaze tracking the operator.
+- **Tone & Demeanor:** Refined, British-cadenced, composed, analytical, and reassuring; polite yet subtly witty. Never panicked, never sycophantic.
+- **Vocal Style:** Concise conversational turns built for barge-in; default male voice core **Charon** (16 male Gemini voices selectable). Numbers are spoken as natural words ("seventy-five percent").
+- **Humour:** Optional dry British wit and deadpan understatement (Settings toggle).
+- **Name & Wake Phrase:** Assistant codename, operator callsign, and standby wake phrase (default "Hey Jarvis") are configurable in Settings or by voice.
 
 ### 2.2 Target Operator
 
-Developers, power users, and cyber-enthusiasts who demand an autonomous, voice-first digital assistant with cutting-edge visual presence and zero-friction desktop/web execution.
+Developers and power users who want a voice-first assistant that can act on their machine: open apps, manage files, scaffold projects, run commands with approval, and look things up — with a striking visual presence.
 
 ---
 
-## 3. Core Feature Scope (Full Parity with Mark-LI Engine)
+## 3. Core Feature Scope
 
 ### 🎙️ 3.1 Real-Time Audio Engine & Expressive Voice Core
 
-- **Native Bidirectional Streaming:** Direct PCM 16kHz mic ingest via browser `AudioWorkletNode` ➔ WebSocket ➔ Gemini 3.8 Live API ➔ 24kHz raw PCM stream response.
-- **Expressive Delivery:** Natural native-audio prosody from Gemini 3.8 Live. (The separate affective dialog toggle was removed from the API in 3.8.)
-- **Proactive Audio & Smart Barge-in:** Distinguishes background room chatter from direct operator address; instantly silences Ada's audio playback within 50ms upon user interruption via client-side `stopAndFlush()`.
-- **Zero Subscription Cost:** Built on the Gemini Live API free tier (`models/gemini-3.8-live`) over a raw WebSocket.
+- **Native Bidirectional Streaming:** 16 kHz PCM mic ingest via `AudioWorkletNode` ➔ WebSocket ➔ Gemini 3.8 Live ➔ 24 kHz PCM playback through a jitter-buffered gapless player.
+- **Instant Barge-In:** `stopAndFlush()` silences playback within 50 ms of the operator speaking.
+- **Session Resilience:** Sliding-window context compression, resumption handles, GoAway socket swaps, and exponential-backoff re-sync behind a `RECONNECTING` status pill.
+- **Zero Subscription Cost:** Runs on the Gemini Live API free tier.
 
-### 🌅 3.2 Spoken Startup Greeting & Two-Phase Morning Tactical Briefing
+### 🌅 3.2 Spoken Startup Greeting & Two-Phase Briefing
 
-- **Two-Phase Low-Latency Delivery:**
-  - **Phase 1 (Instant Spoken Greeting — `<1s`):** Immediately upon WebSocket handshake completion (`msg.setupComplete`), dispatch a client content directive turn instructing Gemini to greet the operator aloud with time of day, clearance confirmation, and session continuity context.
-  - **Phase 2 (Parallel World News Delivery):** In parallel with Phase 1 audio playback, background-fetch top world news headlines via DuckDuckGo/Grounding. As soon as Phase 1 finishes, Ada delivers a concise 1-sentence headline summary aloud and updates the HUD Intel Drawer with full dossiers.
-- **Silent Reception State Guard:** If the operator has configured mic mute preference in `localStorage`, maintain silent link with text-only confirmation while keeping audio greeting capabilities ready.
+- **Phase 1:** Immediately after `setupComplete`, Jarvis greets the operator aloud with the local time.
+- **Phase 2 (optional):** Grounded news headlines are fetched in parallel and delivered as a short spoken brief, with dossiers in the Intel panel.
 
-### 🔔 3.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins)
+### 💤 3.3 Standby & Wake Phrase
 
-- **Unprompted Tactical Check-Ins:** Background engine tracking operator idle silence (15 min silence gate, 20 min check cooldown) to initiate voice check-ins when the operator has been quiet.
-- **Context-Aware Rotating Prompt Builder:**
-  - _Focus Area 1:_ Active projects & goals stored in memory (inquiring on progress, offering tips).
-  - _Focus Area 2:_ Time of day & operator wellbeing (late-night coding alerts, break/hydration reminders).
-  - _Focus Area 3:_ Relevant intelligence or suggestions tailored to operator profile.
-- **Smarter Silence Gate:** Zero interruption while Ada is actively speaking or while user was speaking within the last 30 seconds.
+- When the link is offline, a browser Web Speech listener (Chrome / Edge) waits for the configurable wake phrase with fuzzy matching, then links Jarvis back up.
+- `enter_standby` lets Jarvis sign off and close the link after his farewell.
 
-### 🧠 3.4 Deep Neural Memory & Session Continuity
+### 🧠 3.4 Semantic Memory & Session Context
 
-- **Long-Term Knowledge Vault (`data/memories.json`):** Categorized memory store covering identity, preferences, active projects, mission directives, and notes. Accessible via `recall_memory` and `store_memory` live tools.
-- **Consumed Session Continuity Recaps (`data/sessions.json`):**
-  - When a session terminates or upon conversation lull, summarize recent dialog turns into a 1–2 sentence recap.
-  - On next system startup, `pop_last_session()` injects this context into Phase 1 greeting (_"Last time we spoke, you were optimizing the 3D viewport..."_) and consumes the entry so it is never repeated.
-- **Silent Language Memory:** Automatically detects the operator's spoken language on first use and updates identity profile so all subsequent sessions adapt natively.
+- **Knowledge Vault (`data/memories.json`):** Categorised facts, preferences, missions, and profile, injected into the system prompt and recalled with `recall_memory` / `store_memory`.
+- **Semantic Recall (RAG):** Gemini Embedding 2 vectors in a local cache rank memories by meaning, with keyword fallback.
 
-### 💃 3.5 3D Hologram & Lip-Sync Core
+### 💠 3.5 Holographic Visual Core
 
-- **Real-time 3D Viewport:** R3F/Three.js rendering authentic `docs/adawong.glb` (7.29 MB, 10 sub-meshes, 220-joint skeletal rig).
-- **Audio-Reactive Lip-Sync:** Web Audio `AnalyserNode` decomposes real-time 24kHz speech into spectral bands, driving mouth and jaw articulation.
-- **Interactive Life Simulation:** Procedural spine breathing motion (`bone21_00`) and smooth head/neck bone interpolation (`bone23_022`, `bone22_01`) tracking mouse cursor in screen space via `Quaternion.slerp`.
-- **Framing Presets:** One-click tactical camera switching between Portrait (`[0, 1.46, 1.05]`) and Full Body (`[0, 1.05, 2.75]`), with initial canvas camera perfectly aligned to portrait framing.
+- **Arc Reactor Orb (`ArcReactorOrb.jsx`):** Fibonacci particle sphere, static radial stator dial, rotating radar sweep, bloom flare, and a core that swells while speaking; zero allocations inside `useFrame()`.
+- **Viewport (`JarvisViewport.jsx`):** Zoom in / out / reset controls and a live FPS profiler.
 
-### 👁️ 3.6 Multimodal Cyber-Vision Matrix
+### 👁️ 3.6 Multimodal Vision
 
-- **Screen Interrogation:** Web `getDisplayMedia` captures active monitor frames and feeds base64 image tokens to Gemini Live for screen analysis and code debugging.
-- **Webcam Optical Feed:** Web `getUserMedia` captures live operator video with on-HUD picture-in-picture stream (`WebcamStream.jsx`).
-- **Tactical Inspection:** Ada analyzes UI bugs, error tracebacks, or physical camera objects upon verbal command.
+- **Screen Interrogation:** `getDisplayMedia` frames streamed to Gemini Live for screen analysis and debugging.
+- **Webcam Feed:** `getUserMedia` picture-in-picture with frame streaming.
 
-### 🖥️ 3.7 Full Host OS & Desktop Automation Bridge
+### 🖥️ 3.7 Desktop & File Control
 
-- **Local Execution Bridge (`/api/os-control` & local daemon):**
-  - **Application Launcher:** Launch system programs (VSCode, Spotify, Chrome, Terminal, Task Manager, Notepad, Calculator) by voice via `execute_os_action`.
-  - **System Settings:** Control master system volume, mute/unmute, screen brightness, network interfaces, and power states (lock workstation, sleep, shutdown).
-  - **Mouse & Keyboard Control:** PyAutoGUI/Win32 automation for clicks, double clicks, text typing, keyboard hotkeys (`Ctrl+C`, `Ctrl+V`), and window focus.
-  - **Desktop Control:** Wallpaper changing, desktop cleanup, and file organization by date or extension.
+- **Apps & System:** Launch any installed app by name (`.desktop` index), volume, folders, URLs, minimize, lock.
+- **Files:** Sandboxed create / read / write / replace / append / open, folder organiser with preview, apply, and undo; no delete.
+- **Input & Windows:** Typing, key combos, mouse, scroll, and window focus / minimize / maximize via xdotool or ydotool and wmctrl or the GNOME Window Calls extension.
+- **Terminal:** Read-only commands run immediately; everything else requires a click on the HUD authorization card; sudo and destructive commands are refused.
 
-### 🌐 3.8 Browser Automation Engine (Playwright Integration)
+### 🔍 3.8 Intelligence & Web Search
 
-- **Real User Profile Support:** Attaches to user browser profiles (Chrome, Edge, Brave) to leverage existing logins and active sessions.
-- **Autonomous Web Actions:** Navigate to URLs, fill forms, click buttons via CSS selectors or semantic descriptions, scroll pages, capture full-page screenshots, and extract tabular data.
+- **Grounded Search:** Built-in Google Search grounding in the live session plus `web_search` dossiers via Gemini with Google Search (DuckDuckGo fallback); cited sources land in the Intel panel.
+- **Weather:** Live meteorological telemetry via `get_weather`.
 
-### 🔍 3.9 Tactical Intelligence & Multi-Mode Web Search
+### 📄 3.9 Documents, Uploads & Projects
 
-- **Multi-Mode Engine:** `search` (general web facts), `news` (breaking headlines), `research` (deep dossiers), `price` (product cost lookup), and `compare` (side-by-side feature comparisons).
-- **Dual Grounding:** Primary query resolution via Google Search Grounding with DuckDuckGo fallback.
-- **Dynamic Intel Drawer:** Slide-out tactical drawer displaying rich formatted dossiers, source links, and headline cards.
+- **Document Forge:** Markdown ➔ PDF (`pdf-lib`) or Word (`docx`) via `create_document`.
+- **Uploads:** Drag-and-drop or UPLOAD button; images go to Gemini as images, PDFs / Word / text as extracted content.
+- **Project Scaffolder:** Node/Express API (JS or TS) and admin panel via `@bhavyajustchill/init`, Next.js via `create-next-app`, React (JavaScript) via Vite, Flutter via `flutter create`, run as background jobs.
 
-### 💻 3.10 Deep File Processor & Autonomous Dev Agent
+### 🎬 3.10 Media Deck
 
-- **Multi-Format File Processing:** Support for drag-and-drop or path-based operations on:
-  - Images (OCR, resize, compress, format conversion)
-  - PDFs (text extraction, summarization, docx conversion)
-  - CSV/Excel (filtering, sorting, statistical summaries)
-  - Audio/Video (transcription, trimming, audio extraction)
-  - Code Files (review, explanation, documentation, optimization)
-- **Autonomous Dev Agent:** Multi-file project scaffolding in `~/Desktop/AdaProjects`: plans project structure, creates files, installs dependencies via `npm`/`pip`, runs code, parses tracebacks, and self-heals errors up to 5 attempts.
+- **YouTube:** Built-in player panel with search, queue, auto-advance, and volume ducking under Jarvis's voice.
+- **Spotify:** Desktop app control over MPRIS; exact-track playback with optional free Web API credentials.
+- **3D Viewer:** glTF / GLB holo-viewer with auto-framing, orbit controls, animation playback, and stats.
 
-### 👁️‍🗨️ 3.11 Background Topic Monitoring & Hardware Telemetry Voice Alerts
+### 🧩 3.11 Modular Cyber-Plugin Architecture
 
-- **Background Intelligence Tracking:** Operator can command Ada to track topics (e.g., _"Monitor developments on AI agents"_). The background engine periodically queries news feeds and alerts the operator via voice upon new developments.
-- **Hardware Telemetry Voice Warnings:** Evaluates live CPU temperature, memory usage, and GPU load from `/api/system-telemetry`, speaking localized voice alerts when CPU temp > 85°C or RAM > 92%.
+- Drop-in JavaScript plugins in `plugins/`, auto-discovered and executed via `run_cyber_plugin`, with a HUD plugin console.
 
-### ⏰ 3.12 Native OS Scheduled Reminders & Tactical Integrations
+### ⚙️ 3.12 Identity, Voice & System Customisation
 
-- **OS-Native Scheduled Reminders:** Creates scheduled tasks via Windows Task Scheduler (`schtasks.exe`) to fire desktop notifications at exact date/time even if the browser is minimized.
-- **Game Updater Integration:** Checks Steam and Epic Games update status, lists installed games, and schedules nighttime updates with optional auto-shutdown.
-- **YouTube & Flight Control:** Voice playback control for YouTube videos and Google Flights price lookup.
+- Settings modal for callsign, assistant codename, role, clearance, directives, voice core, humour, auto-briefing, mic default, and wake phrase; `update_operator_profile` lets Jarvis change them by voice.
 
-### 🧩 3.13 Modular Cyber-Plugin Architecture
+### 📱 3.13 Mobile Companion
 
-- **Drop-in JavaScript Plugins:** Plugins declared in `plugins/` with auto-discovery, tool schema registration into Gemini Live, and crash isolation.
-- **Plugin Command Center:** Tactical HUD matrix in `TacticalDrawer.jsx` with per-plugin toggle switches and execution monitoring.
+- LAN pairing via QR code and a standalone `/mobile` PWA with push-to-talk relay and remote desktop actions.
 
-### ⚙️ 3.14 Mark-LIII Identity, Voice & System Customization Matrix
+### ⏳ 3.14 Deferred (see PHASES.md)
 
-- **Operator Identity & Name-to-Call Customization:** Configurable operative name/callsign (e.g., `"Bhavya Sir"`), security clearance, role, and behavioral directives. Accessible via left sidebar Settings panel and persistent to `data/memories.json`.
-- **Dynamic System Instruction Injection:** Rehydrates operator profile, strict addressing rules, and active long-term memories directly into Gemini Live's initial system instruction on session start. Guarantees Ada addresses the operator by their chosen name and immediately honors stored facts without requiring tool lookups.
-- **Prebuilt Gemini Live Voice Selection:** Multi-voice selector allowing switching between Gemini prebuilt voices (`Aoede`, `Charon`, `Fenrir`, `Kore`, `Puck`) with instant persistence.
-- **Voice-Driven Profile Sync (`update_operator_profile`):** Autonomous Gemini Live tool allowing Ada to update operator callsign, clearance, role, or directives directly during voice conversations.
-- **Left-Sidebar Tactical Settings Panel:** Dedicated `SETTINGS` tab and header shortcut button in `TelemetryPanel.jsx` providing direct Mark-LIII configuration parity within the cyberpunk HUD.
+- Session recap memory, proactive idle check-ins, Playwright browser automation, background topic monitoring, OS scheduled reminders.
 
 ---
 
@@ -140,20 +116,18 @@ Developers, power users, and cyber-enthusiasts who demand an autonomous, voice-f
 
 | Metric                       | Requirement              | Target Architecture                                       |
 | :--------------------------- | :----------------------- | :-------------------------------------------------------- |
-| **Framework & Dialect**      | Next.js 16 + Pure JSX/JS | Next.js 16 App Router, React 19, zero TypeScript overhead |
+| **Framework & Dialect**      | Next.js 16 + Pure JSX/JS | Next.js 16 App Router, React 19, zero TypeScript          |
 | **End-to-End Voice Latency** | `< 500 ms`               | Gemini 3.8 Live WebSocket                                 |
-| **3D Rendering Performance** | Stable `60 FPS`          | React Three Fiber + Instanced Meshes + Draco GLTF         |
-| **Lip-Sync Accuracy**        | Sub-30ms sync            | Web Audio API `AnalyserNode` ➔ Frame-synced Morph Targets |
-| **Model Asset Footprint**    | `< 30 MB`                | Draco-compressed GLB with 2K PBR textures                 |
+| **3D Rendering Performance** | Stable `60 FPS`          | React Three Fiber, zero-allocation `useFrame()`           |
 | **Audio Ingest Overhead**    | `< 2% CPU`               | `AudioWorkletProcessor` downsampling thread               |
-| **Browser Compatibility**    | Chrome, Edge, Brave      | WebGL2, Web Audio API, WebSockets                         |
+| **Host Safety**              | Sandboxed by default     | File sandbox roots, same-origin guard, terminal approval  |
+| **Browser Compatibility**    | Chrome, Edge, Brave      | WebGL2, Web Audio API, WebSockets (wake phrase: Chrome / Edge) |
 
 ---
 
 ## 5. Out of Scope (Non-Goals)
 
-- **No TypeScript / No TSX:** Strictly build with native `.js` and `.jsx`.
-- **No Old Cascade Pipelines:** Strictly no legacy Whisper ➔ Text LLM ➔ TTS chains. Native speech-to-speech only.
-- **No Heavy Monolithic Frameworks:** Avoid heavy heavyweight physics engines; use optimized bone-lerping for real-time responsiveness.
-- **No Unencrypted Channels:** All WebSocket communication must be SSL/TLS encrypted (WSS).
-
+- **No TypeScript / No TSX** in this codebase: strictly `.js` and `.jsx`.
+- **No Cascade Pipelines:** No Whisper ➔ text LLM ➔ TTS chains; native speech-to-speech only.
+- **No Silent Destructive Actions:** No file delete tool; terminal commands that change the system always need an on-screen click.
+- **No Unencrypted Channels:** All Gemini communication uses WSS / HTTPS.

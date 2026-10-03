@@ -13,7 +13,7 @@ import {
   Sparkles,
   Filter,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 export function SciFiMemoryVaultModal() {
   const {
@@ -25,7 +25,7 @@ export function SciFiMemoryVaultModal() {
     saveMemoryApi,
     deleteMemoryApi,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef(null);

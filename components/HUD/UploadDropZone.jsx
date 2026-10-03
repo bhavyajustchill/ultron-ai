@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { UploadCloud } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { openModelViewer } from "@/lib/mediaClient";
 
 const MAX_IMAGE_SIDE = 1280;
@@ -74,7 +74,7 @@ async function buildParts(file, upload) {
  * "jarvis-open-upload" event. Files are saved through /api/upload and handed to Jarvis as one turn.
  */
 export function UploadDropZone({ onSendParts }) {
-  const addCommsMessage = useAdaStore((state) => state.addCommsMessage);
+  const addCommsMessage = useJarvisStore((state) => state.addCommsMessage);
   const [isDragging, setIsDragging] = useState(false);
   const dragDepthRef = useRef(0);
   const inputRef = useRef(null);

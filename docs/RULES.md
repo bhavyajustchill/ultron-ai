@@ -1,7 +1,7 @@
-# 🛡️ AI CODING RULES & GUARDRAILS — PROJECT A.D.A
+# 🛡️ AI CODING RULES & GUARDRAILS — J.A.R.V.I.S MARK II
 **Codename:** Protocol-Rules // Engineering Standards  
 **Scope:** Next.js 16, React 19, JavaScript (JSX), React Three Fiber, Web Audio API  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Reference Documents:** [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`DESIGN.md`](./DESIGN.md)
 
 ---
 
@@ -15,12 +15,12 @@
 * **Component Architecture:**
   - Standard Functional Components with clean prop destructuring:
     ```jsx
-    export const AdaAvatar = ({ lipSyncRef, scale = 1.8 }) => { ... };
+    export const ArcReactorOrb = ({ getInputByteFrequencyData, pcmPlayer, onToggleListening }) => { ... };
     ```
   - Next.js Client Components that handle 3D Canvas, Web Audio, or WebSockets MUST declare `'use client';` at the very top.
   - Server Components should be used for initial page shells, metadata, and static UI wrappers.
 * **State Management:**
-  - Avoid putting high-frequency streaming audio data (FFT bins, PCM chunks) into React state. Use `useRef` or Zustand stores to avoid re-rendering the whole DOM on every audio frame.
+  - Avoid putting high-frequency streaming audio data (FFT bins, PCM chunks) into React state. Use `useRef` or the Zustand store (`useJarvisStore` in `lib/store.js`) to avoid re-rendering the whole DOM on every audio frame.
 
 ---
 
@@ -28,7 +28,7 @@
 
 * **Zero Garbage Collection in `useFrame`:**
   - NEVER instantiate new `Vector3`, `Euler`, `Matrix4`, or `Color` objects inside `useFrame()`. Reuse pre-allocated instance variables outside the frame loop.
-  - NEVER call `setState()` inside `useFrame()`. Update `ref.current.morphTargetInfluences` or bone transforms directly.
+  - NEVER call `setState()` inside `useFrame()`. Mutate refs (positions, rotations, material uniforms, light intensities) directly.
 * **Asset Disposal & Cleanup:**
   - Always clean up Three.js materials, textures, and geometries when unmounting components to avoid WebGL context leaks.
 * **Asset Optimization:**
@@ -53,10 +53,10 @@
 ## 4. Cyberpunk UI & Styling Conventions
 
 * **Color Tokens:**
-  - Only use configured Tailwind cyberpunk tokens: `var(--ada-scarlet)`, `var(--cyber-cyan)`, `var(--carbon-900)`, etc.
+  - Only use configured Tailwind cyberpunk tokens: `var(--jarvis-cyan)`, `var(--cyber-cyan)`, `var(--amber-alert)`, `var(--carbon-900)`, etc.
   - Never use plain browser default reds or blues.
 * **Visual Hierarchy:**
-  - Keep the 3D viewport of Ada Wong unobstructed in the center.
+  - Keep the Arc Reactor Orb unobstructed in the center.
   - Telemetry, comms logs, and controls must reside on the peripheral HUD borders with glassmorphism (`backdrop-blur-md`, subtle border opacity).
 * **Typography:**
   - Headers and status badges: `font-orbitron`.
@@ -72,4 +72,4 @@
   - If the Gemini Live WebSocket drops connection, immediately show a reconnecting status pill (`RECONNECTING`) and execute exponential backoff, resuming the session via its latest resumption handle.
 * **Non-Blocking Tool Calls:**
   - Long-running tools (like deep web search or local file scans) must never freeze the audio thread or 3D animation loop.
-  - Always inform the user via Ada's voice channel or HUD comms log while a tool is in flight.
+  - Always inform the user via Jarvis's voice channel or HUD comms log while a tool is in flight.

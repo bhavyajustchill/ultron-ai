@@ -3,14 +3,14 @@
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 /**
  * ArcReactorOrb — Holographic Radar Reactor Orb with Particle-Only Rotation.
  * Features:
  * - Particle-only 3D rotation: only the 3D particle sphere rotates when dragged or procedurally.
  *   The core, radial stator dial, and sweeping light remain locked facing forward without tilting.
- * - Dominant Ada Scarlet (#FF003C) & crimson color palette with reduced electric cyan accents.
+ * - Electric aqua-cyan (#00E5FF) J.A.R.V.I.S palette with white-hot core highlights.
  * - Synchronized speed scaling: very slow in IDLE (0.045 rad/s particles, 0.18 rad/s sweep light),
  *   accelerating in sync during listening, speaking, and thinking.
  * - Very dim, subtle, ethereal rotating radar light wedge (opacity 0.045).
@@ -23,7 +23,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
   const coreMeshRef = useRef(null);
   const flareSpriteRef = useRef(null);
   const centerLightRef = useRef(null);
-  const scarletLightRef = useRef(null);
+  const accentLightRef = useRef(null);
   const cyanLightRef = useRef(null);
   const radarSweepRef = useRef(null);
   const statorGroupRef = useRef(null);
@@ -47,8 +47,8 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
   const speechEnergyRef = useRef(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const status = useAdaStore((state) => state.status);
-  const isMuted = useAdaStore((state) => state.isMuted);
+  const status = useJarvisStore((state) => state.status);
+  const isMuted = useJarvisStore((state) => state.isMuted);
 
   // 1. Procedural Radial Optical Bloom Texture (Seamless Cubic Falloff, Zero Ring Banding)
   const coreBloomTexture = useMemo(() => {
@@ -808,8 +808,8 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       centerLightRef.current.intensity =
         (isHovered ? 6.5 : 5.0) * (isSpeaking ? 1.0 + speechEnergy * 0.35 : 1.0) + shockwave * 1.5;
     }
-    if (scarletLightRef.current) {
-      scarletLightRef.current.intensity =
+    if (accentLightRef.current) {
+      accentLightRef.current.intensity =
         8.0 * (isSpeaking ? 1.0 + speechEnergy * 0.35 : 1.0) + shockwave * 2.5;
     }
   });
@@ -835,7 +835,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         decay={1.5}
       />
       <pointLight
-        ref={scarletLightRef}
+        ref={accentLightRef}
         position={[0, 0, 0]}
         color="#00E5FF"
         intensity={16}

@@ -298,13 +298,13 @@ export default function MobileRemotePage() {
             {desktopState.recentComms.slice(-3).map((item, idx) => (
               <div key={idx} className="flex items-start gap-1">
                 <span
-                  className={`font-bold ${item.sender === "jarvis" || item.sender === "ada"
+                  className={`font-bold ${item.sender === "jarvis"
                       ? "text-[#00F0FF]"
                       : item.sender === "user"
                         ? "text-[#FF8095]"
                         : "text-[#7E859E]"
                     }`}>
-                  {item.sender ? (item.sender === "ada" ? "JARVIS" : item.sender.toUpperCase()) : "COMMS"}:
+                  {item.sender ? item.sender.toUpperCase() : "COMMS"}:
                 </span>
                 <span className="text-[#D0D4E4] truncate">{item.text}</span>
               </div>

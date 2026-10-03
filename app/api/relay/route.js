@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
 // In-memory relay store shared across API invocations in the Node process
-if (!global.__adaRelayStore) {
-  global.__adaRelayStore = {
+if (!global.__jarvisRelayStore) {
+  global.__jarvisRelayStore = {
     pendingDirectives: [], // Directives sent by mobile to be consumed by desktop
     desktopState: {
       status: 'DISCONNECTED',
@@ -15,7 +15,7 @@ if (!global.__adaRelayStore) {
   };
 }
 
-const store = global.__adaRelayStore;
+const store = global.__jarvisRelayStore;
 
 /**
  * GET /api/relay

@@ -14,7 +14,7 @@ import {
   Radio,
   Clock,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 export function IntelModal() {
   const {
@@ -24,7 +24,7 @@ export function IntelModal() {
     clearIntelResults,
     addIntelResult,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState("search"); // 'search' | 'news' | 'research'
@@ -67,8 +67,8 @@ export function IntelModal() {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-intel", handleExternalClose);
-    return () => window.removeEventListener("ada-close-intel", handleExternalClose);
+    window.addEventListener("jarvis-close-intel", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-intel", handleExternalClose);
   }, [isIntelOpen, triggerClose]);
 
   // Keyboard shortcut: Escape to close
@@ -145,7 +145,7 @@ export function IntelModal() {
     );
 
     try {
-      const searchKey = useAdaStore.getState().userApiKey;
+      const searchKey = useJarvisStore.getState().userApiKey;
       const res = await fetch(
         `/api/web-search?query=${encodeURIComponent(query)}&mode=${encodeURIComponent(searchMode)}`,
         { headers: searchKey ? { "x-gemini-api-key": searchKey } : {} }

@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   RefreshCw,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 export function MobilePairingModal({ isOpen, onClose }) {
   const {
@@ -21,7 +21,7 @@ export function MobilePairingModal({ isOpen, onClose }) {
     mobilePairingData,
     isPairingLoading,
     loadMobilePairing,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [copied, setCopied] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -64,8 +64,8 @@ export function MobilePairingModal({ isOpen, onClose }) {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-mobile", handleExternalClose);
-    return () => window.removeEventListener("ada-close-mobile", handleExternalClose);
+    window.addEventListener("jarvis-close-mobile", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-mobile", handleExternalClose);
   }, [open, triggerClose]);
 
   // Clean up timer on unmount

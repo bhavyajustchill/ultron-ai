@@ -16,7 +16,7 @@ import {
   Minimize2,
   GripHorizontal,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 /**
  * ScreenShareModal
@@ -36,7 +36,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
     resetVisionFrames,
     setActiveVisionSource,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -276,8 +276,8 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-screen", handleExternalClose);
-    return () => window.removeEventListener("ada-close-screen", handleExternalClose);
+    window.addEventListener("jarvis-close-screen", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-screen", handleExternalClose);
   }, [isOpen, triggerClose]);
 
   // Keyboard shortcut: Escape to close

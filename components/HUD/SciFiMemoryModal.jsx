@@ -19,7 +19,7 @@ import {
   Sparkles,
   AlertTriangle,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 export function SciFiMemoryModal() {
   const {
@@ -28,7 +28,7 @@ export function SciFiMemoryModal() {
     deleteMemoryApi,
     updateMemoryApi,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [activeMemory, setActiveMemory] = useState(null);
   const [isClosing, setIsClosing] = useState(false);

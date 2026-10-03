@@ -2,11 +2,11 @@
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Terminal, User, Bot, Info, Send, CornerDownLeft, X, Trash2 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { MarkdownText } from "@/components/HUD/MarkdownText";
 
 export function CommsLog({ sendTextMessage }) {
-  const { isCommsLogOpen, setIsCommsLogOpen, commsLog } = useAdaStore();
+  const { isCommsLogOpen, setIsCommsLogOpen, commsLog } = useJarvisStore();
 
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef(null);
@@ -39,8 +39,8 @@ export function CommsLog({ sendTextMessage }) {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-comms", handleExternalClose);
-    return () => window.removeEventListener("ada-close-comms", handleExternalClose);
+    window.addEventListener("jarvis-close-comms", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-comms", handleExternalClose);
   }, [isCommsLogOpen, triggerClose]);
 
   // Keyboard shortcut: Escape to close
@@ -120,7 +120,7 @@ export function CommsLog({ sendTextMessage }) {
         ref={scrollRef}
         className="flex-1 flex flex-col gap-2.5 p-3 font-mono text-xs overflow-y-auto pr-1.5 min-h-0">
         {commsLog.map((item) => {
-          const isJarvis = item.sender === "jarvis" || item.sender === "ada";
+          const isJarvis = item.sender === "jarvis";
           const isUser = item.sender === "user";
           const isSystem = item.sender === "system";
 
@@ -163,7 +163,7 @@ export function CommsLog({ sendTextMessage }) {
                 className={`leading-relaxed text-xs break-words select-text ${
                   isJarvis ? "text-[#F0F2F8]" : isUser ? "text-[#B8F6FF]" : "text-[#7E859E]"
                 }`}>
-                <MarkdownText content={item.text} isAda={isJarvis} />
+                <MarkdownText content={item.text} isJarvis={isJarvis} />
               </div>
             </div>
           );

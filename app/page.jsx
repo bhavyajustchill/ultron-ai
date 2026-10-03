@@ -27,7 +27,7 @@ import {
   Ear,
   EarOff,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
 import { GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { ApiKeyModal } from "@/components/HUD/ApiKeyModal";
@@ -79,7 +79,7 @@ export default function Home() {
     isIntelOpen,
     setIsIntelOpen,
     intelSearchResults,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [textInput, setTextInput] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -126,7 +126,7 @@ export default function Home() {
 
   // Standby wake phrase: armed once the link has stayed offline for a moment, so startup and
   // reconnect blips never grab the microphone
-  const operatorProfile = useAdaStore((state) => state.operatorProfile);
+  const operatorProfile = useJarvisStore((state) => state.operatorProfile);
   const wakeEnabled = operatorProfile?.wakeWordEnabled !== false;
   const wakePhrase = operatorProfile?.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE;
   const [isStandby, setIsStandby] = useState(false);
@@ -163,7 +163,7 @@ export default function Home() {
     autoConnectAttemptedRef.current = true;
 
     // Synchronously hydrate stored voice preference on client mount
-    const { loadStoredVoiceName } = useAdaStore.getState();
+    const { loadStoredVoiceName } = useJarvisStore.getState();
     if (loadStoredVoiceName) {
       loadStoredVoiceName();
     }
@@ -232,7 +232,7 @@ export default function Home() {
 
     const syncRelay = async () => {
       try {
-        const storeState = useAdaStore.getState();
+        const storeState = useJarvisStore.getState();
         await fetch("/api/relay", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -366,7 +366,7 @@ export default function Home() {
         <button
           onClick={() => {
             if (isTelemetryOpen) {
-              window.dispatchEvent(new CustomEvent("ada-close-telemetry"));
+              window.dispatchEvent(new CustomEvent("jarvis-close-telemetry"));
             } else {
               setIsTelemetryOpen(true);
             }
@@ -384,7 +384,7 @@ export default function Home() {
         <button
           onClick={() => {
             if (isIntelOpen) {
-              window.dispatchEvent(new CustomEvent("ada-close-intel"));
+              window.dispatchEvent(new CustomEvent("jarvis-close-intel"));
             } else {
               setIsIntelOpen(true);
             }
@@ -409,19 +409,19 @@ export default function Home() {
         {/* Camera Zoom & Reset Controls */}
         <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
           <button
-            onClick={() => window.dispatchEvent(new CustomEvent("ada-camera-action", { detail: "in" }))}
+            onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "in" }))}
             className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
             title="Zoom In (or scroll up)">
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
-            onClick={() => window.dispatchEvent(new CustomEvent("ada-camera-action", { detail: "out" }))}
+            onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "out" }))}
             className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
             title="Zoom Out (or scroll down)">
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
-            onClick={() => window.dispatchEvent(new CustomEvent("ada-camera-action", { detail: "reset" }))}
+            onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "reset" }))}
             className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
             title="Reset Camera View">
             <RotateCcw className="w-3.5 h-3.5" />
@@ -447,7 +447,7 @@ export default function Home() {
         <button
           onClick={() => {
             if (isCommsLogOpen) {
-              window.dispatchEvent(new CustomEvent("ada-close-comms"));
+              window.dispatchEvent(new CustomEvent("jarvis-close-comms"));
             } else {
               setIsCommsLogOpen(true);
             }
@@ -629,7 +629,7 @@ export default function Home() {
             <button
               onClick={() => {
                 if (isScreenModalOpen) {
-                  window.dispatchEvent(new CustomEvent("ada-close-screen"));
+                  window.dispatchEvent(new CustomEvent("jarvis-close-screen"));
                 } else {
                   setIsScreenModalOpen(true);
                 }
@@ -645,7 +645,7 @@ export default function Home() {
             <button
               onClick={() => {
                 if (isWebcamOpen) {
-                  window.dispatchEvent(new CustomEvent("ada-close-webcam"));
+                  window.dispatchEvent(new CustomEvent("jarvis-close-webcam"));
                 } else {
                   setIsWebcamOpen(true);
                 }
@@ -668,7 +668,7 @@ export default function Home() {
             <button
               onClick={() => {
                 if (isMobileModalOpen) {
-                  window.dispatchEvent(new CustomEvent("ada-close-mobile"));
+                  window.dispatchEvent(new CustomEvent("jarvis-close-mobile"));
                 } else {
                   setIsMobileModalOpen(true);
                 }

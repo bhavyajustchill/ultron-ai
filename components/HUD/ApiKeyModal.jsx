@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Key, ShieldCheck, X, ExternalLink, Trash2, CheckCircle } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL } from "@/lib/jarvisPersona";
 
 export function ApiKeyModal({ isOpen, onClose, onSaveKey }) {
-  const userApiKey = useAdaStore((state) => state.userApiKey);
-  const setUserApiKey = useAdaStore((state) => state.setUserApiKey);
+  const userApiKey = useJarvisStore((state) => state.userApiKey);
+  const setUserApiKey = useJarvisStore((state) => state.setUserApiKey);
   const [tempKey, setTempKey] = useState("");
   const [saved, setSaved] = useState(false);
 

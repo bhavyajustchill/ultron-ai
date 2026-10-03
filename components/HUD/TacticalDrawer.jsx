@@ -39,7 +39,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import { MarkdownText } from "@/components/HUD/MarkdownText";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 
 const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK II
@@ -100,7 +100,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
     fps,
     frameTimeMs,
     setIsMobileModalOpen,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState("search"); // 'search' | 'news' | 'research'
@@ -188,7 +188,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
     addCommsMessage("system", `[INTEL DESK] Executing web reconnaissance for: "${query}"...`);
 
     try {
-      const searchKey = useAdaStore.getState().userApiKey;
+      const searchKey = useJarvisStore.getState().userApiKey;
       const res = await fetch(
         `/api/web-search?query=${encodeURIComponent(query)}&mode=${encodeURIComponent(searchMode)}`,
         { headers: searchKey ? { "x-gemini-api-key": searchKey } : {} }
@@ -203,7 +203,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
         });
         setSearchQuery("");
         addCommsMessage(
-          "ada",
+          "jarvis",
           `Reconnaissance complete for "${query}". I have indexed ${data.count || 0} intelligence items into your console.`,
         );
       }
@@ -310,7 +310,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
         {activeTab === "dossier" && (
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-1">
-              <MarkdownText content={OPERATIVE_DOSSIER_MARKDOWN} isAda={true} />
+              <MarkdownText content={OPERATIVE_DOSSIER_MARKDOWN} isJarvis={true} />
             </div>
 
             <div className="w-full md:w-64 flex flex-col gap-2.5 p-3.5 chamfer-md border border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.04)] shrink-0">

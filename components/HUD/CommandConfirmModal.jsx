@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { AlertTriangle, FolderOpen, ShieldAlert, SquareTerminal, Timer } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { respondToCommand, runCommandWithApproval } from "@/lib/terminalClient";
 
 /**
@@ -11,8 +11,8 @@ import { respondToCommand, runCommandWithApproval } from "@/lib/terminalClient";
  * documents Jarvis reads can never get a command run. Escape denies; it auto-denies on timeout.
  */
 export function CommandConfirmModal() {
-  const request = useAdaStore((state) => state.pendingCommand);
-  const addCommsMessage = useAdaStore((state) => state.addCommsMessage);
+  const request = useJarvisStore((state) => state.pendingCommand);
+  const addCommsMessage = useJarvisStore((state) => state.addCommsMessage);
   const [secondsLeft, setSecondsLeft] = useState(0);
 
   // Other HUD components can run a command through the same gate:

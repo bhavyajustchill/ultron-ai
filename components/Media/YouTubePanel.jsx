@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef } from "react";
 import { MonitorPlay, Pause, Play, SkipBack, SkipForward, Volume2 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { FloatingPanel } from "@/components/Media/FloatingPanel";
 import { playYouTubeQuery } from "@/lib/mediaClient";
 
@@ -23,9 +23,9 @@ const initialPosition = () => ({
  * through the result queue, and ducks the volume while Jarvis is speaking.
  */
 export function YouTubePanel() {
-  const youtube = useAdaStore((state) => state.youtube);
-  const setYouTube = useAdaStore((state) => state.setYouTube);
-  const status = useAdaStore((state) => state.status);
+  const youtube = useJarvisStore((state) => state.youtube);
+  const setYouTube = useJarvisStore((state) => state.setYouTube);
+  const status = useJarvisStore((state) => state.status);
   const iframeRef = useRef(null);
   const { isOpen, queue, index, isPlaying, volume, command, query } = youtube;
   const current = queue[index];
@@ -139,7 +139,7 @@ export function YouTubePanel() {
         </button>
         <button
           className={controlButton}
-          onClick={() => useAdaStore.getState().sendYouTubeCommand(isPlaying ? "pause" : "play")}
+          onClick={() => useJarvisStore.getState().sendYouTubeCommand(isPlaying ? "pause" : "play")}
           title={isPlaying ? "Pause" : "Play"}>
           {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
         </button>

@@ -1,153 +1,133 @@
-# 🩸 DESIGN & UI SPECIFICATION — PROJECT A.D.A
-**Visual Philosophy:** Cyberpunk Syndicate Tactical HUD // Neo-Noir Operative  
-**Active 3D Model:** [`adawong.glb`](./adawong.glb) (7.29 MB, 10 Meshes, Authentic RE Game Asset)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+# 💠 DESIGN & UI SPECIFICATION — J.A.R.V.I.S MARK II
+
+**Visual Core:** Arc Reactor Orb (`components/Canvas3D/ArcReactorOrb.jsx`) in `JarvisViewport.jsx`  
+**Theme:** Cyberpunk Tactical HUD — Electric Aqua-Cyan on Deep Space Carbon
 
 ---
 
 ## 1. Color Palette & Cyberpunk Tokens
 
-The visual design channels Ada Wong’s signature crimson elegance infused with high-tech syndicate surveillance aesthetics.
+The interface is an electric aqua-cyan holographic HUD over a deep carbon void. Tokens live in `app/globals.css` (`:root` + Tailwind `@theme inline`):
 
 ```css
 :root {
-  /* Core Brand & Neon Highlights */
-  --ada-scarlet:       #FF003C;  /* Signature Crimson Glow (Primary Brand) */
-  --ada-scarlet-dim:   #7A001C;  /* Subdued borders / glow drops */
-  --cyber-cyan:        #00F0FF;  /* Holographic telemetry & data accents */
-  --amber-alert:       #FFE600;  /* System warnings & security flags */
-  
-  /* Tactical Surfaces & Depth */
-  --void-black:        #050508;  /* Deep background canvas */
-  --carbon-900:        #0A0B10;  /* Primary HUD glass panels (opacity 80%) */
-  --carbon-800:        #12141D;  /* Secondary cards & inset containers */
-  --carbon-border:     rgba(255, 0, 60, 0.25); /* Hologram perimeter line */
-  
-  /* Text & Readability */
-  --text-primary:      #F0F2F8;  /* Crisp high-contrast readout */
-  --text-muted:        #7E859E;  /* Secondary telemetry labels */
-  --text-cyan:         #80F7FF;  /* Data streams & timestamp highlights */
+  --jarvis-cyan:      #00E5FF;  /* Primary brand: electric aqua-cyan */
+  --jarvis-cyan-dim:  #00364D;  /* Subdued borders / glow drops */
+  --cyber-cyan:       #00E5FF;  /* Neon accents */
+  --amber-alert:      #FFE600;  /* THINKING / caution states */
+
+  --void-black:       #010E16;  /* Page background (Carbon) */
+  --carbon-900:       #031520;  /* Panel bases */
+  --carbon-800:       #071F30;  /* Raised surfaces */
+  --carbon-border:    rgba(0, 229, 255, 0.32);
+  --cyan-border:      rgba(0, 229, 255, 0.32);
+
+  --text-primary:     #F0F2F8;
+  --text-muted:       #7E859E;
+  --text-cyan:        #70F0FF;
 }
 ```
+
+**Semantic accents used in components:**
+
+| Purpose | Color |
+| :-- | :-- |
+| Neon highlights, active states | `#00F0FF` |
+| Thinking / connecting | `#FFE600` |
+| Re-syncing link, warnings, terminal authorization | `#FFB020` |
+| Errors, deny, destructive hints | `#FF8095` / `#FF003C` |
+| Jarvis bold text in the Comms Log | `#FF8095`; operator bold text `#80F7FF` |
 
 ---
 
 ## 2. Typography Hierarchy
 
-* **Display & Headers (`Orbitron`, sans-serif):**
-  - Used for system designations, HUD status flags, module headers, and large metric readouts.
-  - Styling: `font-weight: 800`, `letter-spacing: 0.12em`, uppercase.
-* **Telemetry & Terminals (`JetBrains Mono`, monospace):**
-  - Used for transcript feeds, latency counters, code helpers, and system telemetry gauges.
-  - Styling: `font-weight: 500`, zero-padding numerals.
-* **Interface Body (`Rajdhani`, sans-serif):**
-  - Used for briefings, search result summaries, and drawer content.
-  - Styling: `font-weight: 500`, `line-height: 1.4`.
+* **Display & Headers (`Orbitron`, `--font-orbitron`):** system designations, HUD status flags, module headers, large metric readouts. Uppercase, wide letter-spacing.
+* **Telemetry & Terminals (`JetBrains Mono`, `--font-jetbrains`):** transcript feeds, latency counters, commands, telemetry gauges, form inputs.
+* **Interface Body (`Rajdhani`, `--font-rajdhani`):** briefings, summaries, drawer content.
 
 ---
 
-## 3. 3D Holographic Stage & Lighting Setup for `adawong.glb`
+## 3. Holographic Visual Core: the Arc Reactor Orb
 
-Because `adawong.glb` utilizes 7 dedicated PBR material slots (`pl1200_11nuno_BM` for dress, `pl0100_00Face_BM` for facial skin, `pl0100_31SideHair_BM` for hair), lighting is specifically tuned to highlight her silhouette:
+`ArcReactorOrb.jsx` renders six layers inside the R3F canvas (`JarvisViewport.jsx`, camera `fov 45`, default distance `z = 5.265`, zoom in / out / reset via the `jarvis-camera-action` event):
 
-### 3.1 Three.js Lighting Setup
-* **Key Light (Neon Crimson):** Directional light positioned top-left (`[-2, 3, 2]`), color `#FF003C`, intensity `2.5`. Casts dramatic neo-noir rim highlights on the crimson dress and hair.
-* **Fill Light (Cyan Hologram):** Directional light positioned lower-right (`[2.5, -1, 1]`), color `#00F0FF`, intensity `1.2`. Balances the dark textures of the holsters and boots.
-* **Ambient Base:** Low-intensity ambient light (`#080812`, intensity `0.45`) ensuring deep shadows without crushed blacks on her face mesh.
+1. **Volumetric point lighting** — electric aqua-cyan lights whose intensity follows status and vocal energy.
+2. **Optical bloom sprite** — radiant star-flare aura around the core.
+3. **White-hot core singularity** — compact core with aqua corona that grows only while speaking.
+4. **Stator dial** — static radial fin ticks and dial rings (a fixed instrument face; it never tilts).
+5. **Radar sweep** — a dim rotating scanner wedge.
+6. **Particle sphere** — a Fibonacci-distributed particle globe outside the dial, the only layer that rotates (drag or procedural), with randomized per-particle opacity.
 
-### 3.2 Post-Processing Stack (`@react-three/postprocessing`)
-1. **Unreal Bloom:**
-   - Threshold: `0.75` | Intensity: `1.25` | Radius: `0.85`
-   - Amplifies emissive elements, glowing holographic grids, and crimson highlights.
-2. **Chromatic Aberration:**
-   - Offset: `[0.0015, 0.0015]`
-   - Subtle tactical lens dispersion around screen perimeters.
-3. **Scanlines & CRT Grain:**
-   - Custom screen-space shader applying faint horizontal lines (opacity: `0.06`) and micro-film grain to mimic a tactical heads-up display.
-4. **Vignette:**
-   - Darkness: `0.6` | Offset: `0.25`
-   - Focuses operator attention squarely on Ada's portrait.
+**Motion by status:** very slow in idle, accelerating together through `LISTENING`, `THINKING`, and `SPEAKING`. **Performance rule:** zero heap allocations inside `useFrame()` (no `new Vector3/Euler/Matrix4`).
 
 ---
 
-## 4. `adawong.glb` Character Rigging & Animation Specs
-
-### 4.1 Model Mesh Composition
-* **Face Mesh (`mesh4_...pl0100_00Face_BM_0`):** Contains head, eyes, and mouth geometry.
-* **Hair Mesh (`mesh11_...pl0100_31SideHair_BM_0`):** Signature fringe and bob cut.
-* **Dress & Gear (`mesh1_...pl1200_11nuno_BM_0`, `mesh10_...Acc`):** Crimson tactical dress, belts, and holsters.
-
-### 4.2 Skeletal Animation Mapping (220 Joints)
-* **Gaze Tracking Bone:** `bone23_022` (Head Joint, Node 104) and `bone22_01` (Neck Joint, Node 105).
-  - Rotates dynamically to follow cursor screen coordinates using `Quaternion.slerp(targetQuat, 0.08)`.
-* **Breathing Simulation:** Sine-wave translation applied to spine bone `bone21_00` and model root.
-* **Lip-Sync Animation:**
-  - **Option A (Morph Targets):** Driven if blendshapes (`jawOpen`, `mouthSmile`) are baked into `mesh4`.
-  - **Option B (Skeletal):** Driven by modulating jaw-region child bones attached to `bone23_022`.
-
----
-
-## 5. Tactical HUD Layout Specification
+## 4. Tactical HUD Layout
 
 ```
-+-------------------------------------------------------------------------+
-| [ADA // STATUS: ACTIVE]    [SPEECH: LISTENING]    [LATENCY: 42ms] [EXIT] |
-+-----------------------+---------------------------------+---------------+
-| 📊 TELEMETRY          |                                 | 💬 COMMS LOG  |
-| - CPU: 18%  [====   ] |          3D HOLOGRAPHIC         | User: "Status"|
-| - RAM: 8.4GB [====== ]|          VIEWPORT OF            | Ada: "Ready.  |
-| - GPU: 34%  [===    ] |          ADA WONG               |  What is our  |
-| - TEMP: 48°C          |         (adawong.glb)           |  next target?"|
-|                       |                                 |               |
-| ⚙️ ACTIVE DIRECTIVES  |    (Audio-reactive lip-sync,    | [TOOL CALL]   |
-| [X] Vision Mode       |     bone23_022 gaze tracking)   | > Web Search  |
-| [ ] Auto Briefing     |                                 |               |
-+-----------------------+---------------------------------+---------------+
-| ──/\__/\_/\/\__ (Real-time Audio Visualizer Waveform) ───────────────── |
-| [🎤 MUTE]    [✋ INTERRUPT]    [🖥️ SCREEN SHARE]    [📂 INTEL DRAWER]   |
-+-------------------------------------------------------------------------+
++-------------------------------------------------------------------------------+
+| [SYSTEMS] [INTEL]          • J.A.R.V.I.S •          [+][-][⟳] [⤢] [COMMS LOG] |
+|                 JUST A RATHER VERY INTELLIGENT SYSTEM                          |
+|                                                                               |
+|  Systems panel        ╭──────────────────────────╮          Comms Log panel   |
+|  (TelemetryPanel)     │     ARC REACTOR ORB      │          (CommsLog)        |
+|                       ╰──────────────────────────╯                            |
+|                                                                               |
+| [● STATUS BADGE] [👂 WAKE CHIP]                                  [📶 latency] |
+| MIC MUTED // Type directive to J.A.R.V.I.S.. [Enter] ________________ [send]  |
+| [CONNECT] [MUTE] [INTERRUPT]   [BRIEFING][MEMORIES][UPLOAD][API KEY][🖥][📷][⚙][📱] |
++-------------------------------------------------------------------------------+
 ```
 
-### 5.1 HUD Micro-Interactions
-* **Status Glow Transitions:**
-  - `LISTENING`: Gentle cyan neon pulse.
-  - `THINKING`: Fast flickering amber alert pulse.
-  - `SPEAKING`: Vibrant scarlet pulse synced to vocal amplitude.
-* **Instant Interruption Button:** Stamped with hazard stripes; hovering glows intense crimson. Clicking instantly halts playback and clears audio buffers (`stopAndFlush`).
-* **Slide-out Intel Drawer:** Slides out smoothly from the screen bottom with `backdrop-blur-md` to reveal rich search tables, code snippets, or vision captures without obstructing Ada's face.
+### 4.1 Status Badge & Chips
 
-### 5.2 Left-Sidebar Settings Menu & Customization HUD (`TelemetryPanel.jsx`)
-* **Navigation Rail Integration:**
-  - Dedicated `SETTINGS` tab button with gear icon (`⚙`) placed in the tactical tab rail alongside `SYS`, `DOSSIER`, `INTEL`, `MEMORY`, `PLUGINS`.
-  - Secondary top-header shortcut button (`⚙`) for instant drawer-style toggling.
-* **Operative Identity Form Controls:**
-  - `Name to Call` field: Monospace high-contrast input styled with `JetBrains Mono`, cyan focus ring (`#00F0FF`), and glowing placeholder text.
-  - Role & Clearance inputs: Subdued dark backgrounds (`rgba(0,0,0,0.4)`), carbon borders (`rgba(255,255,255,0.1)`).
-  - Tactical Directives textarea: Auto-expanding cyber input area for behavioral instructions.
-* **Vocal Core Selector Chips (Gemini Prebuilt Voices):**
-  - Interactive chip buttons for `Aoede`, `Charon`, `Fenrir`, `Kore`, `Puck`.
-  - Inactive state: Dark carbon background (`rgba(255,255,255,0.03)`), muted text (`#7E859E`).
-  - Active state: Cyber Cyan border (`#00F0FF`), glowing background (`rgba(0,240,255,0.15)`), active pulse dot, bold text.
-* **Action & Save State Feedback:**
-  - "SAVE & DEPLOY TO CORE" button styled in Syndicate Crimson (`#FF003C`) with glowing hover states (`shadow-[0_0_15px_rgba(255,0,60,0.4)]`).
-  - Instant visual confirmation badge and real-time notification push to the Comms Log.
+| Status | Badge | Style |
+| :-- | :-- | :-- |
+| `DISCONNECTED` | `STANDBY // OFFLINE` | muted grey |
+| `CONNECTING` | `LINK // ESTABLISHING...` | amber pulse |
+| `RECONNECTING` | `LINK // RE-SYNCING...` | `#FFB020` pulse |
+| `CONNECTED` | `LINK // READY` (mic muted: `MIC OFF // TEXT ONLY`) | cyan |
+| `LISTENING` | `MIC // LISTENING` | cyan pulse |
+| `THINKING` | `NEURAL // PROCESSING` | amber bounce |
+| `SPEAKING` | `JARVIS // TRANSMITTING` | bright cyan, orb core swells |
+
+The **wake chip** beside the badge shows `WAKE // SAY "HEY JARVIS"` while the standby listener runs, or `NEEDS CHROME OR EDGE`, `MIC BLOCKED`, `RETRYING`, `ARMED FOR STANDBY`.
+
+### 4.2 HUD Micro-Interactions
+
+* **Shutter animations:** every panel opens with `scifi-modal-unfold-down` and closes with the 220 ms `scifi-modal-collapse-up`; header buttons close panels through `jarvis-close-*` window events so they animate too.
+* **Instant Interruption:** the INTERRUPT button calls `stopAndFlush()` (barge-in within 50 ms).
+* **Drag & drop:** dropping files anywhere shows the `DROP FILES TO UPLINK` overlay.
+* **Escape:** closes the focused panel; on the command authorization card it denies.
 
 ---
 
-## 6. Glassmorphism Design System & Floating HUD Architecture
+## 5. Glassmorphism Design System & Floating Panels
 
-### 6.1 Universal Glassmorphic Formula
-All tactical modals and floating panels adhere to a unified cybernetic glass standard:
-- **Surface:** `bg-[rgba(8,12,18,0.55)]` (55% opacity dark carbon) or `bg-[rgba(8,12,18,0.35)]` for high-translucency HUD buttons.
-- **Backdrop Filters:** `backdrop-blur-xl backdrop-saturate-150` for realistic chromatic light transmission from the 3D stage.
-- **Perimeter Edge:** `border border-[rgba(0,229,255,0.25)]` with subtle cyan glow drop `shadow-[0_0_40px_rgba(0,229,255,0.12)]`.
-- **Specular Highlight:** `inset_0_1px_0_rgba(255,255,255,0.06)` generating a crisp glass-beveled edge along top borders.
+### 5.1 Universal Glassmorphic Formula
 
-### 6.2 Floating Non-Blocking Panels
-- **Floating Systems Panel (`TelemetryPanel.jsx`):** Anchored at `fixed top-18 left-6 bottom-28 w-88 sm:w-96 z-30`. Toggled from top-left `[ 📊 SYSTEMS ]` button. Features multi-tab tactical navigation (SYS, DOSSIER, INTEL, MEMORY, PLUGINS, MATRIX), smooth sci-fi shutter entry/exit (`scifi-modal-unfold-down` / `scifi-modal-collapse-up`), close button, and `Escape` hotkey.
-- **Floating Comms Log (`CommsLog.jsx`):** Anchored at `fixed top-18 right-6 bottom-28 w-88 sm:w-96 z-30`. Toggled from top-right `[ 📟 COMMS LOG ]` button. Zero background mask or blur overlay, maintaining uninterrupted visibility of the 3D Arc Reactor Orb.
-- **Top-Right Control Cluster:** Camera zoom (`[+]`, `[-]`, `[⟳]`) and Comms Log toggle buttons with `bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150` glassmorphism.
-- **Edge-to-Edge Directive Input:** Transparent, borderless input with standard 2px electric aqua underline (`border-b-2 border-[rgba(0,229,255,0.25)]`), focus glow, and borderless send action.
-- **Neural Memory Vault (`SciFiMemoryVaultModal.jsx`):** Modal with search filter, category tabs, and deep decryption bridge to `SciFiMemoryModal.jsx`.
+- **Surface:** `bg-[rgba(8,12,18,0.55)]` (panels) or `0.35` (HUD buttons).
+- **Backdrop:** `backdrop-blur-xl backdrop-saturate-150`.
+- **Edge:** `border border-[rgba(0,229,255,0.25)]` with `shadow-[0_0_40px_rgba(0,229,255,0.12)]`.
+- **Specular highlight:** `inset_0_1px_0_rgba(255,255,255,0.06)`; chamfered corners via `chamfer-*` utilities.
 
+### 5.2 Panels & Modals
 
+| Component | Placement & behavior |
+| :-- | :-- |
+| `TelemetryPanel.jsx` (Systems) | Left floating panel: CPU, memory, GPU, network, host stats, FPS profiler. |
+| `CommsLog.jsx` | Right floating panel: Markdown-rendered transcript, system lines, no backdrop mask over the orb. |
+| `IntelModal.jsx` | Draggable dossier window: web results, grounded sources, briefing headlines. |
+| `TacticalDrawer.jsx` | Bottom drawer: dossier, intel, memory vault, OS & plugins. |
+| `SciFiSettingsModal.jsx` | Identity, voice core matrix with audio previews, toggles (briefing, mic, humour, wake phrase), plugins. |
+| `SciFiMemoryVaultModal.jsx` / `SciFiMemoryModal.jsx` | Memory vault search, categories, and detail view. |
+| `ApiKeyModal.jsx` | Gemini key entry (stored in browser `localStorage` as `jarvis_gemini_api_key`). |
+| `UploadDropZone.jsx` | Window-wide drop overlay and hidden file picker. |
+| `Media/YouTubePanel.jsx` | Draggable player with queue and volume slider (`FloatingPanel` shell). |
+| `Media/ModelViewerPanel.jsx` | Draggable 3D holo-viewer with stats row and auto-rotate toggle. |
+| `CommandConfirmModal.jsx` | Centered amber authorization card: command, reason, folder, warnings, countdown, DENY / AUTHORIZE. |
+| `Vision/ScreenShareModal.jsx`, `Vision/WebCamPiP.jsx` | Draggable vision panels. |
+| `MobilePairingModal.jsx` | QR pairing for the `/mobile` PWA. |
+
+New floating windows should use `components/Media/FloatingPanel.jsx` (drag bounds, shutter animations, Escape) to stay consistent.

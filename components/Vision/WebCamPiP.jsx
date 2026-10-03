@@ -15,7 +15,7 @@ import {
   Scan,
   GripHorizontal,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 /**
  * WebCamPiP
@@ -30,7 +30,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
     incrementVisionFrames,
     setActiveVisionSource,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -248,8 +248,8 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-webcam", handleExternalClose);
-    return () => window.removeEventListener("ada-close-webcam", handleExternalClose);
+    window.addEventListener("jarvis-close-webcam", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-webcam", handleExternalClose);
   }, [isOpen, triggerClose]);
 
   // Keyboard shortcut: Escape to close

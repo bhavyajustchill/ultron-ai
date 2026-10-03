@@ -91,7 +91,7 @@ function parseDuckDuckGoHtml(html) {
 async function fetchInstantAnswer(query) {
   try {
     const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 Project-ADA/1.0' } });
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 JARVIS-Mark-II/1.0' } });
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -259,7 +259,7 @@ export async function GET(req) {
       });
     }
 
-    // Compose concise takeaway summary for Ada to speak
+    // Compose concise takeaway summary for Jarvis to speak
     const topSnippets = results
       .slice(0, 3)
       .map((r, i) => `${i + 1}. ${r.title}: ${r.snippet.slice(0, 140)}...`)

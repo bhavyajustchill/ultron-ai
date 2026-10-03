@@ -69,7 +69,7 @@ export function AudioWaveform({
         const x = i * (barWidth + 2);
         const y = height - barHeight;
 
-        // Gradient: Ada Scarlet at base to Neon Cyan at crest
+        // Gradient: crimson (#FF003C) at base to neon cyan at crest
         const grad = ctx.createLinearGradient(0, height, 0, y);
         grad.addColorStop(0, '#FF003C');
         grad.addColorStop(1, '#00F0FF');

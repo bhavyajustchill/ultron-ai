@@ -4,7 +4,7 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from "react
 import { Canvas } from "@react-three/fiber";
 import { Bounds, Center, Html, OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
 import { Box, Rotate3d } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { modelFileUrl } from "@/lib/mediaClient";
 import { FloatingPanel } from "@/components/Media/FloatingPanel";
 
@@ -80,8 +80,8 @@ function ModelScene({ url, onStats }) {
  * voice tool or by uploading a .glb / .gltf file.
  */
 export function ModelViewerPanel() {
-  const { isOpen, path, name, nonce } = useAdaStore((state) => state.modelViewer);
-  const setModelViewer = useAdaStore((state) => state.setModelViewer);
+  const { isOpen, path, name, nonce } = useJarvisStore((state) => state.modelViewer);
+  const setModelViewer = useJarvisStore((state) => state.setModelViewer);
   const [stats, setStats] = useState(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const handleStats = useCallback((next) => setStats(next), []);

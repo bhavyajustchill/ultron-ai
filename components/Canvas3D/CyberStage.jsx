@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 /**
  * CyberStage — Pure White Studio Lighting & Clean Stage.
@@ -14,7 +14,7 @@ import { useAdaStore } from "@/lib/store";
  * - Ambient Light: #FFFFFF
  */
 export function CyberStage({ showFloor = true }) {
-  const status = useAdaStore((state) => state.status);
+  const status = useJarvisStore((state) => state.status);
   const ringRef1 = useRef(null);
   const ringRef2 = useRef(null);
   const keyLightRef = useRef(null);
@@ -30,7 +30,7 @@ export function CyberStage({ showFloor = true }) {
       }
     }
 
-    // Subtle white brightness modulation when Ada is speaking
+    // Subtle white brightness modulation when Jarvis is speaking
     if (keyLightRef.current) {
       if (status === "SPEAKING") {
         const pulse = Math.sin(state.clock.elapsedTime * 7) * 0.3 + 2.3;

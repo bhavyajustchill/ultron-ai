@@ -1,9 +1,9 @@
-# 🚀 IMPLEMENTATION PHASES — PROJECT A.D.A
+# 🚀 IMPLEMENTATION PHASES — PROJECT J.A.R.V.I.S
 
-**Codename:** Deployment Roadmap // Operative-Wong  
+**Codename:** Deployment Roadmap // Mark II  
 **Architecture:** Next.js 16 + Three.js (R3F) + JavaScript (JSX) + Gemini Live WebSockets  
-**Active 3D Model:** [`adawong.glb`](./adawong.glb) (7.29 MB, 10 Meshes, 220 Joints)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Visual Core:** Arc Reactor Orb (`components/Canvas3D/ArcReactorOrb.jsx`); Phases 0–5 originally targeted a humanoid avatar model, since replaced  
+**Reference Documents:** [`PRD.md`](./PRD.md), [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 
 ---
 
@@ -25,10 +25,10 @@
 - [x] **Next.js 16 Foundation:** Setup Next.js 16 App Router with JavaScript (JSX), TailwindCSS, and Turbopack.
 - [x] **Audio Ingest Worklet:** Implement `public/audio-worklet-processor.js` for off-thread 48kHz ➔ 16kHz Int16 downsampling.
 - [x] **3D Model Asset Verified:**
-  - Active model confirmed: [`docs/adawong.glb`](./adawong.glb) (7.29 MB).
+  - Active model confirmed: the original humanoid avatar model (`.glb`, since removed) (7.29 MB).
   - Structure verified: 10 skinned sub-meshes (`pl0100_00Face`, `pl1200_11nuno`, `pl0100_31SideHair`, etc.).
   - Rig verified: 220 joints with `bone23_022` (Head) and `bone22_01` (Neck).
-  - [x] Copy to `public/models/adawong.glb` for direct Next.js static serving (7.29 MB verified).
+  - [x] Copy to the avatar model in `public/models/` for direct Next.js static serving (7.29 MB verified).
 - [x] **Design Tokens & Fonts:** Configure Tailwind cyberpunk variables, scanline animations, and import fonts (`Orbitron`, `JetBrains Mono`, `Rajdhani`).
 
 ---
@@ -43,13 +43,13 @@
 - [x] **Gapless Audio Player (`pcmPlayer.js`):**
   - Schedule chunks with `AudioBufferSourceNode` using jitter buffers.
   - Implement instant barge-in `stopAndFlush()` triggered on user speech or manual interrupt.
-- [x] **Persona Injection:** Inject Ada Wong system instructions, tone parameters, and affective dialog toggles.
+- [x] **Persona Injection:** Inject the persona system instructions, tone parameters, and affective dialog toggles.
 
 ---
 
-## Phase 2: 3D Hologram & Lip-Sync Core with `adawong.glb`
+## Phase 2: 3D Hologram & Lip-Sync Core (prototype avatar, superseded by the Arc Reactor Orb)
 
-- [x] **3D Viewport Setup:** Create `AdaViewport.js` loading `adawong.glb` via `@react-three/drei` `useGLTF`.
+- [x] **3D Viewport Setup:** Create `JarvisViewport.js` loading the avatar model via `@react-three/drei` `useGLTF`.
 - [x] **Lighting & Shadows:** Configure cyberpunk dual-rim lighting (Scarlet `#FF003C` + Cyan `#00F0FF`).
 - [x] **Gaze Tracking System (`useGazeTracking.js`):**
   - Target `bone23_022` (Head) and `bone22_01` (Neck).
@@ -66,7 +66,7 @@
 
 - [x] **HUD Shell:** Built high-contrast glassmorphic HUD overlay components (`TelemetryPanel.jsx`, `TacticalDrawer.jsx`, `AudioWaveform.jsx`).
 - [x] **Audio Waveform Canvas:** Real-time oscillating neon frequency visualizer (`AudioWaveform.jsx`).
-- [x] **Comms Log Feed:** Live dialogue transcript, user prompts, Ada replies, tactical markdown rendering (`MarkdownText.jsx`), and quick mic toggle (`CommsLog.jsx`).
+- [x] **Comms Log Feed:** Live dialogue transcript, user prompts, Jarvis replies, tactical markdown rendering (`MarkdownText.jsx`), and quick mic toggle (`CommsLog.jsx`).
 - [x] **Telemetry Dashboard:** Live holographic gauges displaying latency, audio status (`LISTENING`, `THINKING`, `SPEAKING`, `CONNECTED`), 220-joint skeletal parameters, and system metrics (`TelemetryPanel.jsx`).
 - [x] **Tactical Intel Drawer:** Smooth sliding bottom panel with tabs for Operative Dossier, Neural Intel, and System Matrix (`TacticalDrawer.jsx`).
 
@@ -104,7 +104,7 @@
   - [x] Pure WebGL direct rasterization baseline for maximum FPS; optional Cyber-Optics shader controls in `TacticalDrawer.jsx` and top camera bar `[FX: ON/OFF]`.
 - [x] **Performance Benchmarks & Profiler:**
   - [x] Ensure consistent 60–120+ FPS on integrated and dedicated GPUs (verified at 120–220 FPS).
-  - [x] Zero-GC audit on all `useFrame()` hooks (`AdaAvatar.jsx`, `useGazeTracking.js`, `useLipSync.js`).
+  - [x] Zero-GC audit on all `useFrame()` hooks (the avatar component, `useGazeTracking.js`, `useLipSync.js`).
   - [x] Live 1-second sampled zero-allocation FPS & frame time telemetry profiler integrated into `TelemetryPanel.jsx` (`RenderProfilerBadge`).
   - [x] Verify end-to-end voice latency remains under 500ms with real-time status indicators.
 - [x] **Mobile Remote Dashboard (PWA):**
@@ -118,7 +118,7 @@
 ## Phase 6: Advanced Mark-LI Parity & Autonomous Agent Capabilities
 
 - [x] **6.1 Spoken Startup Greeting & Two-Phase Morning Tactical Briefing:**
-  - [x] Dispatch an immediate client content directive turn to Gemini Live on `msg.setupComplete` instructing Ada to speak a 2-sentence tactical greeting aloud (<1s latency) announcing time of day and status.
+  - [x] Dispatch an immediate client content directive turn to Gemini Live on `msg.setupComplete` instructing Jarvis to speak a 2-sentence tactical greeting aloud (<1s latency) announcing time of day and status.
   - [x] Pre-fetch top world news headlines in parallel via DuckDuckGo/Grounding while Phase 1 audio plays.
   - [x] Automatically deliver spoken news summary upon Phase 1 completion and populate the HUD Intel Drawer with headline dossiers.
   - [x] Respect `localStorage` microphone mute preference: greet via audio while maintaining mic muted state.
@@ -136,12 +136,12 @@
   - [x] Enable sliding-window `contextWindowCompression` to lift the 15-minute audio session cap.
   - [x] Session resumption: track `sessionResumptionUpdate` handles, swap sockets on `goAway` at the next idle turn, and auto re-sync dropped links with exponential backoff (0.5s → 8s, 5 attempts) behind a `RECONNECTING` HUD status pill.
   - [ ] Live voice verification with the operator's API key (greeting, tool call, barge-in, voice switch, >15 min session).
-> **Roadmap note (2026-10-04, `DEC-147`):** Items 6.2–6.8 come from the original Project A.D.A roadmap. Where they overlap `features.txt` they are folded into Phase 7; the rest is **deferred** until Phase 7 completes.
+> **Roadmap note (2026-10-04, `DEC-147`):** Items 6.2–6.8 come from the original Project J.A.R.V.I.S roadmap. Where they overlap `features.txt` they are folded into Phase 7; the rest is **deferred** until Phase 7 completes.
 
 - [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Deferred)_
-  - [ ] Buffer active session dialog turns in `useAdaStore` / session state.
+  - [ ] Buffer active session dialog turns in `useJarvisStore` / session state.
   - [ ] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`.
-  - [ ] Implement `pop_last_session()` on startup to inject the previous session's context into Ada's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
+  - [ ] Implement `pop_last_session()` on startup to inject the previous session's context into Jarvis's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
   - [ ] Implement silent spoken language detection: automatically record operator language in identity profile and adapt subsequent greetings.
 - [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Deferred)_
   - [ ] Implement `ProactiveEngine` timer evaluating operator silence duration (15 min silence gate, 20 min cooldown).
@@ -149,7 +149,7 @@
     - _Focus 1:_ Operator's active projects & goals in memory.
     - _Focus 2:_ Time of day & operator wellbeing (late-night check-in, rest reminder).
     - _Focus 3:_ Relevant tactical suggestions or technical tips.
-  - [ ] Smart silence gating: abort trigger if Ada is speaking or if operator spoke within last 30 seconds.
+  - [ ] Smart silence gating: abort trigger if Jarvis is speaking or if operator spoke within last 30 seconds.
 - [ ] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Folded into 7.1 folder organization and 7.7 input control; wallpaper deferred)_
   - [ ] Upgrade `/api/os-control` with robust local Node.js `child_process` / PowerShell execution handlers.
   - [ ] Keyboard typing and hotkey execution (`Ctrl+C`, `Ctrl+V`, `Alt+Tab`, `Enter`).
@@ -161,7 +161,7 @@
   - [ ] Implement voice-controlled actions: go to URL, smart search, CSS/semantic click, form input, element extraction, scrolling, and full-page screenshots.
 - [ ] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:** _(Folded into 7.2 uploads and 7.3/7.7 scaffolding and terminal; self-healing loop deferred)_
   - [ ] Drag-and-drop file upload zone on the HUD supporting images (OCR, resize, compress), PDFs (extract text, summarize), CSV/Excel (filter, stats), and audio/video (transcribe, trim).
-  - [ ] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/AdaProjects`.
+  - [ ] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/JarvisProjects`.
   - [ ] Self-healing execution loop: execute code, capture terminal stdout/stderr, parse tracebacks, and automatically repair errors up to 5 attempts.
 - [ ] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Deferred)_
   - [ ] Topic monitoring service checking user-defined topics daily via DuckDuckGo search.

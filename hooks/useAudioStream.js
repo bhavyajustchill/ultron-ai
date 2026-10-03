@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useCallback, useEffect } from 'react';
-import { useAdaStore } from '@/lib/store';
+import { useJarvisStore } from '@/lib/store';
 
 /**
  * useAudioStream — Manages browser microphone capture and off-thread
@@ -19,9 +19,9 @@ export function useAudioStream({ onAudioChunk, onUserSpeaking }) {
   const isRecordingRef = useRef(false);
   const isStartingRef = useRef(false);
 
-  const isMuted = useAdaStore((state) => state.isMuted);
-  const status = useAdaStore((state) => state.status);
-  const addCommsMessage = useAdaStore((state) => state.addCommsMessage);
+  const isMuted = useJarvisStore((state) => state.isMuted);
+  const status = useJarvisStore((state) => state.status);
+  const addCommsMessage = useJarvisStore((state) => state.addCommsMessage);
   const isMutedRef = useRef(isMuted);
   isMutedRef.current = isMuted;
 

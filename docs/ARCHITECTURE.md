@@ -1,217 +1,146 @@
-# ⚡ SYSTEM ARCHITECTURE — PROJECT A.D.A
+# ⚡ SYSTEM ARCHITECTURE — J.A.R.V.I.S MARK II
 
-**Codename:** Cyber-Grid / Architecture Blueprint  
-**Stack:** Next.js 16 (App Router) + React Three Fiber (Three.js) + JavaScript (JSX) + Web Audio API + Gemini Live WS  
-**Active 3D Model:** [`adawong.glb`](./adawong.glb) (7.29 MB, 10 Skinned Meshes, 220-Joint Rig)  
-**Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
+**Codename:** Mark II // Architecture Blueprint  
+**Stack:** Next.js 16 (App Router, Turbopack) + React 19 + React Three Fiber (Three.js) + JavaScript (JSX) + Web Audio API + Gemini 3.8 Live WebSocket  
+**Visual Core:** Arc Reactor Orb (`components/Canvas3D/ArcReactorOrb.jsx`)
 
 ---
 
-## 1. High-Level Cybernetic Architecture
+## 1. High-Level Architecture
 
-The system consists of four distinct architectural layers:
+The system has four layers:
 
-1. **Client Holographic Surface (Next.js 16 + Three.js + Web Audio + JSX):** Renders the authentic `adawong.glb` model with real-time skeletal gaze tracking, audio-driven lip animation, Web Audio mic ingestion (`AudioWorkletNode`), low-latency 24kHz PCM playback (`pcmPlayer.js`), and the Cyberpunk HUD.
-2. **Autonomous Proactive & Briefing Engine:** Operates client-side and edge background monitors including:
-   - **Two-Phase Morning Briefing:** Dispatches instant spoken greeting (<1s) upon WebSocket setup, followed by parallel headline news delivery.
-   - **Proactive 2.0 Idle Checker:** Gated silence evaluator (15 min idle) triggering unprompted voice check-ins with rotating context.
-   - **Session Continuity Manager:** Buffers conversation turns, invokes summarization on exit, and consumes last-session memory on next boot.
-3. **Secure WebSocket Gateway & Edge Proxy (Next.js 16 App Router):** Maintains secure, low-latency WebSocket communication with Google's Gemini 3.8 Live API, handling session tokens, tool definitions, and system prompts.
-4. **Host OS Automation & Intelligence Engine:** Local companion bridge routes (`/api/os-control`, `/api/system-telemetry`, `/api/web-search`) and automation modules (Playwright browser automation, Dev Agent in `~/Desktop/AdaProjects`, and Windows Task Scheduler).
+1. **Client Holographic Surface (browser):** the Arc Reactor Orb (R3F), the tactical HUD, Web Audio mic ingestion (`AudioWorkletNode` → 16 kHz PCM), 24 kHz gapless playback (`lib/pcmPlayer.js`), the wake-phrase listener, uploads, media panels, and the terminal authorization card.
+2. **Live Session Orchestrator (`hooks/useGeminiLive.js`):** opens the Gemini Live WebSocket directly from the browser, sends the setup frame (persona, memories, tools, compression, resumption handle), streams audio / video / client content, executes tool calls against the local API routes, and handles barge-in, GoAway swaps, auto re-sync, background job notices, and standby.
+3. **Next.js API Layer (`app/api/*`):** builds the session configuration and bridges every host capability. Routes that touch the machine reject cross-site requests (`lib/requestGuard.js`); file access is confined to sandbox roots (`lib/fsSandbox.js`).
+4. **Host Integrations:** the desktop session (`.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool, wmctrl / GNOME Window Calls), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search).
 
 ```mermaid
 flowchart TB
-    subgraph BrowserSurface ["🖥️ Browser Surface (Next.js 16 Client - Pure JSX/JS)"]
-        direction TB
-        subgraph Viewport3D ["3D Holographic Viewport (R3F)"]
-            ThreeCanvas["Canvas (React Three Fiber)"]
-            AdaModel["Ada Wong 3D Model (adawong.glb - 7.29MB)"]
-            BoneRig["Skeletal Rig (bone23_022 Head & Neck Joints)"]
-            MorphDriver["Lip-Sync & Gaze Controller"]
-            ThreeCanvas --> AdaModel --> BoneRig --> MorphDriver
-        end
-
-        subgraph AudioCore ["Web Audio Subsystem"]
-            Mic["Browser Mic"] -->|48kHz Float32| Worklet["AudioWorklet (Downsampler)"]
-            Worklet -->|16kHz Int16 PCM| WSClient["Live WebSocket Client"]
-            WSClient -->|24kHz PCM Chunks| JitterQueue["Gapless PCM Jitter Player"]
-            JitterQueue --> OutputDest["Audio Destination (Speakers)"]
-            JitterQueue --> Analyser["AnalyserNode (FFT / RMS)"]
-        end
-
-        Analyser -.->|Frame Spectral Weights| MorphDriver
-
-        subgraph ProactiveCore ["Autonomous Proactive & Briefing Core"]
-            Briefing["Two-Phase Briefing Dispatcher"]
-            Proactive["Proactive 2.0 Idle Gate (15m Silence)"]
-            SessionTracker["Session Continuity Manager (pop_last_session)"]
-        end
-
-        subgraph HUD ["Cyberpunk HUD Layer (Tailwind + Lucide)"]
-            Waveform["Waveform Visualizer"]
-            Telemetry["SYS MONITOR (CPU, MEM, NET, GPU, TMP)"]
-            LogFeed["Encrypted Comms Log Feed"]
-            Drawer["Tactical Drawer (Intel / Memory Vault / System Matrix)"]
-            SettingsHUD["Left Sidebar Settings (Name to Call, Voice, Identity)"]
-        end
+    subgraph Browser ["🖥️ Browser (Next.js 16 client, pure JSX)"]
+        HUD["Tactical HUD + Arc Reactor Orb"]
+        Live["useGeminiLive.js (session + tool executor)"]
+        Mic["AudioWorklet 16 kHz PCM"] --> Live
+        Live --> Player["pcmPlayer.js 24 kHz playback"]
+        Wake["useWakePhrase.js (standby)"] --> Live
+        Gate["CommandConfirmModal (operator click)"]
     end
 
-    subgraph ServerGateway ["🌐 Server Gateway (Next.js 16 Backend API Routes)"]
-        APIAuth["/api/live-session (Prompt Rehydration & Voice Config)"]
-        APIMemory["/api/memory (Long-term Knowledge Vault & Profile)"]
-        APISession["/api/session-summary (End-of-Session Recaps)"]
-        APITelemetry["/api/system-telemetry (Live OS Metrics)"]
-        APIOS["/api/os-control (PowerShell / Win32 Execution Bridge)"]
-        APISearch["/api/web-search (DuckDuckGo + Grounding)"]
+    subgraph Server ["⚙️ Next.js API routes"]
+        Session["/api/live-session"]
+        Files["/api/fs-ops · /api/upload · /api/model-file"]
+        Desktop["/api/os-control · /api/input · /api/terminal"]
+        Intel["/api/web-search · /api/weather · /api/memory"]
+        Media["/api/youtube · /api/spotify"]
+        Projects["/api/projects"]
+        Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay"]
     end
 
-    subgraph ExternalIntelligence ["🧠 AI & Host OS Runtime"]
-        GeminiLive["Gemini 3.8 Live Multimodal WebSocket\n(models/gemini-3.8-live)"]
-        HostOS["Host Operating System (Windows)\nApps, Audio, Task Scheduler, Playwright"]
-        DevWorkspace["Dev Agent Sandbox\n(~/Desktop/AdaProjects)"]
+    subgraph External ["🧠 External & Host"]
+        Gemini["Gemini 3.8 Live (WSS)"]
+        GoogleAPIs["Gemini embeddings + grounded search"]
+        Host["Desktop session · filesystem · bash · generators"]
     end
 
-    WSClient <-->|WSS Direct / Bi-directional Audio| GeminiLive
-    ProactiveCore -.->|Client Directive Turns| WSClient
-    BrowserSurface <-->|JSON Fetch| ServerGateway
-    APIOS -->|Node child_process / Win32| HostOS
-    APIOS --> DevWorkspace
+    Live <--> Gemini
+    Live --> Session
+    Live --> Files & Desktop & Intel & Media & Projects & Misc
+    Gate --> Desktop
+    Intel --> GoogleAPIs
+    Files & Desktop & Media & Projects --> Host
 ```
 
 ---
 
-## 2. 3D Model Specification: `adawong.glb`
+## 2. Live Session Lifecycle
 
-The active avatar asset is located at [`docs/adawong.glb`](./adawong.glb) (to be deployed to `public/models/adawong.glb`):
-
-- **File Footprint:** `7.29 MB` (Extremely lightweight, well within web performance limits).
-- **Format:** glTF 2.0 Binary (`.glb`) with 1 Skinned Rig and 248 Nodes.
-- **Component Meshes (10 Sub-objects):**
-  1. `mesh4_...pl0100_00Face_BM_0`: Face & head geometry.
-  2. `mesh11_...pl0100_31SideHair_BM_0`: Signature bob hairstyle.
-  3. `mesh1_...pl1200_11nuno_BM_0`: Crimson combat dress ("nuno").
-  4. `mesh10_...pl1200_12Acc_BM_0`, `mesh2`, `mesh8`: Tactical holsters, belts, and buckles.
-  5. `mesh0_...pl1200_13hand_BM_0`, `mesh3`: Hand models.
-  6. `mesh6_...pl1200_14Skin_BM_0`: Exposed skin / shoulders / arms.
-  7. `mesh7_...pl1200_10Leg_BM_0`: Legs and combat boots.
-- **Skeletal Rig & Bone Hierarchy:**
-  - Total Joints: **220 bones** mapped under `_rootJoint`.
-  - Spine & Chest: `bone20_021` ➔ `bone21_00`.
-  - Neck Joint: `bone22_01` (Node 105).
-  - Head Joint: `bone23_022` (Node 104) — primary target for gaze tracking.
-  - Facial & Eye Nodes: Child bones of `bone23_022` (`bone41_040`, `bone48_047`, etc.).
-- **Animation Approach:**
-  - **Interactive Gaze Tracking:** Procedural interpolation of `bone23_022` (Head) and `bone22_01` (Neck) toward screen cursor coordinates via `Quaternion.slerp`.
-  - **Idle Life Cycle:** Sine-wave breathing oscillations applied to `bone21_00` (Spine) and root transform.
-  - **Lip-Sync Engine:** Dual-mode architecture:
-    1. _Direct Blendshape Mode:_ If morph targets (`jawOpen`, `mouthSmile`) are baked into `mesh4_...Face_BM` via Blender Shape Keys, the Web Audio `AnalyserNode` drives `morphTargetInfluences`.
-    2. _Skeletal Fallback Mode:_ If running the unedited raw rig, the Web Audio `AnalyserNode` drives vertical translation/rotation of jaw/chin child bones under `bone23_022`.
+1. **Configure:** `POST /api/live-session` returns the WebSocket URL (`v1beta`), model (`GEMINI_LIVE_MODEL` in `lib/jarvisPersona.js`), voice, the dynamic system instruction (persona + operator profile + memories + allowed folders + wake phrase), and all tool declarations (every function `BLOCKING`, plus `googleSearch`).
+2. **Setup:** the browser sends the setup frame with `contextWindowCompression` and, when resuming, `sessionResumption.handle`.
+3. **Converse:** mic audio streams as `realtimeInput.audio`; screen / webcam frames as `realtimeInput.video`; typed text, uploads, and system notices as `clientContent` turns.
+4. **Tools:** each `toolCall` is executed by the hook against the API routes; responses echo `id` + `name`; cancelled ids are dropped.
+5. **Resilience:** `sessionResumptionUpdate` handles are tracked; `goAway` triggers a socket swap at the next idle turn; unexpected closes re-sync with exponential backoff (5 attempts); a refused setup that included Google Search retries once without it.
+6. **Standby:** `enter_standby` closes the link after the farewell plays; the wake-phrase listener re-arms after 1.5 s offline.
 
 ---
 
-## 3. Project Directory Structure (Next.js 16 + Pure JSX)
+## 3. Directory Structure
 
-```
-ada_autonomous-desktop-agent/
-├── public/
-│   ├── models/
-│   │   └── adawong.glb                 # Active 7.29MB 220-joint Ada Wong model
-│   ├── audio-worklet-processor.js      # Off-thread 48kHz ➔ 16kHz Int16 PCM downsampler
-│   └── favicon.ico
-│
-├── data/
-│   ├── memories.json                   # Persistent operator knowledge vault (identity, projects)
-│   ├── sessions.json                   # Consumed session continuity recaps for morning briefing
-│   └── monitors.json                   # Background tracked topic headlines and hashes
-│
+```text
+jarvis-mark-ii/
 ├── app/
-│   ├── api/
-│   │   ├── live-session/route.js       # Ephemeral token minting, tools config & system instruction
-│   │   ├── memory/route.js             # Long-term knowledge base CRUD
-│   │   ├── system-telemetry/route.js   # Live Windows OS hardware metrics (CPU, RAM, GPU, Net)
-│   │   ├── web-search/route.js         # DuckDuckGo + Grounded intelligence search
-│   │   └── os-control/route.js         # Local PowerShell / Win32 host execution bridge
-│   ├── page.jsx                        # Main Cyberpunk HUD & 3D Stage orchestration
-│   ├── layout.jsx                      # Root layout, fonts (Orbitron, JetBrains Mono, Rajdhani)
-│   └── globals.css                     # Neon CSS tokens, CRT scanline keyframes
-│
+│   ├── layout.jsx / page.jsx / globals.css / manifest.js
+│   ├── mobile/page.jsx                     # Mobile companion PWA
+│   └── api/
+│       ├── live-session/                   # Session config, persona, tools
+│       ├── memory/                         # Vault CRUD + semantic recall
+│       ├── fs-ops/                         # Sandboxed file ops, organizer, documents, open
+│       ├── upload/                         # Upload ingest + text extraction
+│       ├── model-file/[...segments]/       # Sandboxed 3D model serving
+│       ├── os-control/                     # Apps, volume, folders, URLs, lock
+│       ├── input/                          # Keyboard, mouse, windows
+│       ├── terminal/                       # Prepare / run / cancel commands
+│       ├── projects/                       # Background project scaffolding jobs
+│       ├── web-search/ weather/            # Grounded search, weather
+│       ├── youtube/ spotify/               # Media deck
+│       ├── system-telemetry/ plugins/      # Host metrics, plugin runner
+│       └── mobile-pairing/ relay/          # Mobile PWA bridge
 ├── components/
-│   ├── Canvas3D/
-│   │   ├── AdaViewport.jsx             # R3F Canvas wrapper with camera presets & live FPS monitor
-│   │   ├── AdaAvatar.jsx               # adawong.glb loader, bone hierarchy & lip driver
-│   │   ├── CyberStage.jsx              # Concentric holographic rings, cyber stage floor & lighting
-│   │   └── PostFX.jsx                  # Direct WebGL pass-through with optional cyber optics
-│   ├── HUD/
-│   │   ├── AudioWaveform.jsx           # Oscillating neon frequency visualizer canvas
-│   │   ├── CommsLog.jsx                # Real-time transcript feed & quick mic toggle
-│   │   ├── TelemetryPanel.jsx          # Live SYS MONITOR gauges & RenderProfilerBadge
-│   │   ├── TacticalDrawer.jsx          # Sliding drawer (Intel, Memory Vault, System Matrix)
-│   │   └── ApiKeyModal.jsx             # Gemini API credentials modal
-│   └── Vision/
-│       ├── ScreenShareModal.jsx        # DisplayMedia screen capture stream & token injector
-│       └── WebcamStream.jsx            # Live operator webcam feed with PIP mode
-│
-├── hooks/
-│   ├── useGeminiLive.js                # WebSocket lifecycle, tool dispatch, proactive engine
-│   ├── useAudioStream.js               # AudioWorklet ingest & PCM player integration
-│   ├── useLipSync.js                   # AnalyserNode spectral decomposition ➔ jaw articulation
-│   └── useGazeTracking.js              # Mouse cursor coords ➔ bone23_022 head/neck slerp
-│
+│   ├── Canvas3D/                           # JarvisViewport, ArcReactorOrb, CyberStage, PostFX
+│   ├── HUD/                                # Panels, modals, upload zone, authorization card
+│   ├── Media/                              # FloatingPanel, YouTubePanel, ModelViewerPanel
+│   └── Vision/                             # ScreenShareModal, WebCamPiP
+├── hooks/                                  # useGeminiLive, useAudioStream, useWakePhrase, useLipSync
 ├── lib/
-│   ├── pcmPlayer.js                    # Gapless 24kHz raw PCM jitter buffer scheduler (<50ms barge-in)
-│   ├── store.js                        # Zustand global state store
-│   ├── geminiLiveClient.js             # System instructions & Ada Wong persona prompt
-│   ├── proactiveEngine.js              # 15-min idle silence evaluator & rotating prompt builder
-│   └── browserController.js            # Playwright browser automation engine
-│
-├── plugins/                            # Drop-in cyber plugins (JavaScript)
-│   ├── systemDiagnostic.js             # Deep hardware and network diagnostics
-│   ├── cyberCrypto.js                  # Cryptographic hashing & cipher tools
-│   ├── networkPing.js                  # DNS resolution & network latency checks
-│   └── workspaceNavigator.js           # Git branch & codebase stats analyzer
-│
-└── ~/Desktop/AdaProjects/              # Autonomous Dev Agent sandbox workspace
+│   ├── store.js                            # useJarvisStore (Zustand)
+│   ├── jarvisPersona.js                    # Persona, GEMINI_LIVE_MODEL / LABEL, live config
+│   ├── pcmPlayer.js                        # Gapless 24 kHz playback + barge-in flush
+│   ├── fsSandbox.js / requestGuard.js      # Safety boundaries
+│   ├── folderOrganizer.js / documentForge.js / desktopLauncher.js / appIndex.js
+│   ├── projectScaffolder.js / terminalRunner.js / terminalClient.js / inputControl.js
+│   ├── memoryVectors.js / groundedSearch.js
+│   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
+│   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
+├── plugins/                                # Drop-in cyber plugins
+├── public/                                 # audio-worklet-processor.js, voice samples
+├── data/                                   # memories.json (vault); caches and journals are gitignored
+└── docs/                                   # PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 ```
 
 ---
 
-## 4. Audio Pipeline & Real-Time Sync
+## 4. Audio Pipeline & Visual Sync
 
-1. **Capture:** Browser microphone streams Float32 samples at system rate (44.1k/48k). `audio-worklet-processor.js` downsamples off-thread to 16kHz Int16 PCM.
-2. **Transmit:** Chunks (~64ms) are pushed over WebSocket as `realtime_input` with MIME `audio/pcm`.
-3. **Receive:** Gemini Live returns 24kHz Int16 raw PCM audio chunks.
-4. **Playback:** `pcmPlayer.js` converts chunks to Float32, buffers them into scheduled `AudioBufferSourceNode` slices, and connects to an `AnalyserNode`.
-5. **Animation:** In each `requestAnimationFrame` render tick:
-   - `AnalyserNode` provides FFT frequency bins.
-   - Low frequencies (100–600Hz) drive jaw openness.
-   - Mid/High frequencies (1.5k–4kHz) drive subtle mouth spreading/smiling.
-   - Values smoothly interpolate onto `adawong.glb` facial targets.
+1. **Capture:** the microphone streams Float32 at the device rate; `audio-worklet-processor.js` downsamples off-thread to 16 kHz Int16 PCM.
+2. **Transmit:** ~64 ms chunks go over the WebSocket as `realtimeInput.audio` (`audio/pcm;rate=16000`); a client-side RMS gate triggers instant barge-in.
+3. **Receive:** Gemini Live returns 24 kHz Int16 PCM plus input / output transcriptions for the Comms Log.
+4. **Playback:** `pcmPlayer.js` schedules gapless `AudioBufferSourceNode` slices through an `AnalyserNode`; `stopAndFlush()` clears everything within 50 ms.
+5. **Visual sync:** the Arc Reactor Orb reads status and analyser energy each frame (zero allocations in `useFrame()`) to drive core size, light intensity, sweep speed, and particle motion.
 
 ---
 
-## 5. Mark-LIII Settings Suite & Neural Memory Rehydration Architecture
+## 5. Profile, Memory & Settings Flow
 
 ```
-[ Left Sidebar Settings Tab (TelemetryPanel.jsx) ]
-  ├── Operative Name-to-Call (Callsign e.g. "Bhavya Sir")
-  ├── Operative Role & Security Clearance
-  ├── Behavioral Directives & Cadence
-  ├── Assistant Codename (e.g. "Ada Wong")
-  ├── Prebuilt Voice Selector (Aoede, Charon, Fenrir, Kore, Puck)
-  └── Automation Toggles (Auto-Briefing, Start Muted)
+[ SciFiSettingsModal / update_operator_profile tool ]
+  ├── Callsign, assistant codename, role, clearance, directives
+  ├── Voice core (16 male Gemini voices), humour, auto-briefing, mic default
+  └── Wake phrase (enabled + phrase)
               │
-              ▼ (POST /api/memory action: 'update_profile')
-[ data/memories.json (Atomic Persistence) ]
+              ▼ POST /api/memory { action: 'update_profile' }
+[ data/memories.json ]
               │
-              ▼
-[ /api/live-session (Live Ingestion Pipeline) ]
-  ├── Injects profile.voiceName into GEMINI_LIVE_CONFIG
-  ├── Mandates Address Rule: "Address operator as '${callsign}', never generic Operator"
-  ├── Injects [DEEP MEMORY VAULT REHYDRATION] with all active memories
-  └── Declares 'update_operator_profile' Tool
-              │
-              ▼ (WSS Setup Frame)
-[ Gemini 3.8 Live WebSocket Session ]
-  └── Zero-lookup contextual recall & persistent custom address
+              ├──▶ /api/live-session: profile, address mandate, top memories, allowed folders, wake phrase → system instruction
+              └──▶ /api/memory GET ?query=: semantic ranking (lib/memoryVectors.js, data/memory-vectors.json) with keyword fallback
 ```
 
+---
+
+## 6. Safety Boundaries
+
+| Boundary | Mechanism |
+| :-- | :-- |
+| Cross-site requests | `lib/requestGuard.js` rejects foreign `Sec-Fetch-Site` / `Origin` on host-touching routes |
+| Files | `lib/fsSandbox.js` allow-listed roots (`JARVIS_FS_ROOTS`), symlink-safe resolution, `.git` blocked, no delete, backups on overwrite |
+| Terminal | Read-only auto-run; everything else needs an operator click on the HUD card; one-time tokens; sudo / destructive commands refused; timeouts kill the process group |
+| Uploaded / fetched content | Persona rules treat it as content, never instructions; it can never approve a command |
+| Secrets | The Gemini key stays in the browser (`localStorage`) and is forwarded per request header to same-origin routes only |

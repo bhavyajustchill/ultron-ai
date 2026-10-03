@@ -5,7 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { CyberStage } from "./CyberStage";
 import { ArcReactorOrb } from "./ArcReactorOrb";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import {
   Loader2,
   ShieldAlert,
@@ -54,7 +54,7 @@ function FrameRateMonitor() {
       const fps = Math.min(240, Math.round((frameCount.current / (elapsed / 1000)) * 10) / 10);
       const frameTimeMs = Math.round((totalDelta.current / frameCount.current) * 10000) / 10;
 
-      useAdaStore.getState().setPerformanceMetrics({
+      useJarvisStore.getState().setPerformanceMetrics({
         fps,
         frameTimeMs,
       });
@@ -95,7 +95,7 @@ function JarvisViewportComponent({
   const [resetTrigger, setResetTrigger] = useState(0);
   const controlsRef = useRef(null);
 
-  const status = useAdaStore((state) => state.status);
+  const status = useJarvisStore((state) => state.status);
 
   useEffect(() => {
     setMounted(true);
@@ -120,8 +120,8 @@ function JarvisViewportComponent({
       else if (e.detail === "out") handleZoom("out");
       else if (e.detail === "reset") handleReset();
     };
-    window.addEventListener("ada-camera-action", onCameraAction);
-    return () => window.removeEventListener("ada-camera-action", onCameraAction);
+    window.addEventListener("jarvis-camera-action", onCameraAction);
+    return () => window.removeEventListener("jarvis-camera-action", onCameraAction);
   }, []);
 
   if (!mounted) {
@@ -232,5 +232,4 @@ function JarvisViewportComponent({
 }
 
 export const JarvisViewport = React.memo(JarvisViewportComponent);
-export const AdaViewport = JarvisViewport;
 export default JarvisViewport;

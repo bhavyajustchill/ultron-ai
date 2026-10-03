@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useCallback, useEffect, useState } from 'react';
-import { useAdaStore } from '@/lib/store';
+import { useJarvisStore } from '@/lib/store';
 import { PCMStreamPlayer } from '@/lib/pcmPlayer';
 import { useAudioStream } from '@/hooks/useAudioStream';
 import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
@@ -78,7 +78,7 @@ export function useGeminiLive() {
     setStatus,
     setLatencyMs,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   // Initialize PCM Stream Player on first mount
   useEffect(() => {
@@ -94,7 +94,7 @@ export function useGeminiLive() {
         setStatus('SPEAKING');
       } else {
         if (wsRef.current && isSetupCompleteRef.current) {
-          const isMutedNow = useAdaStore.getState().isMuted;
+          const isMutedNow = useJarvisStore.getState().isMuted;
           setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
         }
       }
@@ -124,7 +124,7 @@ export function useGeminiLive() {
     briefingStateRef.current = 'IDLE';
     currentTurnTextRef.current = '';
     if (isPlaying && wsRef.current && isSetupCompleteRef.current) {
-      const isMutedNow = useAdaStore.getState().isMuted;
+      const isMutedNow = useJarvisStore.getState().isMuted;
       setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
     }
   }, [setStatus]);
@@ -366,8 +366,8 @@ export function useGeminiLive() {
       const activeVoice = isResume
         ? voiceRef.current
         : overrideVoice ||
-          useAdaStore.getState().operatorProfile?.voiceName ||
-          (typeof window !== 'undefined' ? localStorage.getItem('ada_voice_name') : null) ||
+          useJarvisStore.getState().operatorProfile?.voiceName ||
+          (typeof window !== 'undefined' ? localStorage.getItem('jarvis_voice_name') : null) ||
           'Aoede';
 
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -406,7 +406,7 @@ export function useGeminiLive() {
 
           if (!sessionRes.ok) {
             if (sessionData.error === 'MISSING_API_KEY') {
-              useAdaStore.getState().setIsKeyModalOpen(true);
+              useJarvisStore.getState().setIsKeyModalOpen(true);
               addCommsMessage('system', 'Gemini API Key required. Please enter your key in the credentials prompt.');
               setStatus('DISCONNECTED');
               return;
@@ -415,7 +415,7 @@ export function useGeminiLive() {
           }
 
           if (sessionData.profile) {
-            useAdaStore.getState().setOperatorProfile(sessionData.profile);
+            useJarvisStore.getState().setOperatorProfile(sessionData.profile);
           }
 
           if (withoutSearch && sessionData.tools) {
@@ -502,7 +502,7 @@ export function useGeminiLive() {
               isSetupCompleteRef.current = true;
               isEstablishedRef.current = true;
               linkUpSinceRef.current = Date.now();
-              const isMutedNow = useAdaStore.getState().isMuted;
+              const isMutedNow = useJarvisStore.getState().isMuted;
               const isPlayingNow = pcmPlayerRef.current?.activeSources?.size > 0;
               setStatus(isPlayingNow ? 'SPEAKING' : isMutedNow ? 'CONNECTED' : 'LISTENING');
               if (isResume) {
@@ -565,7 +565,7 @@ export function useGeminiLive() {
                 briefingStateRef.current = 'PHASE1';
                 setTimeout(() => {
                   if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-                  const { operatorProfile } = useAdaStore.getState();
+                  const { operatorProfile } = useJarvisStore.getState();
                   const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
                   const enableHumor = operatorProfile?.enableHumor !== false;
                   const now = new Date();
@@ -633,12 +633,12 @@ export function useGeminiLive() {
 
                 for (const call of functionCalls) {
                   if (call.name === 'get_system_telemetry') {
-                    let currentStats = useAdaStore.getState().systemTelemetry;
+                    let currentStats = useJarvisStore.getState().systemTelemetry;
                     try {
                       const res = await fetch('/api/system-telemetry');
                       if (res.ok) {
                         const freshData = await res.json();
-                        useAdaStore.getState().setSystemTelemetry(freshData);
+                        useJarvisStore.getState().setSystemTelemetry(freshData);
                         currentStats = freshData;
                       }
                     } catch (err) {
@@ -702,7 +702,7 @@ export function useGeminiLive() {
                       );
 
                       // Display weather dossier in Tactical Drawer
-                      useAdaStore.getState().addIntelResult({
+                      useJarvisStore.getState().addIntelResult({
                         query: `Weather in ${loc.full_address || loc.name}`,
                         mode: 'weather',
                         summary: weatherOutput.summary,
@@ -768,7 +768,7 @@ export function useGeminiLive() {
                     };
 
                     try {
-                      const searchKey = apiKeyRef.current || useAdaStore.getState().userApiKey || '';
+                      const searchKey = apiKeyRef.current || useJarvisStore.getState().userApiKey || '';
                       const res = await fetch(
                         `/api/web-search?query=${encodeURIComponent(query)}&mode=${encodeURIComponent(mode)}`,
                         { headers: searchKey ? { 'x-gemini-api-key': searchKey } : {} }
@@ -776,7 +776,7 @@ export function useGeminiLive() {
                       if (res.ok) {
                         const data = await res.json();
                         searchOutput = data;
-                        useAdaStore.getState().addIntelResult({
+                        useJarvisStore.getState().addIntelResult({
                           query,
                           mode,
                           summary: data.summary,
@@ -817,12 +817,12 @@ export function useGeminiLive() {
                     );
 
                     let memoryData = {
-                      profile: useAdaStore.getState().operatorProfile,
-                      memories: useAdaStore.getState().memories || [],
+                      profile: useJarvisStore.getState().operatorProfile,
+                      memories: useJarvisStore.getState().memories || [],
                     };
 
                     try {
-                      const recallKey = apiKeyRef.current || useAdaStore.getState().userApiKey || '';
+                      const recallKey = apiKeyRef.current || useJarvisStore.getState().userApiKey || '';
                       const res = await fetch(
                         `/api/memory?query=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`,
                         { headers: recallKey ? { 'x-gemini-api-key': recallKey } : {} }
@@ -831,7 +831,7 @@ export function useGeminiLive() {
                         const data = await res.json();
                         memoryData = data;
                         if (data.profile) {
-                          useAdaStore.getState().setOperatorProfile(data.profile);
+                          useJarvisStore.getState().setOperatorProfile(data.profile);
                         }
                       }
                     } catch (err) {
@@ -888,7 +888,7 @@ export function useGeminiLive() {
                       if (res.ok) {
                         const data = await res.json();
                         if (data.memory) {
-                          useAdaStore.getState().addMemory(data.memory);
+                          useJarvisStore.getState().addMemory(data.memory);
                           storeResult = data.memory;
                         }
                       }
@@ -906,7 +906,7 @@ export function useGeminiLive() {
                     if (nameMatch && nameMatch[1]) {
                       const extractedName = nameMatch[1].trim();
                       if (extractedName && extractedName.length < 30) {
-                        useAdaStore.getState().setOperatorProfile({ callsign: extractedName });
+                        useJarvisStore.getState().setOperatorProfile({ callsign: extractedName });
                         fetch('/api/memory', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
@@ -952,7 +952,7 @@ export function useGeminiLive() {
                       `[SETTINGS] Inscribing profile update to neural core: ${Object.keys(updates).join(', ')}...`
                     );
 
-                    let updatedProfile = { ...useAdaStore.getState().operatorProfile, ...updates };
+                    let updatedProfile = { ...useJarvisStore.getState().operatorProfile, ...updates };
 
                     try {
                       const res = await fetch('/api/memory', {
@@ -963,7 +963,7 @@ export function useGeminiLive() {
                       if (res.ok) {
                         const data = await res.json();
                         if (data.profile) {
-                          useAdaStore.getState().setOperatorProfile(data.profile);
+                          useJarvisStore.getState().setOperatorProfile(data.profile);
                           updatedProfile = data.profile;
                         }
                       }
@@ -1054,8 +1054,8 @@ export function useGeminiLive() {
                         body: JSON.stringify({ pluginId, args }),
                       });
                       pluginResult = await res.json();
-                      if (useAdaStore.getState().setLastPluginOutput) {
-                        useAdaStore.getState().setLastPluginOutput(pluginResult);
+                      if (useJarvisStore.getState().setLastPluginOutput) {
+                        useJarvisStore.getState().setLastPluginOutput(pluginResult);
                       }
                     } catch (err) {
                       console.error('[useGeminiLive] Plugin execution error:', err);
@@ -1118,7 +1118,7 @@ export function useGeminiLive() {
 
                   if (call.name === 'enter_standby') {
                     standbyRequestedRef.current = true;
-                    const phrase = useAdaStore.getState().operatorProfile?.wakePhrase || DEFAULT_WAKE_PHRASE;
+                    const phrase = useJarvisStore.getState().operatorProfile?.wakePhrase || DEFAULT_WAKE_PHRASE;
                     addCommsMessage('system', '[WAKE] Standby requested. Closing the link after Jarvis signs off...');
                     functionResponses.push({
                       response: {
@@ -1135,7 +1135,7 @@ export function useGeminiLive() {
                   if (call.name === 'youtube_player') {
                     const args = call.args || {};
                     const action = args.action || 'play';
-                    const store = useAdaStore.getState();
+                    const store = useJarvisStore.getState();
                     const { youtube } = store;
                     const describeVideo = (video) => ({ title: video.title, channel: video.channel, duration: video.duration, live: video.live });
                     let output;
@@ -1393,7 +1393,7 @@ export function useGeminiLive() {
                 const { queries, sources } = groundingRef.current;
                 if (sources.size > 0) {
                   const searchedFor = [...queries].join(' / ') || 'Google Search grounding';
-                  useAdaStore.getState().addIntelResult(
+                  useJarvisStore.getState().addIntelResult(
                     {
                       query: searchedFor,
                       mode: 'grounded',
@@ -1414,13 +1414,13 @@ export function useGeminiLive() {
 
                 // Return to idle state once full turn concludes
                 if (!pcmPlayerRef.current || pcmPlayerRef.current.activeSources.size === 0) {
-                  const isMutedNow = useAdaStore.getState().isMuted;
+                  const isMutedNow = useJarvisStore.getState().isMuted;
                   setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
                 }
 
                 // Phase 2: After Phase 1 greeting finishes, fetch news and dispatch intelligence briefing
                 if (briefingStateRef.current === 'PHASE1') {
-                  const { operatorProfile } = useAdaStore.getState();
+                  const { operatorProfile } = useJarvisStore.getState();
                   const shouldAutoBrief = operatorProfile?.autoBriefing !== false;
 
                   if (!shouldAutoBrief) {
@@ -1451,7 +1451,7 @@ export function useGeminiLive() {
 
                       let newsSummary = '';
                       try {
-                        const newsKey = apiKeyRef.current || useAdaStore.getState().userApiKey || '';
+                        const newsKey = apiKeyRef.current || useJarvisStore.getState().userApiKey || '';
                         const newsRes = await fetch('/api/web-search?query=top+world+news+today&mode=news', {
                           headers: newsKey ? { 'x-gemini-api-key': newsKey } : {},
                         });
@@ -1460,7 +1460,7 @@ export function useGeminiLive() {
                           newsSummary = newsData.summary || '';
                           // Push results to Intel tab in Tactical Drawer
                           if (newsData.results && newsData.results.length > 0) {
-                            const { addIntelResult } = useAdaStore.getState();
+                            const { addIntelResult } = useJarvisStore.getState();
                             if (addIntelResult) {
                               newsData.results.slice(0, 5).forEach((r) =>
                                 addIntelResult({
@@ -1477,7 +1477,7 @@ export function useGeminiLive() {
                         console.warn('[useGeminiLive] News fetch failed, briefing without live intel:', err);
                       }
 
-                      const { operatorProfile } = useAdaStore.getState();
+                      const { operatorProfile } = useJarvisStore.getState();
                       const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
                       const now = new Date();
                       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -1648,10 +1648,10 @@ export function useGeminiLive() {
       }
 
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        const activeKey = useAdaStore.getState().userApiKey || useAdaStore.getState().loadStoredApiKey();
+        const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
         if (!activeKey) {
           addCommsMessage('system', 'Gemini API Key required to link live session. Please enter your key in the prompt.');
-          useAdaStore.getState().setIsKeyModalOpen(true);
+          useJarvisStore.getState().setIsKeyModalOpen(true);
           return false;
         }
         addCommsMessage('system', 'Link offline. Establishing secure channel for queued transmission...');
@@ -1702,11 +1702,11 @@ export function useGeminiLive() {
       }
 
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        const activeKey = useAdaStore.getState().userApiKey || useAdaStore.getState().loadStoredApiKey();
+        const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
         if (!activeKey) {
           pendingPartsRef.current = null;
           addCommsMessage('system', 'Gemini API Key required to link live session. Please enter your key in the prompt.');
-          useAdaStore.getState().setIsKeyModalOpen(true);
+          useJarvisStore.getState().setIsKeyModalOpen(true);
           return false;
         }
         addCommsMessage('system', 'Link offline. Establishing secure channel for queued upload...');
@@ -1766,7 +1766,7 @@ export function useGeminiLive() {
       // Flush current audio, set state, dispatch Phase 1
       if (pcmPlayerRef.current) pcmPlayerRef.current.stopAndFlush();
       briefingStateRef.current = 'PHASE1';
-      const { operatorProfile } = useAdaStore.getState();
+      const { operatorProfile } = useJarvisStore.getState();
       const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
       const enableHumor = operatorProfile?.enableHumor !== false;
       const now = new Date();
@@ -1808,12 +1808,12 @@ export function useGeminiLive() {
   // Register active connectSession callback into global store for HUD modals
   useEffect(() => {
     connectSessionRef.current = connectSession;
-    const { setReconnectSession } = useAdaStore.getState();
+    const { setReconnectSession } = useJarvisStore.getState();
     if (setReconnectSession) {
       setReconnectSession(connectSession);
     }
     return () => {
-      const store = useAdaStore.getState();
+      const store = useJarvisStore.getState();
       if (store.setReconnectSession) {
         store.setReconnectSession(null);
       }

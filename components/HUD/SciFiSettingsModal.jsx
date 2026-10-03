@@ -26,7 +26,7 @@ import {
   Terminal,
   Ear,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 
@@ -194,7 +194,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     isPluginsLoading,
     lastPluginOutput,
     setLastPluginOutput,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef(null);
@@ -356,7 +356,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           "system",
           `[VOICE LINK] Re-linking live neural channel with calibrated "${draft.voiceName}" vocal core (Humor: ${draft.enableHumor ? "ON" : "OFF"})...`
         );
-        const activeKey = useAdaStore.getState().userApiKey || useAdaStore.getState().loadStoredApiKey();
+        const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
         reconnectFn(activeKey, draft.voiceName);
       }
 
@@ -690,7 +690,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <FileText className="w-3.5 h-3.5 text-[#00F0FF]" /> OPERATIONAL DIRECTIVES & PREFERENCES
             </span>
             <span className="text-[10px] text-[#7E859E]">
-              Custom behavioral directives injected directly into Ada's neural system prompt:
+              Custom behavioral directives injected directly into Jarvis's neural system prompt:
             </span>
             <textarea
               rows={3}
@@ -814,7 +814,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             </div>
 
             <p className="text-[10px] text-[#A6AFC2] leading-snug">
-              Modular desktop capabilities and diagnostic extensions integrated into Ada's autonomous tool runtime.
+              Modular desktop capabilities and diagnostic extensions integrated into Jarvis's autonomous tool runtime.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
