@@ -27,7 +27,7 @@ const DEFAULT_MEMORY_DATA = {
     },
     {
       id: 'mem-seed-2',
-      content: 'Primary vocal core calibrated to Charon model on Gemini 3.1 Flash Multimodal Live WebSocket.',
+      content: 'Vocal core runs on the Gemini Live multimodal WebSocket; the active voice is whichever core is selected in Settings.',
       category: 'tactical',
       importance: 'medium',
       timestamp: new Date().toISOString(),

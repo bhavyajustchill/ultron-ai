@@ -2,7 +2,7 @@
 
 **Codename:** Operative-Wong // Mark-LI Next-Gen Web Architecture  
 **Target Platform:** Next.js 16 (App Router) + React Three Fiber (Three.js) + JavaScript (JSX) + Web Audio API  
-**AI Core:** Gemini 2.5 Multimodal Live API (Bidirectional WebSocket Audio)  
+**AI Core:** Gemini 3.8 Live API (Bidirectional WebSocket Audio)  
 **Persona:** Ada Wong (Resident Evil // Cyberpunk Syndicate Infiltrator)  
 **Reference Document:** [`ada_wong_realtime_voice_spec.md`](../ada_wong_realtime_voice_spec.md)
 
@@ -14,7 +14,7 @@
 
 Instead of robotic text-to-speech or clunky chatbot windows, Project A.D.A combines:
 
-1. **Zero-Latency Conversational Audio**: Native bidirectional speech-to-speech via the Gemini 2.5 Live API (<500ms latency, native affective inflection, voice proactivity).
+1. **Zero-Latency Conversational Audio**: Native bidirectional speech-to-speech via the Gemini 3.8 Live API (<500ms latency, natural expressive speech, always-on proactive audio).
 2. **Interactive 3D Holographic Viewport**: Real-time 3D Ada Wong avatar rendered with Three.js / React Three Fiber, equipped with audio-driven viseme lip-sync, cursor gaze tracking, and reactive facial expressions.
 3. **Omni-Agent Capabilities**: Full parity with the Mark-LI engine—computer control, screen/webcam vision, multi-mode web intelligence, autonomous dev agent, file processing, long-term memory, daily briefings, and plugin expansion.
 4. **Cyberpunk Tactical HUD**: High-tech holographic interface styled with neon scarlet, carbon fiber textures, tactical telemetry, visualizer waveforms, and scanline shaders.
@@ -37,12 +37,12 @@ Developers, power users, and cyber-enthusiasts who demand an autonomous, voice-f
 
 ## 3. Core Feature Scope (Full Parity with Mark-LI Engine)
 
-### 🎙️ 3.1 Real-Time Audio Engine & Affective Voice Core
+### 🎙️ 3.1 Real-Time Audio Engine & Expressive Voice Core
 
-- **Native Bidirectional Streaming:** Direct PCM 16kHz mic ingest via browser `AudioWorkletNode` ➔ WebSocket ➔ Gemini 2.5 Live API ➔ 24kHz raw PCM stream response.
-- **Affective Dialog:** Evaluates vocal emotional tone (urgency, fatigue, excitement) and adapts speech pacing, tone, and inflection dynamically.
+- **Native Bidirectional Streaming:** Direct PCM 16kHz mic ingest via browser `AudioWorkletNode` ➔ WebSocket ➔ Gemini 3.8 Live API ➔ 24kHz raw PCM stream response.
+- **Expressive Delivery:** Natural native-audio prosody from Gemini 3.8 Live. (The separate affective dialog toggle was removed from the API in 3.8.)
 - **Proactive Audio & Smart Barge-in:** Distinguishes background room chatter from direct operator address; instantly silences Ada's audio playback within 50ms upon user interruption via client-side `stopAndFlush()`.
-- **Zero Subscription Cost:** Built on official Google GenAI SDK and Gemini Live developer preview (`models/gemini-2.5-flash-native-audio-preview-12-2025`).
+- **Zero Subscription Cost:** Built on the Gemini Live API free tier (`models/gemini-3.8-live`) over a raw WebSocket.
 
 ### 🌅 3.2 Spoken Startup Greeting & Two-Phase Morning Tactical Briefing
 
@@ -129,7 +129,7 @@ Developers, power users, and cyber-enthusiasts who demand an autonomous, voice-f
 ### ⚙️ 3.14 Mark-LIII Identity, Voice & System Customization Matrix
 
 - **Operator Identity & Name-to-Call Customization:** Configurable operative name/callsign (e.g., `"Bhavya Sir"`), security clearance, role, and behavioral directives. Accessible via left sidebar Settings panel and persistent to `data/memories.json`.
-- **Dynamic System Instruction Injection:** Rehydrates operator profile, strict addressing rules, and active long-term memories directly into Gemini 2.5 Live's initial system instruction on session start. Guarantees Ada addresses the operator by their chosen name and immediately honors stored facts without requiring tool lookups.
+- **Dynamic System Instruction Injection:** Rehydrates operator profile, strict addressing rules, and active long-term memories directly into Gemini Live's initial system instruction on session start. Guarantees Ada addresses the operator by their chosen name and immediately honors stored facts without requiring tool lookups.
 - **Prebuilt Gemini Live Voice Selection:** Multi-voice selector allowing switching between Gemini prebuilt voices (`Aoede`, `Charon`, `Fenrir`, `Kore`, `Puck`) with instant persistence.
 - **Voice-Driven Profile Sync (`update_operator_profile`):** Autonomous Gemini Live tool allowing Ada to update operator callsign, clearance, role, or directives directly during voice conversations.
 - **Left-Sidebar Tactical Settings Panel:** Dedicated `SETTINGS` tab and header shortcut button in `TelemetryPanel.jsx` providing direct Mark-LIII configuration parity within the cyberpunk HUD.
@@ -141,7 +141,7 @@ Developers, power users, and cyber-enthusiasts who demand an autonomous, voice-f
 | Metric                       | Requirement              | Target Architecture                                       |
 | :--------------------------- | :----------------------- | :-------------------------------------------------------- |
 | **Framework & Dialect**      | Next.js 16 + Pure JSX/JS | Next.js 16 App Router, React 19, zero TypeScript overhead |
-| **End-to-End Voice Latency** | `< 500 ms`               | Gemini 2.5 Live Multimodal WebSocket                      |
+| **End-to-End Voice Latency** | `< 500 ms`               | Gemini 3.8 Live WebSocket                                 |
 | **3D Rendering Performance** | Stable `60 FPS`          | React Three Fiber + Instanced Meshes + Draco GLTF         |
 | **Lip-Sync Accuracy**        | Sub-30ms sync            | Web Audio API `AnalyserNode` ➔ Frame-synced Morph Targets |
 | **Model Asset Footprint**    | `< 30 MB`                | Draco-compressed GLB with 2K PBR textures                 |

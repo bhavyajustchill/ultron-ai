@@ -2,8 +2,8 @@
   "profile": {
     "callsign": "Bhavya Sir",
     "assistantName": "Jarvis",
-    "voiceName": "Charon",
-    "liveModel": "models/gemini-3.1-flash-live-preview",
+    "voiceName": "Algenib",
+    "liveModel": "models/gemini-3.8-live",
     "autoBriefing": false,
     "enableHumor": false,
     "clearance": "MERN Expert",
@@ -133,7 +133,7 @@
     },
     {
       "id": "mem-seed-2",
-      "content": "Primary vocal core calibrated to Charon model on Gemini 3.1 Flash Multimodal Live WebSocket.",
+      "content": "Vocal core runs on the Gemini Live multimodal WebSocket; the active voice is whichever core is selected in Settings.",
       "category": "tactical",
       "importance": "medium",
       "timestamp": "2026-09-09T08:30:00.000Z",

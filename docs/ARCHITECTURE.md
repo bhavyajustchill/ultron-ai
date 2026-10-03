@@ -16,7 +16,7 @@ The system consists of four distinct architectural layers:
    - **Two-Phase Morning Briefing:** Dispatches instant spoken greeting (<1s) upon WebSocket setup, followed by parallel headline news delivery.
    - **Proactive 2.0 Idle Checker:** Gated silence evaluator (15 min idle) triggering unprompted voice check-ins with rotating context.
    - **Session Continuity Manager:** Buffers conversation turns, invokes summarization on exit, and consumes last-session memory on next boot.
-3. **Secure WebSocket Gateway & Edge Proxy (Next.js 16 App Router):** Maintains secure, low-latency WebSocket communication with Google's Gemini 2.5 Multimodal Live API, handling session tokens, tool definitions, and system prompts.
+3. **Secure WebSocket Gateway & Edge Proxy (Next.js 16 App Router):** Maintains secure, low-latency WebSocket communication with Google's Gemini 3.8 Live API, handling session tokens, tool definitions, and system prompts.
 4. **Host OS Automation & Intelligence Engine:** Local companion bridge routes (`/api/os-control`, `/api/system-telemetry`, `/api/web-search`) and automation modules (Playwright browser automation, Dev Agent in `~/Desktop/AdaProjects`, and Windows Task Scheduler).
 
 ```mermaid
@@ -66,7 +66,7 @@ flowchart TB
     end
 
     subgraph ExternalIntelligence ["🧠 AI & Host OS Runtime"]
-        GeminiLive["Gemini 2.5 Live Multimodal WebSocket\n(models/gemini-2.5-flash-native-audio-preview)"]
+        GeminiLive["Gemini 3.8 Live Multimodal WebSocket\n(models/gemini-3.8-live)"]
         HostOS["Host Operating System (Windows)\nApps, Audio, Task Scheduler, Playwright"]
         DevWorkspace["Dev Agent Sandbox\n(~/Desktop/AdaProjects)"]
     end
@@ -211,7 +211,7 @@ ada_autonomous-desktop-agent/
   └── Declares 'update_operator_profile' Tool
               │
               ▼ (WSS Setup Frame)
-[ Gemini 2.5 Live WebSocket Session ]
+[ Gemini 3.8 Live WebSocket Session ]
   └── Zero-lookup contextual recall & persistent custom address
 ```
 

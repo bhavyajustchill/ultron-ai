@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { MarkdownText } from "@/components/HUD/MarkdownText";
 import { useAdaStore } from "@/lib/store";
+import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 
 const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK II
 **Designation:** J.A.R.V.I.S // Autonomous Desktop Operating System  
@@ -51,7 +52,7 @@ const OPERATIVE_DOSSIER_MARKDOWN = `### SYSTEM PROFILE: J.A.R.V.I.S MARK II
 
 #### Tactical Profile & Specializations
 - **System Architecture & Telemetry:** Full native control of operating system diagnostics, hardware monitoring, and terminal operations.
-- **Cognitive Capabilities:** Gemini 3.1 Live multimodal perception, sub-500ms voice reasoning, and real-time vision processing.
+- **Cognitive Capabilities:** ${GEMINI_LIVE_LABEL} multimodal perception, sub-500ms voice reasoning, and real-time vision processing.
 - **Demeanor:** Refined, composed, polite yet subtly sarcastic, with unwavering loyalty to the Operator.
 - **Directives:** Assist Operator with desktop automation, mission intel, code analysis, and real-time auditory briefings.`;
 
@@ -794,7 +795,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
               </div>
 
               <div className="text-[10px] font-mono text-[#7E859E]">
-                Gemini 3.1 Live Tools: <span className="text-[#00F0FF]">execute_os_action</span> &{" "}
+                {GEMINI_LIVE_LABEL} Tools: <span className="text-[#00F0FF]">execute_os_action</span> &{" "}
                 <span className="text-[#FF8095]">run_cyber_plugin</span>
               </div>
             </div>
@@ -1041,7 +1042,7 @@ export function TacticalDrawer({ isOpen, onClose, onTriggerBriefing }) {
                 <div className="flex flex-col gap-1 text-[11px] font-mono">
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Model Core:</span>
-                    <span className="text-[#00F0FF] truncate max-w-[130px]">gemini-3.1-flash-live</span>
+                    <span className="text-[#00F0FF] truncate max-w-[130px]">{GEMINI_LIVE_MODEL.replace("models/", "")}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#7E859E]">Voice Actor:</span>

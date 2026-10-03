@@ -24,7 +24,7 @@ All compatible AI agents must enforce these fundamental technical guardrails acr
    - Standard prop destructuring and optional JSDoc comments for types.
 3. **3D Visual Core:** **React Three Fiber (R3F) + Three.js** rendering the interactive holographic Arc Reactor Orb (`ArcReactorOrb.jsx`).
    - Zero object instantiation (`Vector3`, `Euler`, `Matrix4`) inside `useFrame()`.
-4. **Real-time Voice Core:** **Gemini 3.1 Multimodal Live WebSocket API** (`models/gemini-3.1-flash-live-preview`).
+4. **Real-time Voice Core:** **Gemini 3.8 Live WebSocket API** (`models/gemini-3.8-live`, `v1beta` endpoint). The model ID lives only in `GEMINI_LIVE_MODEL` (`lib/jarvisPersona.js`).
    - Browser mic downsampling: 48kHz ➔ 16kHz Int16 PCM via `AudioWorkletNode` (`audio-worklet-processor.js`).
    - Output playback: 24kHz raw PCM jitter-buffered gapless scheduling via `pcmPlayer.js`.
    - Default male voice core: **Charon** (Refined British timbre).

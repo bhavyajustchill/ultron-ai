@@ -19,7 +19,7 @@ import { useAdaStore } from "@/lib/store";
 
 /**
  * WebCamPiP
- * Real-time operator webcam optical surveillance & frame feed to Gemini 2.5 Live
+ * Real-time operator webcam optical surveillance & frame feed to Gemini 3.8 Live
  * Bounded inside the center 3D stage so it NEVER blocks the right-side chat UI.
  */
 export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {

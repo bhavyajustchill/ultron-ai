@@ -69,7 +69,7 @@
 
 * **Graceful Degradation:**
   - If WebGL2 is unsupported, display a high-tech fallback HUD terminal instead of a blank screen.
-  - If the Gemini 2.5 Live WebSocket drops connection, immediately show a reconnecting status pill and execute exponential backoff.
+  - If the Gemini Live WebSocket drops connection, immediately show a reconnecting status pill (`RECONNECTING`) and execute exponential backoff, resuming the session via its latest resumption handle.
 * **Non-Blocking Tool Calls:**
   - Long-running tools (like deep web search or local file scans) must never freeze the audio thread or 3D animation loop.
   - Always inform the user via Ada's voice channel or HUD comms log while a tool is in flight.

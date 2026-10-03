@@ -127,6 +127,12 @@
   - [ ] Dynamically inject profile, strict address mandates, and active long-term memories into Gemini Live's `systemInstruction` on `/api/live-session`.
   - [ ] Register and handle `update_operator_profile` live tool for autonomous voice-driven identity updates.
   - [ ] Persist settings atomically to `data/memories.json` and sync Zustand store.
+- [ ] **6.1.6 Gemini 3.8 Live Core Migration & Resilient Voice Link (`DEC-146`):**
+  - [x] Switch the live model to `models/gemini-3.8-live` on the documented `v1beta` WebSocket endpoint, centralized in `GEMINI_LIVE_MODEL` / `GEMINI_LIVE_LABEL` (`lib/jarvisPersona.js`).
+  - [x] Pin all live tools to `behavior: 'BLOCKING'` (3.8 defaults to `NON_BLOCKING`), echo function names in tool responses, and drop responses for `toolCallCancellation` ids.
+  - [x] Enable sliding-window `contextWindowCompression` to lift the 15-minute audio session cap.
+  - [x] Session resumption: track `sessionResumptionUpdate` handles, swap sockets on `goAway` at the next idle turn, and auto re-sync dropped links with exponential backoff (0.5s → 8s, 5 attempts) behind a `RECONNECTING` HUD status pill.
+  - [ ] Live voice verification with the operator's API key (greeting, tool call, barge-in, voice switch, >15 min session).
 - [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:**
   - [ ] Buffer active session dialog turns in `useAdaStore` / session state.
   - [ ] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`.

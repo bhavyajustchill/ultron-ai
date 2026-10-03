@@ -1,7 +1,7 @@
 /**
  * AudioWorkletProcessor for high-performance off-thread microphone audio downsampling.
  * Converts 44.1kHz / 48kHz Float32 microphone input to 16kHz 16-bit Linear PCM (Int16)
- * for streaming directly into the Gemini 3.1 Live WebSocket API without blocking WebGL.
+ * for streaming directly into the Gemini 3.8 Live WebSocket API without blocking WebGL.
  * Buffers samples into ~32ms chunks (512 samples) with continuous phase carryover and linear interpolation.
  */
 class PCMDownsamplerProcessor extends AudioWorkletProcessor {

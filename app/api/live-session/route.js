@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG } from '@/lib/jarvisPersona';
+import {
+  JARVIS_SYSTEM_INSTRUCTION,
+  GEMINI_LIVE_CONFIG,
+  GEMINI_LIVE_MODEL,
+  GEMINI_LIVE_LABEL,
+} from '@/lib/jarvisPersona';
 
 const MEMORY_FILE_PATH = path.join(process.cwd(), 'data', 'memories.json');
 
@@ -30,7 +35,7 @@ function readPersistedMemory() {
 
 /**
  * Next.js 16 App Router Route Handler: POST /api/live-session
- * Validates credentials and prepares the Gemini 3.1 Live WebSocket session configuration,
+ * Validates credentials and prepares the Gemini 3.8 Live WebSocket session configuration,
  * dynamically ingesting the operator profile, prebuilt voice, and active memory directives.
  */
 export async function POST(req) {
@@ -67,7 +72,7 @@ export async function POST(req) {
       );
     }
 
-    const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+    const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
 
     // Dynamic prompt rehydration from persistent knowledge vault
     const memoryData = readPersistedMemory();
@@ -80,7 +85,7 @@ export async function POST(req) {
     const role = profile.role?.trim() || 'Lead Systems Architect';
     const preferences = profile.preferences?.trim() || '';
     const voiceName = clientVoiceName || profile.voiceName || 'Charon';
-    const selectedModel = 'models/gemini-3.1-flash-live-preview';
+    const selectedModel = GEMINI_LIVE_MODEL;
 
     // Synchronize voice back to persistent vault if provided by client
     if (clientVoiceName && profile.voiceName !== clientVoiceName) {
@@ -92,7 +97,7 @@ export async function POST(req) {
       }
     }
 
-    console.log(`[/api/live-session] Initializing Gemini 3.1 Live session: vocal_core="${voiceName}", operator="${callsign}"`);
+    console.log(`[/api/live-session] Initializing ${GEMINI_LIVE_LABEL} session: vocal_core="${voiceName}", operator="${callsign}"`);
 
     const enableHumor = profile.enableHumor !== false;
 
@@ -185,6 +190,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
       systemInstruction: dynamicSystemInstruction,
       inputAudioTranscription: {},
       outputAudioTranscription: {},
+      contextWindowCompression: GEMINI_LIVE_CONFIG.contextWindowCompression,
       profile: {
         ...profile,
         voiceName,
@@ -194,6 +200,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
           functionDeclarations: [
             {
               name: 'get_system_telemetry',
+              behavior: 'BLOCKING',
               description:
                 'Retrieves real-time host operating system resource metrics, including current CPU percentage, RAM memory usage and limits, active processes, uptime, network throughput, and GPU load.',
               parameters: {
@@ -203,6 +210,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'get_weather',
+              behavior: 'BLOCKING',
               description:
                 'Retrieves exact real-time live meteorological metrics and atmospheric status for any city or operator\'s current location (e.g. current temperature in °C and °F, apparent/feels-like temperature, conditions like Sunny/Rain/Cloudy/Thunderstorm, humidity percentage, wind speed in km/h, precipitation in mm, and daily forecast). Can also launch the interactive Google Weather card on the operator\'s desktop browser if requested.',
               parameters: {
@@ -223,6 +231,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'web_search',
+              behavior: 'BLOCKING',
               description:
                 'Searches the live web for breaking news headlines, market data, technical research, flight status, or general facts. For weather and temperatures, use get_weather instead.',
               parameters: {
@@ -243,6 +252,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'recall_memory',
+              behavior: 'BLOCKING',
               description:
                 'Retrieves stored memory facts, Operator profile attributes, mission objectives, and past tactical directives from persistent long-term memory.',
               parameters: {
@@ -264,6 +274,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'store_memory',
+              behavior: 'BLOCKING',
               description:
                 'Saves a new fact, operator preference, project specification, or mission objective into persistent long-term memory so it is remembered across all future conversations.',
               parameters: {
@@ -292,6 +303,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'update_operator_profile',
+              behavior: 'BLOCKING',
               description:
                 'Updates the operator\'s identity settings, name to call (callsign), assistant codename, voice preference, role, clearance, or behavioral directives in persistent storage.',
               parameters: {
@@ -307,7 +319,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
                   },
                   voice_name: {
                     type: 'STRING',
-                    description: 'Gemini 3.1 Live prebuilt male voice name: Charon, Fenrir, Puck, Achird, Algenib, Algieba, Alnilam, Enceladus, Iapetus, Orus, Rasalgethi, Sadachbia, Sadaltager, Schedar, Umbriel, or Zubenelgenubi.',
+                    description: 'Gemini Live prebuilt male voice name: Charon, Fenrir, Puck, Achird, Algenib, Algieba, Alnilam, Enceladus, Iapetus, Orus, Rasalgethi, Sadachbia, Sadaltager, Schedar, Umbriel, or Zubenelgenubi.',
                     enum: [
                       'Charon',
                       'Fenrir',
@@ -329,8 +341,8 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
                   },
                   live_model: {
                     type: 'STRING',
-                    description: 'Gemini Live model: models/gemini-3.1-flash-live-preview.',
-                    enum: ['models/gemini-3.1-flash-live-preview'],
+                    description: `Gemini Live model: ${GEMINI_LIVE_MODEL}.`,
+                    enum: [GEMINI_LIVE_MODEL],
                   },
                   role: {
                     type: 'STRING',
@@ -349,6 +361,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'execute_os_action',
+              behavior: 'BLOCKING',
               description:
                 'Controls host desktop actions across Linux and Windows: adjust system volume (volume_up, volume_down, mute, unmute, set_volume), launch authorized applications (code, terminal, notepad, gedit, text_editor, calculator, explorer/files, taskmgr, spotify, browser), open workspace project folders, open target URLs in browser, minimize all desktop windows, or lock the workstation. When confirming volume actions to the user, always vocalize the percentage as a natural whole number phrase in words (e.g. "seventy-five percent", never "seven five percent").',
               parameters: {
@@ -382,6 +395,7 @@ Always acknowledge and act upon this knowledge seamlessly in conversation withou
             },
             {
               name: 'run_cyber_plugin',
+              behavior: 'BLOCKING',
               description:
                 'Executes a specialized cyber plugin from the Project J.A.R.V.I.S plugin matrix: "system_diagnostic" (deep hardware/network diagnostic), "cyber_crypto" (SHA-256/MD5 hashing or Base64 cipher), "network_ping" (DNS resolution and latency check), or "workspace_navigator" (codebase stats, git branch, file metrics).',
               parameters: {

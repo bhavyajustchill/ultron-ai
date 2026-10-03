@@ -20,7 +20,7 @@ import { useAdaStore } from "@/lib/store";
 
 /**
  * ScreenShareModal
- * Real-time desktop screen capture & frame streaming to Gemini 2.5 Live
+ * Real-time desktop screen capture & frame streaming to Gemini 3.8 Live
  * Bounded floating cyber-window inside the 3D stage with zero chat UI blockage.
  */
 export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {

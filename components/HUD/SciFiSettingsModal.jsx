@@ -26,6 +26,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
+import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 
 const PREBUILT_VOICES = [
   {
@@ -208,7 +209,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     callsign: "Bhavya Sir",
     assistantName: "Jarvis",
     voiceName: "Charon",
-    liveModel: "models/gemini-3.1-flash-live-preview",
+    liveModel: GEMINI_LIVE_MODEL,
     autoBriefing: true,
     enableHumor: true,
     clearance: "Class-9 Operative",
@@ -228,7 +229,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           callsign: operatorProfile.callsign || "Bhavya Sir",
           assistantName: operatorProfile.assistantName || "Jarvis",
           voiceName: operatorProfile.voiceName || "Charon",
-          liveModel: "models/gemini-3.1-flash-live-preview",
+          liveModel: GEMINI_LIVE_MODEL,
           autoBriefing: operatorProfile.autoBriefing !== false,
           enableHumor: operatorProfile.enableHumor !== false,
           clearance: operatorProfile.clearance || "Class-9 Operative",
@@ -337,7 +338,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       setSavedSuccess(true);
       addCommsMessage(
         "system",
-        `[SETTINGS] Neural Vault synchronized. Address: "${draft.callsign}", Vocal Core: "${draft.voiceName}", Intelligence Engine: "gemini-3.1-flash-live".`
+        `[SETTINGS] Neural Vault synchronized. Address: "${draft.callsign}", Vocal Core: "${draft.voiceName}", Intelligence Engine: "${GEMINI_LIVE_MODEL.replace("models/", "")}".`
       );
 
       // Reconnect live session if active or connecting, or if vocal core was changed or humor toggled
@@ -370,7 +371,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       callsign: "Bhavya Sir",
       assistantName: "Jarvis",
       voiceName: "Charon",
-      liveModel: "models/gemini-3.1-flash-live-preview",
+      liveModel: GEMINI_LIVE_MODEL,
       autoBriefing: true,
       enableHumor: true,
       clearance: "Class-9 Operative",
@@ -409,7 +410,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <span className="text-sm font-bold tracking-wider text-white flex items-center gap-2">
                 OPERATIVE SETTINGS MATRIX
                 <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(0,240,255,0.2)] border border-[rgba(0,240,255,0.4)] text-[#00F0FF] font-bold">
-                  GEMINI 3.1 LIVE
+                  {GEMINI_LIVE_LABEL.toUpperCase()}
                 </span>
               </span>
               <span className="text-[10px] text-[#7E859E]">
@@ -478,11 +479,11 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             </div>
           </div>
 
-          {/* Section 2: Gemini 3.1 Live Intelligence Core (Locked Dedicated Engine) */}
+          {/* Section 2: Gemini Live Intelligence Core (Locked Dedicated Engine) */}
           <div className="flex flex-col gap-2 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-[#00F0FF] flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-[#00F0FF]" /> GEMINI 3.1 LIVE INTELLIGENCE CORE
+                <Cpu className="w-3.5 h-3.5 text-[#00F0FF]" /> {GEMINI_LIVE_LABEL.toUpperCase()} INTELLIGENCE CORE
               </span>
               <span className="text-[9px] text-[#7E859E]">
                 Status: <span className="text-[#00F0FF] font-bold">LOCKED // EXCLUSIVE CORE</span>
@@ -493,7 +494,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-[#00F0FF] animate-pulse" />
-                  <span className="text-xs font-bold font-mono text-white">Gemini 3.1 Flash Live</span>
+                  <span className="text-xs font-bold font-mono text-white">{GEMINI_LIVE_LABEL}</span>
                   <span className="text-[8px] px-1.5 py-0.5 chamfer-xs font-bold font-mono tracking-wider bg-[rgba(255,0,60,0.2)] border border-[rgba(255,0,60,0.5)] text-[#FF003C]">
                     NEXT-GEN PREVIEW // SUB-600MS
                   </span>
@@ -503,7 +504,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   ACTIVE OPERATIVE CORE
                 </span>
               </div>
-              <div className="text-[10px] text-[#7E859E] font-mono">models/gemini-3.1-flash-live-preview</div>
+              <div className="text-[10px] text-[#7E859E] font-mono">{GEMINI_LIVE_MODEL}</div>
               <p className="text-[11px] text-[#A6AFC2] leading-snug">
                 Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project J.A.R.V.I.S Mark II.
               </p>

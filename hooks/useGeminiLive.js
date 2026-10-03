@@ -4,7 +4,22 @@ import { useRef, useCallback, useEffect, useState } from 'react';
 import { useAdaStore } from '@/lib/store';
 import { PCMStreamPlayer } from '@/lib/pcmPlayer';
 import { useAudioStream } from '@/hooks/useAudioStream';
-import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG } from '@/lib/jarvisPersona';
+import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
+
+// Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
+const MAX_RECONNECT_ATTEMPTS = 5;
+const RECONNECT_BASE_DELAY_MS = 500;
+// A link must stay up this long before the backoff counter resets (stops tight loops,
+// e.g. when the server accepts setup and immediately closes on exhausted quota)
+const STABLE_LINK_MS = 30000;
+
+/**
+ * Parses a protobuf Duration JSON string (e.g. "12s", "0.5s") into milliseconds.
+ */
+function parseDurationMs(duration, fallbackMs) {
+  const seconds = parseFloat(duration);
+  return Number.isFinite(seconds) ? seconds * 1000 : fallbackMs;
+}
 
 /**
  * Helper to convert ArrayBuffer to Base64 string without buffer allocation overhead.
@@ -20,9 +35,9 @@ function arrayBufferToBase64(buffer) {
 }
 
 /**
- * useGeminiLive — Core hook for bidirectional Gemini 3.1 Live WebSocket connection.
+ * useGeminiLive — Core hook for bidirectional Gemini 3.8 Live WebSocket connection.
  * Manages WebSocket lifecycle, off-thread 16kHz audio streaming, 24kHz gapless playback,
- * instant barge-in interruption, and comms transcript feeds.
+ * instant barge-in interruption, session resumption / auto-reconnect, and comms transcript feeds.
  */
 export function useGeminiLive() {
   const wsRef = useRef(null);
@@ -35,6 +50,21 @@ export function useGeminiLive() {
   const briefingStateRef = useRef('IDLE');
   const briefingTimeoutRef = useRef(null);
   const currentTurnTextRef = useRef('');
+
+  // Session resumption & auto-reconnect state
+  const sessionDataRef = useRef(null);
+  const apiKeyRef = useRef('');
+  const voiceRef = useRef(null);
+  const resumeHandleRef = useRef(null);
+  const isEstablishedRef = useRef(false);
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimerRef = useRef(null);
+  const linkUpSinceRef = useRef(0);
+  const goAwayPendingRef = useRef(false);
+  const goAwayTimerRef = useRef(null);
+  const isTurnActiveRef = useRef(false);
+  const cancelledToolIdsRef = useRef(new Set());
+  const connectSessionRef = useRef(null);
 
   const {
     status,
@@ -123,8 +153,27 @@ export function useGeminiLive() {
     onUserSpeaking: handleBargeIn,
   });
 
+  // Clear all resumption / reconnect bookkeeping (manual connect or disconnect)
+  const resetLinkState = useCallback(() => {
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+    if (goAwayTimerRef.current) {
+      clearTimeout(goAwayTimerRef.current);
+      goAwayTimerRef.current = null;
+    }
+    resumeHandleRef.current = null;
+    isEstablishedRef.current = false;
+    reconnectAttemptRef.current = 0;
+    goAwayPendingRef.current = false;
+    isTurnActiveRef.current = false;
+    cancelledToolIdsRef.current.clear();
+  }, []);
+
   // Disconnect active session
   const disconnectSession = useCallback(() => {
+    resetLinkState();
     stopMic();
     if (pcmPlayerRef.current) {
       pcmPlayerRef.current.stopAndFlush();
@@ -141,13 +190,75 @@ export function useGeminiLive() {
     pendingTextRef.current = null;
     setStatus('DISCONNECTED');
     addCommsMessage('system', 'Live session link terminated.');
-  }, [stopMic, setStatus, addCommsMessage]);
+  }, [resetLinkState, stopMic, setStatus, addCommsMessage]);
 
-  // Connect to Gemini 3.1 Live WebSocket
+  // Re-establish a dropped link with exponential backoff, resuming the session when possible
+  const scheduleReconnect = useCallback((reason) => {
+    if (reconnectTimerRef.current) return;
+
+    const attempt = reconnectAttemptRef.current;
+    if (attempt >= MAX_RECONNECT_ATTEMPTS) {
+      resetLinkState();
+      stopMic();
+      setStatus('DISCONNECTED');
+      addCommsMessage(
+        'system',
+        `[VOICE LINK] Re-sync failed after repeated attempts${reason ? ` (${reason})` : ''}. Reconnect manually to resume.`
+      );
+      return;
+    }
+
+    reconnectAttemptRef.current = attempt + 1;
+    const delayMs = RECONNECT_BASE_DELAY_MS * 2 ** attempt;
+    setStatus('RECONNECTING');
+    addCommsMessage(
+      'system',
+      `[VOICE LINK] Link dropped${reason ? ` (${reason})` : ''}. Re-syncing in ${delayMs / 1000}s (attempt ${attempt + 1}/${MAX_RECONNECT_ATTEMPTS})...`
+    );
+
+    reconnectTimerRef.current = setTimeout(() => {
+      reconnectTimerRef.current = null;
+      connectSessionRef.current?.(apiKeyRef.current, voiceRef.current, { resume: true });
+    }, delayMs);
+  }, [resetLinkState, stopMic, setStatus, addCommsMessage]);
+
+  // Swap to a new socket with the latest resumption handle before the server closes the old one
+  const resumeAfterGoAway = useCallback(() => {
+    if (goAwayTimerRef.current) {
+      clearTimeout(goAwayTimerRef.current);
+      goAwayTimerRef.current = null;
+    }
+    if (!goAwayPendingRef.current) return;
+    goAwayPendingRef.current = false;
+    connectSessionRef.current?.(apiKeyRef.current, voiceRef.current, { resume: true });
+  }, []);
+
+  // Connect to Gemini Live WebSocket. `options.resume` re-links the cached session config
+  // using the latest resumption handle (falls back to a fresh session without greeting).
   const connectSession = useCallback(
-    async (customApiKey, overrideVoice) => {
-      if (wsRef.current) {
-        disconnectSession();
+    async (customApiKey, overrideVoice, options = {}) => {
+      const isResume = Boolean(options.resume && sessionDataRef.current);
+      const resumeHandle = isResume ? resumeHandleRef.current : null;
+
+      if (isResume) {
+        // Silently retire the previous socket without tearing down mic or playback
+        if (wsRef.current) {
+          const staleWs = wsRef.current;
+          staleWs.onopen = null;
+          staleWs.onmessage = null;
+          staleWs.onclose = null;
+          staleWs.onerror = null;
+          staleWs.close();
+          wsRef.current = null;
+        }
+        isSetupCompleteRef.current = false;
+        isTurnActiveRef.current = false;
+        cancelledToolIdsRef.current.clear();
+      } else {
+        if (wsRef.current) {
+          disconnectSession();
+        }
+        resetLinkState();
       }
 
       // Unlock browser AudioContext synchronously during user click gesture
@@ -155,52 +266,66 @@ export function useGeminiLive() {
         pcmPlayerRef.current.initContext();
       }
 
-      setStatus('CONNECTING');
-
       // Resolve vocal core: overrideVoice || store || localStorage || 'Aoede'
-      const activeVoice =
-        overrideVoice ||
-        useAdaStore.getState().operatorProfile?.voiceName ||
-        (typeof window !== 'undefined' ? localStorage.getItem('ada_voice_name') : null) ||
-        'Aoede';
+      const activeVoice = isResume
+        ? voiceRef.current
+        : overrideVoice ||
+          useAdaStore.getState().operatorProfile?.voiceName ||
+          (typeof window !== 'undefined' ? localStorage.getItem('ada_voice_name') : null) ||
+          'Aoede';
 
-      addCommsMessage('system', `Initiating handshake with Gemini 3.1 Live Gateway [Vocal Core: ${activeVoice}]...`);
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+      if (isResume) {
+        setStatus('RECONNECTING');
+      } else {
+        setStatus('CONNECTING');
+        addCommsMessage('system', `Initiating handshake with ${GEMINI_LIVE_LABEL} Gateway [Vocal Core: ${activeVoice}]...`);
+      }
 
       try {
-        // Step 1: Call Next.js route to obtain session configuration with client temporal anchor
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-        const localTime = new Date().toLocaleString(undefined, {
-          dateStyle: 'full',
-          timeStyle: 'medium',
-        });
-        const utcOffset = new Date().getTimezoneOffset();
+        let sessionData = sessionDataRef.current;
 
-        const sessionRes = await fetch('/api/live-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            apiKey: customApiKey || '',
-            timezone,
-            localTime,
-            utcOffset,
-            voiceName: activeVoice,
-          }),
-        });
+        if (!isResume) {
+          // Step 1: Call Next.js route to obtain session configuration with client temporal anchor
+          const localTime = new Date().toLocaleString(undefined, {
+            dateStyle: 'full',
+            timeStyle: 'medium',
+          });
+          const utcOffset = new Date().getTimezoneOffset();
 
-        const sessionData = await sessionRes.json();
+          const sessionRes = await fetch('/api/live-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              apiKey: customApiKey || '',
+              timezone,
+              localTime,
+              utcOffset,
+              voiceName: activeVoice,
+            }),
+          });
 
-        if (!sessionRes.ok) {
-          if (sessionData.error === 'MISSING_API_KEY') {
-            useAdaStore.getState().setIsKeyModalOpen(true);
-            addCommsMessage('system', 'Gemini API Key required. Please enter your key in the credentials prompt.');
-            setStatus('DISCONNECTED');
-            return;
+          sessionData = await sessionRes.json();
+
+          if (!sessionRes.ok) {
+            if (sessionData.error === 'MISSING_API_KEY') {
+              useAdaStore.getState().setIsKeyModalOpen(true);
+              addCommsMessage('system', 'Gemini API Key required. Please enter your key in the credentials prompt.');
+              setStatus('DISCONNECTED');
+              return;
+            }
+            throw new Error(sessionData.message || 'Failed to authenticate session');
           }
-          throw new Error(sessionData.message || 'Failed to authenticate session');
-        }
 
-        if (sessionData.profile) {
-          useAdaStore.getState().setOperatorProfile(sessionData.profile);
+          if (sessionData.profile) {
+            useAdaStore.getState().setOperatorProfile(sessionData.profile);
+          }
+
+          // Cache config so a dropped link can be resumed without re-negotiating
+          sessionDataRef.current = sessionData;
+          apiKeyRef.current = customApiKey;
+          voiceRef.current = activeVoice;
         }
 
         const wsUrl = sessionData.wsUrl;
@@ -209,8 +334,10 @@ export function useGeminiLive() {
         // Step 2: Establish direct WebSocket connection
         const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
+        let didOpen = false;
 
         ws.onopen = () => {
+          didOpen = true;
           const latency = Math.round(performance.now() - startTimeRef.current);
           setLatencyMs(latency);
 
@@ -218,10 +345,17 @@ export function useGeminiLive() {
             sessionData.generationConfig?.speechConfig?.voiceConfig?.prebuiltVoiceConfig?.voiceName ||
             activeVoice;
 
-          addCommsMessage(
-            'system',
-            `WebSocket linked (Latency: ${latency}ms). Configuring J.A.R.V.I.S persona [Vocal Core: ${setupVoice}]...`
-          );
+          if (isResume) {
+            addCommsMessage(
+              'system',
+              `WebSocket re-linked (Latency: ${latency}ms). ${resumeHandle ? 'Restoring session context...' : 'Resume token unavailable, starting a fresh session...'}`
+            );
+          } else {
+            addCommsMessage(
+              'system',
+              `WebSocket linked (Latency: ${latency}ms). Configuring J.A.R.V.I.S persona [Vocal Core: ${setupVoice}]...`
+            );
+          }
           console.log(`[useGeminiLive] Configuring J.A.R.V.I.S persona with vocal core: ${setupVoice}`);
 
           // Step 3: Send initial setup frame
@@ -243,6 +377,9 @@ export function useGeminiLive() {
               },
               inputAudioTranscription: sessionData.inputAudioTranscription || {},
               outputAudioTranscription: sessionData.outputAudioTranscription || {},
+              contextWindowCompression:
+                sessionData.contextWindowCompression || GEMINI_LIVE_CONFIG.contextWindowCompression,
+              sessionResumption: resumeHandle ? { handle: resumeHandle } : {},
               ...(sessionData.tools ? { tools: sessionData.tools } : {}),
             },
           };
@@ -263,9 +400,19 @@ export function useGeminiLive() {
             // Acknowledge setup complete
             if (msg.setupComplete) {
               isSetupCompleteRef.current = true;
+              isEstablishedRef.current = true;
+              linkUpSinceRef.current = Date.now();
               const isMutedNow = useAdaStore.getState().isMuted;
-              setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
-              if (isMutedNow) {
+              const isPlayingNow = pcmPlayerRef.current?.activeSources?.size > 0;
+              setStatus(isPlayingNow ? 'SPEAKING' : isMutedNow ? 'CONNECTED' : 'LISTENING');
+              if (isResume) {
+                addCommsMessage(
+                  'system',
+                  resumeHandle
+                    ? '[VOICE LINK] Session re-synced. Conversation context restored.'
+                    : '[VOICE LINK] Link restored on a fresh session.'
+                );
+              } else if (isMutedNow) {
                 addCommsMessage(
                   'system',
                   '[VOICE LINK] Handshake synced. Microphone initialized in MUTED state per Operator security profile.'
@@ -306,7 +453,7 @@ export function useGeminiLive() {
                 } catch (err) {
                   console.error('[useGeminiLive] Failed to transmit queued directive:', err);
                 }
-              } else {
+              } else if (!isResume) {
                 // Phase 1: Dispatch startup spoken greeting after 300ms stabilization pause (Mark-LIII parity)
                 briefingStateRef.current = 'PHASE1';
                 setTimeout(() => {
@@ -339,8 +486,40 @@ export function useGeminiLive() {
               return;
             }
 
+            // Track the latest resumption handle so a dropped link can restore context
+            if (msg.sessionResumptionUpdate) {
+              const { newHandle, resumable } = msg.sessionResumptionUpdate;
+              if (resumable && newHandle) {
+                resumeHandleRef.current = newHandle;
+              }
+              return;
+            }
+
+            // Server will close this connection soon: re-link at the next idle moment,
+            // or just before the deadline if Jarvis is still mid-turn
+            if (msg.goAway) {
+              const timeLeftMs = parseDurationMs(msg.goAway.timeLeft, 5000);
+              console.log(`[useGeminiLive] GoAway received, ${timeLeftMs}ms left on this connection.`);
+              goAwayPendingRef.current = true;
+              if (!isTurnActiveRef.current) {
+                resumeAfterGoAway();
+              } else if (!goAwayTimerRef.current) {
+                goAwayTimerRef.current = setTimeout(resumeAfterGoAway, Math.max(0, timeLeftMs - 1000));
+              }
+              return;
+            }
+
+            // Server retracted pending tool calls (e.g. operator barged in)
+            if (msg.toolCallCancellation) {
+              for (const id of msg.toolCallCancellation.ids || []) {
+                cancelledToolIdsRef.current.add(id);
+              }
+              return;
+            }
+
             // Handle Gemini Live Tool Calling (e.g. get_system_telemetry)
             if (msg.toolCall) {
+              isTurnActiveRef.current = true;
               const { functionCalls } = msg.toolCall;
               if (functionCalls && functionCalls.length > 0) {
                 const functionResponses = [];
@@ -787,12 +966,22 @@ export function useGeminiLive() {
                 }
 
                 if (functionResponses.length > 0) {
-                  const toolResponseMessage = {
-                    toolResponse: {
-                      functionResponses,
-                    },
-                  };
-                  ws.send(JSON.stringify(toolResponseMessage));
+                  // Echo function names (3.8 Live response shape) and drop calls the server cancelled
+                  const callNames = new Map(functionCalls.map((c) => [c.id, c.name]));
+                  const cancelledIds = cancelledToolIdsRef.current;
+                  const liveResponses = functionResponses
+                    .filter((r) => !cancelledIds.has(r.id))
+                    .map((r) => ({ ...r, name: callNames.get(r.id) }));
+                  functionResponses.forEach((r) => cancelledIds.delete(r.id));
+
+                  if (liveResponses.length > 0) {
+                    const toolResponseMessage = {
+                      toolResponse: {
+                        functionResponses: liveResponses,
+                      },
+                    };
+                    ws.send(JSON.stringify(toolResponseMessage));
+                  }
                 }
               }
               return;
@@ -818,7 +1007,12 @@ export function useGeminiLive() {
                 addCommsMessage('user', inputTx.text.trim());
               }
 
+              if (modelTurn) {
+                isTurnActiveRef.current = true;
+              }
+
               if (interrupted) {
+                isTurnActiveRef.current = false;
                 const partialText = currentTurnTextRef.current.trim();
                 if (partialText) {
                   addCommsMessage('jarvis', `${partialText} [Interrupted]`);
@@ -850,6 +1044,8 @@ export function useGeminiLive() {
               }
 
               if (turnComplete) {
+                isTurnActiveRef.current = false;
+
                 // Flush complete text turn to comms log once turn concludes
                 if (currentTurnTextRef.current.trim()) {
                   addCommsMessage('jarvis', currentTurnTextRef.current.trim());
@@ -885,7 +1081,13 @@ export function useGeminiLive() {
                       if (briefingStateRef.current !== 'PHASE2') return; // cancelled by barge-in
                       briefingStateRef.current = 'IDLE';
 
-                      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+                      if (
+                        !wsRef.current ||
+                        wsRef.current.readyState !== WebSocket.OPEN ||
+                        !isSetupCompleteRef.current
+                      ) {
+                        return;
+                      }
 
                       let newsSummary = '';
                       try {
@@ -941,6 +1143,11 @@ export function useGeminiLive() {
                     }, drainMs);
                   }
                 }
+
+                // Turn finished: complete any pending GoAway connection swap
+                if (goAwayPendingRef.current) {
+                  resumeAfterGoAway();
+                }
               }
             }
           } catch (err) {
@@ -948,21 +1155,49 @@ export function useGeminiLive() {
           }
         };
 
+        // onclose always follows onerror and decides between re-sync and going offline
         ws.onerror = (err) => {
           console.error('[useGeminiLive] WebSocket encountered an error:', err);
           addCommsMessage('system', 'WebSocket connection error detected.');
-          setStatus('DISCONNECTED');
         };
 
         ws.onclose = (event) => {
           console.log('[useGeminiLive] WebSocket closed:', event.code, event.reason);
+          const failedBeforeSetup = !isSetupCompleteRef.current;
           isSetupCompleteRef.current = false;
+          isTurnActiveRef.current = false;
+          goAwayPendingRef.current = false;
+          if (goAwayTimerRef.current) {
+            clearTimeout(goAwayTimerRef.current);
+            goAwayTimerRef.current = null;
+          }
+
+          // An established link dropped unexpectedly: auto re-sync instead of going offline
+          if (isEstablishedRef.current) {
+            // Socket opened but setup was refused: the resume handle is stale, start fresh next time
+            if (resumeHandle && didOpen && failedBeforeSetup) {
+              resumeHandleRef.current = null;
+            }
+            if (!failedBeforeSetup && Date.now() - linkUpSinceRef.current > STABLE_LINK_MS) {
+              reconnectAttemptRef.current = 0;
+            }
+            scheduleReconnect(event.reason || (event.code ? `code ${event.code}` : ''));
+            return;
+          }
+
           stopMic();
           setStatus('DISCONNECTED');
-          addCommsMessage('system', `Session closed (${event.code || 'Normal Closure'}).`);
+          addCommsMessage(
+            'system',
+            `Session closed (${event.code || 'Normal Closure'}${event.reason ? `: ${event.reason}` : ''}).`
+          );
         };
       } catch (error) {
         console.error('[useGeminiLive] Session link failed:', error);
+        if (isResume && isEstablishedRef.current) {
+          scheduleReconnect();
+          return;
+        }
         setStatus('DISCONNECTED');
         addCommsMessage('system', `Connection failure: ${error.message}`);
         stopMic();
@@ -970,6 +1205,9 @@ export function useGeminiLive() {
     },
     [
       disconnectSession,
+      resetLinkState,
+      scheduleReconnect,
+      resumeAfterGoAway,
       setStatus,
       addCommsMessage,
       setLatencyMs,
@@ -979,7 +1217,7 @@ export function useGeminiLive() {
     ]
   );
 
-  // Send text directive over live WebSocket (Gemini 3.1 clientContent turn)
+  // Send text directive over live WebSocket (Gemini Live clientContent turn)
   const sendTextMessage = useCallback(
     (text) => {
       if (!text || !text.trim()) return false;
@@ -1021,6 +1259,12 @@ export function useGeminiLive() {
       pendingTextRef.current = trimmed;
       addCommsMessage('user', trimmed);
 
+      // Auto re-sync in progress: let the resumed session deliver the queued text
+      if (isEstablishedRef.current) {
+        addCommsMessage('system', 'Link re-syncing. Transmitting upon sync...');
+        return true;
+      }
+
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         const activeKey = useAdaStore.getState().userApiKey || useAdaStore.getState().loadStoredApiKey();
         if (!activeKey) {
@@ -1038,7 +1282,7 @@ export function useGeminiLive() {
     [addCommsMessage, setStatus, connectSession]
   );
 
-  // Transmit real-time visual frame (JPEG/PNG) to Gemini 3.1 Live session
+  // Transmit real-time visual frame (JPEG/PNG) to Gemini Live session
   const sendVideoFrame = useCallback(
     (base64Data, mimeType = 'image/jpeg') => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
@@ -1114,8 +1358,12 @@ export function useGeminiLive() {
     }
   }, [addCommsMessage, setStatus, sendTextMessage]);
 
+  // Cancel pending re-sync / GoAway timers on unmount
+  useEffect(() => resetLinkState, [resetLinkState]);
+
   // Register active connectSession callback into global store for HUD modals
   useEffect(() => {
+    connectSessionRef.current = connectSession;
     const { setReconnectSession } = useAdaStore.getState();
     if (setReconnectSession) {
       setReconnectSession(connectSession);

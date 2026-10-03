@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Key, ShieldCheck, X, ExternalLink, Trash2, CheckCircle } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
+import { GEMINI_LIVE_MODEL } from "@/lib/jarvisPersona";
 
 export function ApiKeyModal({ isOpen, onClose, onSaveKey }) {
   const userApiKey = useAdaStore((state) => state.userApiKey);
@@ -118,7 +119,7 @@ export function ApiKeyModal({ isOpen, onClose, onSaveKey }) {
           <div className="flex flex-col gap-2 text-xs font-mono text-[#7E859E] leading-relaxed">
             <p>
               To activate real-time speech with{" "}
-              <span className="text-[#00E5FF] font-semibold">gemini-3.1-flash-live-preview</span>,
+              <span className="text-[#00E5FF] font-semibold">{GEMINI_LIVE_MODEL.replace("models/", "")}</span>,
               enter your Gemini API key below.
             </p>
             <div className="flex items-center gap-2 p-2.5 chamfer-xs bg-[rgba(0,229,255,0.06)] border border-[rgba(0,229,255,0.25)] text-[11px] text-[#00E5FF]">

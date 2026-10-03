@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useAdaStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
+import { GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { ApiKeyModal } from "@/components/HUD/ApiKeyModal";
 import { JarvisViewport } from "@/components/Canvas3D/JarvisViewport";
 import { ScreenShareModal } from "@/components/Vision/ScreenShareModal";
@@ -282,6 +283,12 @@ export default function Home() {
           color: "text-[#FFE600] border-[#FFE600] bg-[rgba(255,230,0,0.06)]",
           dot: "bg-[#FFE600] animate-pulse",
         };
+      case "RECONNECTING":
+        return {
+          text: "LINK // RE-SYNCING...",
+          color: "text-[#FFB020] border-[#FFB020] bg-[rgba(255,176,32,0.08)] shadow-[0_0_12px_rgba(255,176,32,0.25)]",
+          dot: "bg-[#FFB020] animate-pulse",
+        };
       default:
         return {
           text: "STANDBY // OFFLINE",
@@ -496,7 +503,7 @@ export default function Home() {
                 ? "border border-[#00E5FF] bg-[rgba(0,229,255,0.15)] text-[#00E5FF] hover:bg-[rgba(0,229,255,0.25)] shadow-[0_0_12px_rgba(0,229,255,0.3)]"
                 : "bg-[#00E5FF] hover:bg-[#33ebff] text-[#010e16] shadow-[0_0_15px_rgba(0,229,255,0.5)] font-bold"
                 }`}
-              title={isConnected ? "Disconnect WebSocket link" : "Establish live Gemini 3.1 link"}>
+              title={isConnected ? "Disconnect WebSocket link" : `Establish live ${GEMINI_LIVE_LABEL} link`}>
               <Power className="w-3.5 h-3.5" />
               <span>{isConnected ? "DISCONNECT" : "CONNECT"}</span>
             </button>
