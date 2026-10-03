@@ -183,6 +183,7 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `/api/fs-ops` actions: `list_directory`, `read_file` (text, 64 KB cap), `create_folder`, `create_file`, `write_file` / `replace_in_file` (backup to `data/fs-journal/backups/`), `append_file`. No delete action.
   - [x] Folder organizer (`lib/folderOrganizer.js`): type-based sub-folders, preview → apply → undo manifests; hidden files, sub-folders, symlinks, and unfinished downloads untouched; collision-safe renames.
   - [x] `file_operations` and `organize_folder` live tools (BLOCKING), workspace roots injected into the system instruction, persona guideline 16 (read before edit, confirm overwrites, preview before organizing).
+  - [x] Offer-to-open flow (`DEC-148`): `open_path` action (default app or code editor via `lib/desktopLauncher.js`); create / write responses instruct Jarvis to ask whether to open the file, enforced by persona guideline 16.
   - [ ] Live voice verification with the operator's API key.
 - [ ] **7.2 Document Forge & File Uploads** — features 10, 11: PDF / DOCX creation tool; HUD drag-and-drop uploads (images straight to Gemini Live, PDF / DOCX text extraction injected as client content).
 - [ ] **7.3 Universal App Launcher & Project Scaffolder** — features 15, 16: index installed `.desktop` apps and launch via `gtk-launch`; project templates (Flutter, React, Node/Express API, Next.js, shadcn admin panel).

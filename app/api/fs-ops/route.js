@@ -3,13 +3,19 @@ import fs from 'fs';
 import path from 'path';
 import { resolveSafePath, displayPath, SandboxError } from '@/lib/fsSandbox';
 import { planOrganize, applyOrganize, undoLastOrganize } from '@/lib/folderOrganizer';
+import { openWithDefaultApp, openInCodeEditor } from '@/lib/desktopLauncher';
 
-const JOURNAL_DIR = path.join(process.cwd(), 'data', 'fs-journal');
+// JARVIS_FS_JOURNAL relocates backups / undo manifests (used by automated checks)
+const JOURNAL_DIR = process.env.JARVIS_FS_JOURNAL || path.join(process.cwd(), 'data', 'fs-journal');
 const BACKUP_DIR = path.join(JOURNAL_DIR, 'backups');
 const MAX_READ_BYTES = 64 * 1024; // keeps file reads well inside the live session context window
 const MAX_WRITE_BYTES = 1024 * 1024;
 const MAX_LIST_ENTRIES = 200;
 const PREVIEW_SAMPLE_SIZE = 10;
+
+// Returned with newly created / written files so Jarvis offers to open them
+const OFFER_TO_OPEN =
+  'Ask the operator whether they would like this file opened now. If they agree, call file_operations with action "open_path" on this path.';
 
 class FsOpError extends Error {}
 
@@ -100,7 +106,7 @@ const ACTIONS = {
     }
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, content, { encoding: 'utf-8', flag: 'wx' });
-    return { message: `Created ${displayPath(target)}.` };
+    return { message: `Created ${displayPath(target)}.`, next_step: OFFER_TO_OPEN };
   },
 
   write_file({ target, body }) {
@@ -118,6 +124,7 @@ const ACTIONS = {
         ? `Replaced ${displayPath(target)}; the previous version was backed up.`
         : `Wrote new file ${displayPath(target)}.`,
       ...(backupPath ? { backup: backupPath } : {}),
+      next_step: OFFER_TO_OPEN,
     };
   },
 
@@ -150,6 +157,17 @@ const ACTIONS = {
     return {
       message: `Updated ${occurrences} occurrence(s) in ${displayPath(target)}; the previous version was backed up.`,
       backup: backupPath,
+    };
+  },
+
+  async open_path({ target, body }) {
+    if (!fs.existsSync(target)) throw new FsOpError(`${displayPath(target)} does not exist.`);
+    const inEditor = body.app === 'code';
+    const result = inEditor ? await openInCodeEditor(target) : await openWithDefaultApp(target);
+    if (!result.success) throw new FsOpError(`Could not open ${displayPath(target)}: ${result.error}`);
+    return {
+      message: `Opened ${displayPath(target)}${inEditor ? ' in the code editor' : ''}.`,
+      ...(result.dryRun ? { dry_run: true } : {}),
     };
   },
 
@@ -228,7 +246,7 @@ export async function POST(req) {
     const target = action === 'organize_folder' && body.mode === 'undo' && !body.path
       ? undefined
       : resolveSafePath(body.path);
-    const result = handler({ target, body });
+    const result = await handler({ target, body });
     return NextResponse.json({ success: true, action, ...(target ? { path: displayPath(target) } : {}), ...result });
   } catch (error) {
     if (error instanceof SandboxError || error instanceof FsOpError) {

@@ -432,7 +432,7 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
               name: 'file_operations',
               behavior: 'BLOCKING',
               description:
-                'Creates, reads, and edits files and folders inside the operator\'s allowed workspace folders. Actions: list_directory (folder contents), read_file (text only), create_folder, create_file (fails if the file exists), write_file (replaces the whole file; previous version is backed up), append_file (adds text to the end), replace_in_file (exact find-and-replace; previous version is backed up). There is no delete action.',
+                'Creates, reads, edits, and opens files and folders inside the operator\'s allowed workspace folders. Actions: list_directory (folder contents), read_file (text only), create_folder, create_file (fails if the file exists), write_file (replaces the whole file; previous version is backed up), append_file (adds text to the end), replace_in_file (exact find-and-replace; previous version is backed up), open_path (opens a file or folder in its default app, or in the code editor with app "code"). There is no delete action.',
               parameters: {
                 type: 'OBJECT',
                 properties: {
@@ -447,6 +447,7 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                       'write_file',
                       'append_file',
                       'replace_in_file',
+                      'open_path',
                     ],
                   },
                   path: {
@@ -469,6 +470,11 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                   replace_all: {
                     type: 'BOOLEAN',
                     description: 'replace_in_file only: replace every occurrence instead of requiring exactly one match.',
+                  },
+                  app: {
+                    type: 'STRING',
+                    description: 'open_path only: "default" (system default app) or "code" (open in the code editor).',
+                    enum: ['default', 'code'],
                   },
                 },
                 required: ['action', 'path'],
