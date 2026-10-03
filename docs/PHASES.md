@@ -195,7 +195,7 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
 - [ ] **7.3 Universal App Launcher & Project Scaffolder (`DEC-151`)** — features 15, 16:
   - [x] `lib/appIndex.js`: freedesktop `.desktop` index across user, system, Flatpak, and Snap dirs (honours NoDisplay / Hidden / OnlyShowIn / NotShowIn / TryExec), fuzzy spoken-name matching, `gio launch` (fallback `gtk-launch`); ambiguous names return candidates.
   - [x] `execute_os_action` `launch_app` falls back to the index for any non-whitelisted app on Linux; new `list_apps` search action; same-origin guard on `/api/os-control`.
-  - [x] `lib/projectScaffolder.js` + `/api/projects`: background jobs for flutter, react (Vite), node-express (hand-written Express 5 API with CRUD sample), nextjs, and shadcn-admin (shadcn init + dashboard-01 block + TooltipProvider + home redirect); non-interactive generators, step timeouts, log tail, `git init`.
+  - [x] `lib/projectScaffolder.js` + `/api/projects`: background jobs using the operator's generators (`DEC-153`): `npx @bhavyajustchill/init@latest` for node-express (JS MVC or TS modular) and admin-panel (React + Tailwind + shadcn), driven through a pseudo-terminal that answers its prompts by name; `create-next-app` for nextjs; `npm create vite@latest` (React, JavaScript only) for react; `flutter create` for flutter. Step timeouts, prompt-stall watchdog, log tail, `git init`.
   - [x] HUD polls jobs, logs progress to the Comms Log, and briefs Jarvis with a `[PROJECT UPDATE]` (delivered when he is idle) so he offers to open the project in VS Code; persona guideline 18.
   - [ ] Live voice verification with the operator's API key.
 - [ ] **7.4 Neural RAG Memory & Grounded Search (`DEC-152`)** — features 7, 6:

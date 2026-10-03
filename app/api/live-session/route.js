@@ -488,14 +488,14 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
               name: 'create_project',
               behavior: 'BLOCKING',
               description:
-                'Scaffolds a new software project from a template as a background job: flutter (Flutter app), react (React + Vite), node-express (Node.js Express REST API with sample CRUD routes), nextjs (Next.js App Router + Tailwind), shadcn-admin (Next.js + shadcn/ui admin dashboard, TypeScript). Returns immediately with a job id; a [PROJECT UPDATE] message arrives when it finishes.',
+                'Scaffolds a new software project as a background job using the operator\'s preferred generators: node-express (Node.js Express API via @bhavyajustchill/init: JavaScript MVC or TypeScript modular), admin-panel (React + Tailwind + shadcn admin template via @bhavyajustchill/init), nextjs (create-next-app), react (Vite, JavaScript), flutter (flutter create). Returns immediately with a job id; a [PROJECT UPDATE] message arrives when it finishes.',
               parameters: {
                 type: 'OBJECT',
                 properties: {
                   template: {
                     type: 'STRING',
                     description: 'Project template.',
-                    enum: ['flutter', 'react', 'node-express', 'nextjs', 'shadcn-admin'],
+                    enum: ['node-express', 'admin-panel', 'nextjs', 'react', 'flutter'],
                   },
                   name: {
                     type: 'STRING',
@@ -507,12 +507,12 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                   },
                   language: {
                     type: 'STRING',
-                    description: 'react and nextjs only: js (default) or ts.',
+                    description: 'node-express and nextjs only: js (default) or ts. React projects are always JavaScript.',
                     enum: ['js', 'ts'],
                   },
                   install_dependencies: {
                     type: 'BOOLEAN',
-                    description: 'Install dependencies after generating (default true). shadcn-admin always installs.',
+                    description: 'Install dependencies after generating (default true).',
                   },
                 },
                 required: ['template', 'name'],
