@@ -13,7 +13,7 @@
     "@react-three/postprocessing": "^3.1.1",
     "loudness": "^0.4.2",
     "lucide-react": "^1.42.0",
-    "next": "16.3.4",
+    "next": "^16.3.8",
     "postprocessing": "^6.39.4",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
