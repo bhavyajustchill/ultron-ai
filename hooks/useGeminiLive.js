@@ -66,6 +66,7 @@ export function useGeminiLive() {
   const isTurnActiveRef = useRef(false);
   const cancelledToolIdsRef = useRef(new Set());
   const connectSessionRef = useRef(null);
+  const projectPollersRef = useRef(new Map());
 
   const {
     status,
@@ -234,6 +235,73 @@ export function useGeminiLive() {
     goAwayPendingRef.current = false;
     connectSessionRef.current?.(apiKeyRef.current, voiceRef.current, { resume: true });
   }, []);
+
+  // Deliver a system notice to Jarvis as a user turn once he is idle (queued while offline)
+  const notifyJarvis = useCallback(
+    (text, attempt = 0) => {
+      const ws = wsRef.current;
+      if (!ws || ws.readyState !== WebSocket.OPEN || !isSetupCompleteRef.current) {
+        pendingPartsRef.current = [...(pendingPartsRef.current || []), { text }];
+        return;
+      }
+      const isBusy = isTurnActiveRef.current || pcmPlayerRef.current?.activeSources?.size > 0;
+      if (isBusy && attempt < 40) {
+        setTimeout(() => notifyJarvis(text, attempt + 1), 750);
+        return;
+      }
+      ws.send(
+        JSON.stringify({
+          clientContent: { turns: [{ role: 'user', parts: [{ text }] }], turnComplete: true },
+        })
+      );
+      setStatus('THINKING');
+    },
+    [setStatus]
+  );
+
+  // Follow a background project scaffolding job and brief Jarvis when it completes
+  const watchProjectJob = useCallback(
+    (jobId) => {
+      if (projectPollersRef.current.has(jobId)) return;
+      let lastStep = null;
+      const timer = setInterval(async () => {
+        let job;
+        try {
+          const res = await fetch(`/api/projects?id=${encodeURIComponent(jobId)}`);
+          job = (await res.json()).job;
+        } catch (err) {
+          console.warn('[useGeminiLive] Project status poll failed:', err);
+          return;
+        }
+        if (!job) {
+          clearInterval(timer);
+          projectPollersRef.current.delete(jobId);
+          return;
+        }
+        if (job.currentStep && job.currentStep !== lastStep) {
+          lastStep = job.currentStep;
+          addCommsMessage('system', `[PROJECT] ${job.name}: ${job.currentStep}...`);
+        }
+        if (job.status === 'running') return;
+
+        clearInterval(timer);
+        projectPollersRef.current.delete(jobId);
+        if (job.status === 'succeeded') {
+          addCommsMessage('system', `[PROJECT] ${job.templateLabel} "${job.name}" ready at ${job.path} (${job.elapsedSeconds}s).`);
+          notifyJarvis(
+            `[PROJECT UPDATE] The ${job.templateLabel} "${job.name}" finished scaffolding at ${job.path} in ${job.elapsedSeconds} seconds. Tell the operator it is ready, then ask whether they would like it opened in VS Code (file_operations action "open_path", app "code", path "${job.path}").`
+          );
+        } else {
+          addCommsMessage('system', `[PROJECT] ${job.name} failed: ${job.error}`);
+          notifyJarvis(
+            `[PROJECT UPDATE] Scaffolding the ${job.templateLabel} "${job.name}" failed: ${job.error}. Last output: ${job.logTail.slice(-4).join(' | ')}. Tell the operator briefly and offer to retry.`
+          );
+        }
+      }, 3000);
+      projectPollersRef.current.set(jobId, timer);
+    },
+    [addCommsMessage, notifyJarvis]
+  );
 
   // Connect to Gemini Live WebSocket. `options.resume` re-links the cached session config
   // using the latest resumption handle (falls back to a fresh session without greeting).
@@ -978,6 +1046,48 @@ export function useGeminiLive() {
                     });
                   }
 
+                  if (call.name === 'create_project') {
+                    const args = call.args || {};
+                    addCommsMessage('system', `[PROJECT] Requesting ${args.template || '?'} project "${args.name || ''}"...`);
+
+                    let projectResult = { success: false, message: 'Failed to contact the project scaffolder.' };
+                    try {
+                      const res = await fetch('/api/projects', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(args),
+                      });
+                      projectResult = await res.json();
+                    } catch (err) {
+                      console.error('[useGeminiLive] Project scaffolding error:', err);
+                    }
+
+                    if (projectResult.success) {
+                      const { job } = projectResult;
+                      addCommsMessage('system', `[PROJECT] Scaffolding ${job.templateLabel} at ${job.path} in the background...`);
+                      watchProjectJob(job.id);
+                      functionResponses.push({
+                        response: {
+                          output: {
+                            status: 'STARTED',
+                            job_id: job.id,
+                            path: job.path,
+                            template: job.templateLabel,
+                            message:
+                              'Scaffolding is running in the background (usually 10 seconds to 3 minutes). A [PROJECT UPDATE] message will arrive when it finishes; tell the operator you are on it.',
+                          },
+                        },
+                        id: call.id,
+                      });
+                    } else {
+                      addCommsMessage('system', `[PROJECT] Failed: ${projectResult.message}`);
+                      functionResponses.push({
+                        response: { output: { status: 'FAILED', message: projectResult.message } },
+                        id: call.id,
+                      });
+                    }
+                  }
+
                   if (
                     call.name === 'file_operations' ||
                     call.name === 'organize_folder' ||
@@ -1270,6 +1380,7 @@ export function useGeminiLive() {
       resetLinkState,
       scheduleReconnect,
       resumeAfterGoAway,
+      watchProjectJob,
       setStatus,
       addCommsMessage,
       setLatencyMs,
@@ -1475,6 +1586,15 @@ export function useGeminiLive() {
 
   // Cancel pending re-sync / GoAway timers on unmount
   useEffect(() => resetLinkState, [resetLinkState]);
+
+  // Stop polling background project jobs on unmount
+  useEffect(() => {
+    const pollers = projectPollersRef.current;
+    return () => {
+      for (const timer of pollers.values()) clearInterval(timer);
+      pollers.clear();
+    };
+  }, []);
 
   // Register active connectSession callback into global store for HUD modals
   useEffect(() => {

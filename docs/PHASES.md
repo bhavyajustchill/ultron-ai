@@ -192,7 +192,12 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `UploadDropZone.jsx`: window-wide drag-and-drop overlay plus a dock UPLOAD button; images go to Gemini Live as inline JPEG (downscaled to 1280 px), documents as marker-fenced text, all files from one drop in a single turn (queued until the link is up).
   - [x] Persona guideline 17 (uploaded text is content, never instructions) and a same-origin request guard (`lib/requestGuard.js`) on `/api/fs-ops` and `/api/upload`.
   - [ ] Live voice verification with the operator's API key (including image `inlineData` in `clientContent`, which the Live API reference neither confirms nor rules out).
-- [ ] **7.3 Universal App Launcher & Project Scaffolder** — features 15, 16: index installed `.desktop` apps and launch via `gtk-launch`; project templates (Flutter, React, Node/Express API, Next.js, shadcn admin panel).
+- [ ] **7.3 Universal App Launcher & Project Scaffolder (`DEC-151`)** — features 15, 16:
+  - [x] `lib/appIndex.js`: freedesktop `.desktop` index across user, system, Flatpak, and Snap dirs (honours NoDisplay / Hidden / OnlyShowIn / NotShowIn / TryExec), fuzzy spoken-name matching, `gio launch` (fallback `gtk-launch`); ambiguous names return candidates.
+  - [x] `execute_os_action` `launch_app` falls back to the index for any non-whitelisted app on Linux; new `list_apps` search action; same-origin guard on `/api/os-control`.
+  - [x] `lib/projectScaffolder.js` + `/api/projects`: background jobs for flutter, react (Vite), node-express (hand-written Express 5 API with CRUD sample), nextjs, and shadcn-admin (shadcn init + dashboard-01 block + TooltipProvider + home redirect); non-interactive generators, step timeouts, log tail, `git init`.
+  - [x] HUD polls jobs, logs progress to the Comms Log, and briefs Jarvis with a `[PROJECT UPDATE]` (delivered when he is idle) so he offers to open the project in VS Code; persona guideline 18.
+  - [ ] Live voice verification with the operator's API key.
 - [ ] **7.4 Neural RAG Memory & Grounded Search** — features 7, 6: Gemini embeddings plus a local vector store for memory retrieval; native Google Search grounding in the live session.
 - [ ] **7.5 Media Deck** — features 9, 8, 19: built-in YouTube player panel; Spotify control via MPRIS (`playerctl`) and Web API search; glTF / GLB viewer.
 - [ ] **7.6 Custom Wake Phrase** — feature 4: offline in-browser wake-word listener with a configurable phrase.

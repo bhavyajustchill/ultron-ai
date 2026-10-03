@@ -4,6 +4,8 @@ import { promisify } from 'util';
 import path from 'path';
 import fs from 'fs';
 import loudness from 'loudness';
+import { findApps, launchAppByName } from '@/lib/appIndex';
+import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 
 const execAsync = promisify(exec);
 const execFileAsync = promisify(execFile);
@@ -119,6 +121,10 @@ const WHITELISTED_APPS = {
 async function launchApplication(appKey) {
   const normalizedKey = appKey.toLowerCase().replace(/[-\s]/g, '_');
   const appConfig = WHITELISTED_APPS[normalizedKey];
+  if (!appConfig && isLinux) {
+    // Anything installed on the desktop: resolve through the .desktop application index
+    return launchAppByName(appKey);
+  }
   if (!appConfig) {
     return {
       success: false,
@@ -549,6 +555,9 @@ export async function GET() {
  *   - target: string (e.g. app name, folder path, url, or volume number)
  */
 export async function POST(req) {
+  const blocked = rejectCrossSiteRequest(req);
+  if (blocked) return blocked;
+
   try {
     const body = await req.json();
     const action = (body.action || '').trim().toLowerCase();
@@ -560,11 +569,25 @@ export async function POST(req) {
     switch (action) {
       // 1. Application Launch
       case 'launch_app': {
-        const appRes = await launchApplication(target);
+        result = await launchApplication(target);
+        break;
+      }
+
+      // 1b. Search installed applications (Linux .desktop index)
+      case 'list_apps': {
+        if (!isLinux) {
+          result = { success: false, message: `Installed-app search is available on Linux; authorized apps: ${Object.keys(WHITELISTED_APPS).join(', ')}.` };
+          break;
+        }
+        const matches = findApps(target || '', 10).map((m) => m.app.name);
         result = {
-          success: appRes.success,
-          message: appRes.message,
-          appName: appRes.appName,
+          success: true,
+          message: target
+            ? matches.length
+              ? `Installed apps matching "${target}": ${matches.join(', ')}.`
+              : `No installed application matches "${target}".`
+            : 'Provide a name or category (e.g. "browser", "editor") to search installed applications.',
+          apps: matches,
         };
         break;
       }
@@ -701,7 +724,7 @@ export async function POST(req) {
       default:
         result = {
           success: false,
-          message: `Unrecognized OS companion action: '${action}'. Valid actions: launch_app, volume_up, volume_down, mute, open_folder, open_url, minimize_all, lock_screen.`,
+          message: `Unrecognized OS companion action: '${action}'. Valid actions: launch_app, list_apps, volume_up, volume_down, mute, open_folder, open_url, minimize_all, lock_screen.`,
         };
     }
 

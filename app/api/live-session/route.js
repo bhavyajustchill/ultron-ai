@@ -370,16 +370,17 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
               name: 'execute_os_action',
               behavior: 'BLOCKING',
               description:
-                'Controls host desktop actions across Linux and Windows: adjust system volume (volume_up, volume_down, mute, unmute, set_volume), launch authorized applications (code, terminal, notepad, gedit, text_editor, calculator, explorer/files, taskmgr, spotify, browser), open workspace project folders, open target URLs in browser, minimize all desktop windows, or lock the workstation. When confirming volume actions to the user, always vocalize the percentage as a natural whole number phrase in words (e.g. "seventy-five percent", never "seven five percent").',
+                'Controls host desktop actions across Linux and Windows: adjust system volume (volume_up, volume_down, mute, unmute, set_volume), launch applications (launch_app with the app\'s name: on Linux any installed application such as "Firefox", "Files", "Text Editor", "Blender"; if several match, the result lists candidates so ask the operator which one), search installed apps (list_apps with a name or category like "browser"), open workspace project folders, open target URLs in browser, minimize all desktop windows, or lock the workstation. When confirming volume actions to the user, always vocalize the percentage as a natural whole number phrase in words (e.g. "seventy-five percent", never "seven five percent").',
               parameters: {
                 type: 'OBJECT',
                 properties: {
                   action: {
                     type: 'STRING',
                     description:
-                      'The desktop action: launch_app, volume_up, volume_down, mute, unmute, set_volume, open_folder, open_url, minimize_all, or lock_screen.',
+                      'The desktop action: launch_app, list_apps, volume_up, volume_down, mute, unmute, set_volume, open_folder, open_url, minimize_all, or lock_screen.',
                     enum: [
                       'launch_app',
+                      'list_apps',
                       'volume_up',
                       'volume_down',
                       'mute',
@@ -394,7 +395,7 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                   target: {
                     type: 'STRING',
                     description:
-                      'Target parameter for the action (e.g. app name like "code", "calc", "notepad", "gedit", "text_editor", "terminal"; folder path; URL; or volume percentage 0-100).',
+                      'Target parameter for the action (e.g. an application name like "Firefox", "VS Code", "Calculator", "Terminal"; an app search term for list_apps; folder path; URL; or volume percentage 0-100).',
                   },
                 },
                 required: ['action'],
@@ -478,6 +479,40 @@ Paths may use "~" for the operator's home folder (e.g. "~/Desktop/notes.md"). An
                   },
                 },
                 required: ['action', 'path'],
+              },
+            },
+            {
+              name: 'create_project',
+              behavior: 'BLOCKING',
+              description:
+                'Scaffolds a new software project from a template as a background job: flutter (Flutter app), react (React + Vite), node-express (Node.js Express REST API with sample CRUD routes), nextjs (Next.js App Router + Tailwind), shadcn-admin (Next.js + shadcn/ui admin dashboard, TypeScript). Returns immediately with a job id; a [PROJECT UPDATE] message arrives when it finishes.',
+              parameters: {
+                type: 'OBJECT',
+                properties: {
+                  template: {
+                    type: 'STRING',
+                    description: 'Project template.',
+                    enum: ['flutter', 'react', 'node-express', 'nextjs', 'shadcn-admin'],
+                  },
+                  name: {
+                    type: 'STRING',
+                    description: 'Project name (converted to kebab-case, or snake_case for Flutter).',
+                  },
+                  location: {
+                    type: 'STRING',
+                    description: 'Parent folder for the project (default "~/dev").',
+                  },
+                  language: {
+                    type: 'STRING',
+                    description: 'react and nextjs only: js (default) or ts.',
+                    enum: ['js', 'ts'],
+                  },
+                  install_dependencies: {
+                    type: 'BOOLEAN',
+                    description: 'Install dependencies after generating (default true). shadcn-admin always installs.',
+                  },
+                },
+                required: ['template', 'name'],
               },
             },
             {
