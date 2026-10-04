@@ -49,7 +49,8 @@ next-env.d.ts
 /data/memory-vectors.json
 /data/memory-vectors.json.tmp
 
-# Jarvis runtime state (reminder registry, autostart log)
+# Jarvis runtime state (reminder registry, autostart log, session recaps)
 /data/reminders.json
 /data/reminders.json.tmp
 /data/autostart.log
+/data/sessions.json

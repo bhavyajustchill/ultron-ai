@@ -30,7 +30,7 @@ flowchart TB
         Session["/api/live-session"]
         Files["/api/fs-ops · /api/upload · /api/model-file"]
         Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
-        Intel["/api/web-search · /api/weather · /api/memory"]
+        Intel["/api/web-search · /api/weather · /api/memory · /api/sessions"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects"]
         Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay"]
@@ -73,6 +73,7 @@ jarvis-mark-ii/
 │   └── api/
 │       ├── live-session/                   # Session config, persona, tools
 │       ├── memory/                         # Vault CRUD + semantic recall
+│       ├── sessions/                       # Conversation recaps (save / pop once)
 │       ├── fs-ops/                         # Sandboxed file ops, organizer, documents, open
 │       ├── upload/                         # Upload ingest + text extraction
 │       ├── model-file/[...segments]/       # Sandboxed 3D model serving
@@ -101,7 +102,7 @@ jarvis-mark-ii/
 │   ├── fsSandbox.js / requestGuard.js      # Safety boundaries
 │   ├── folderOrganizer.js / documentForge.js / desktopLauncher.js / appIndex.js
 │   ├── projectScaffolder.js / terminalRunner.js / terminalClient.js / inputControl.js
-│   ├── memoryVectors.js / groundedSearch.js
+│   ├── memoryVectors.js / groundedSearch.js / geminiText.js / memoryVault.js / sessionRecaps.js
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
 │   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js

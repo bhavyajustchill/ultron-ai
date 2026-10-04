@@ -142,11 +142,11 @@
   - [ ] Operator microphone checks: spoken barge-in, voice switch, and a >15 min session (GoAway swap).
 > **Roadmap note (2026-10-04, `DEC-147`, updated `DEC-160`):** Items 6.2–6.8 come from the original prototype roadmap. Phase 7 absorbed the parts that overlap `features.txt`; everything still open below is now scheduled in **Phase 8** (Mark-LIII parity).
 
-- [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Scheduled: Phase 8.5)_
-  - [ ] Buffer active session dialog turns in `useJarvisStore` / session state.
-  - [ ] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`.
-  - [ ] Implement `pop_last_session()` on startup to inject the previous session's context into Jarvis's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
-  - [ ] Implement silent spoken language detection: automatically record operator language in identity profile and adapt subsequent greetings.
+- [x] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Done in Phase 8.5, `DEC-165`)_
+  - [x] Buffer active session dialog turns in `useJarvisStore` / session state. _(The Comms Log already holds every operator / Jarvis turn; recaps slice it from the last recap onward.)_
+  - [x] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`. _(On disconnect, standby, auto-standby, and closing the HUD.)_
+  - [x] Implement `pop_last_session()` on startup to inject the previous session's context into Jarvis's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
+  - [x] Implement silent spoken language detection: automatically record operator language in identity profile and adapt subsequent greetings.
 - [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Scheduled: Phase 8.6)_
   - [ ] Implement `ProactiveEngine` timer evaluating operator silence duration (15 min silence gate, 20 min cooldown).
   - [ ] Rotating prompt builder cycling between:
@@ -239,7 +239,7 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.2 Conversational Polish (`DEC-162`)** — instant acknowledgment before slow tools; `[ALSO REMEMBERED]` index of memories that do not fit the prompt; `price` and `compare` web search modes; voice and profile changes keep the conversation (fresh session seeded with recent turns, since resumption keeps the old system instruction).
 - [x] **8.3 Undo & System Settings (`DEC-163`)** — `undo_last_action` stack (file create / write / replace / append / organize, folder create, volume, dark mode, WiFi off, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
 - [x] **8.4 Scheduled Reminders & Auto-Start (`DEC-164`)** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel, daily / weekday / weekly repeats, and a spoken announcement when the HUD is linked; start-on-login toggle in Settings and by voice (6.8).
-- [ ] **8.5 Session Continuity & Language Memory** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
+- [x] **8.5 Session Continuity & Language Memory (`DEC-165`)** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
 - [ ] **8.6 Background Intelligence** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).
 - [ ] **8.7 Audio Devices & Theming** — microphone / speaker picker by device name; accent-colour theming across the HUD.
 - [ ] **8.8 Messaging, Flights & Games** — compose WhatsApp / Telegram / email messages via app deep links; flight lookup (Google Flights + summary); Steam library and update check when Steam is installed (6.8).

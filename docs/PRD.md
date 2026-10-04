@@ -59,6 +59,7 @@ Developers and power users who want a voice-first assistant that can act on thei
 
 - **Knowledge Vault (`data/memories.json`):** Categorised facts, preferences, missions, and profile, injected into the system prompt and recalled with `recall_memory` / `store_memory`.
 - **Semantic Recall (RAG):** Gemini Embedding 2 vectors in a local cache rank memories by meaning, with keyword fallback.
+- **Session Continuity:** Each finished conversation is recapped in a sentence or two and recalled once in the next greeting; the operator's language is learned silently and Jarvis greets in it.
 
 ### 💠 3.5 Holographic Visual Core
 

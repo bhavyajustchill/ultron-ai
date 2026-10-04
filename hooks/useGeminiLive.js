@@ -39,6 +39,9 @@ const STABLE_LINK_MS = 30000;
 // Recent dialogue carried into a fresh session when settings change (voice / persona / profile)
 const HANDOFF_TURNS = 20;
 const REMINDER_POLL_MS = 20 * 1000;
+// Auto-standby after this much operator silence while the wake phrase can bring Jarvis back
+// (localStorage "jarvis_auto_standby_ms" overrides it for testing)
+const AUTO_STANDBY_MS = 2 * 60 * 1000;
 
 /**
  * Rebuilds the recent conversation from the Comms Log as alternating user / model turns. A resumed
@@ -119,6 +122,10 @@ export function useGeminiLive() {
   const connectSessionRef = useRef(null);
   const projectPollersRef = useRef(new Map());
   const standbyRequestedRef = useRef(false);
+  // Session continuity (Phase 8.5): Comms Log index the next recap starts from, and the last
+  // time the operator spoke, typed, or Jarvis was talking
+  const recapFromRef = useRef(0);
+  const lastActivityRef = useRef(Date.now());
   const relinkRequestedRef = useRef(false);
 
   const {
@@ -304,13 +311,47 @@ export function useGeminiLive() {
     setTimeout(poll, 800);
   }, []);
 
+  // Recap the conversation since the last recap (needs two operator turns, otherwise it carries
+  // over into the next one). `beacon` is for the page closing, where only sendBeacon survives.
+  const saveSessionRecap = useCallback((beacon = false) => {
+    const store = useJarvisStore.getState();
+    const turns = store.commsLog
+      .slice(recapFromRef.current)
+      .filter((m) => m.sender === 'user' || m.sender === 'jarvis')
+      .map((m) => ({ role: m.sender === 'user' ? 'operator' : 'jarvis', text: m.text.replace(/\s*\[Interrupted\]$/, '') }));
+    if (turns.filter((t) => t.role === 'operator').length < 2) return;
+    recapFromRef.current = store.commsLog.length;
+    const apiKey = apiKeyRef.current || store.userApiKey || '';
+    if (beacon) {
+      navigator.sendBeacon?.('/api/sessions', JSON.stringify({ action: 'save', turns, apiKey }));
+      return;
+    }
+    fetch('/api/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-gemini-api-key': apiKey },
+      body: JSON.stringify({ action: 'save', turns }),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.saved) addCommsMessage('system', `[MEMORY] Session recap saved for next time${result.language ? ` (language: ${result.language})` : ''}.`);
+      })
+      .catch(() => {});
+  }, [addCommsMessage]);
+
+  // Operator-facing disconnect: recap the conversation, then close the link
+  const endSession = useCallback(() => {
+    saveSessionRecap();
+    disconnectSession();
+  }, [saveSessionRecap, disconnectSession]);
+
   // Close the link once Jarvis has finished his farewell (enter_standby tool)
   const enterStandbyWhenQuiet = useCallback(() => {
     runWhenQuiet(() => {
+      saveSessionRecap();
       disconnectSession();
       addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Jarvis back online.');
     });
-  }, [runWhenQuiet, disconnectSession, addCommsMessage]);
+  }, [runWhenQuiet, saveSessionRecap, disconnectSession, addCommsMessage]);
 
   // Re-link with fresh settings (voice / persona / profile) while carrying the conversation over
   const relinkWithHandoff = useCallback((voiceOverride) => {
@@ -588,6 +629,7 @@ export function useGeminiLive() {
               isSetupCompleteRef.current = true;
               isEstablishedRef.current = true;
               linkPendingRef.current = false;
+              lastActivityRef.current = Date.now();
               linkUpSinceRef.current = Date.now();
               const isMutedNow = useJarvisStore.getState().isMuted;
               const isPlayingNow = pcmPlayerRef.current?.activeSources?.size > 0;
@@ -656,9 +698,31 @@ export function useGeminiLive() {
               } else if (!isResume && !options.handoff) {
                 // Phase 1: Dispatch startup spoken greeting after 300ms stabilization pause (Mark-LIII parity)
                 briefingStateRef.current = 'PHASE1';
-                setTimeout(() => {
+                setTimeout(async () => {
+                  if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+                  // The last conversation's recap is taken here, so it is mentioned exactly once
+                  let lastSession = null;
+                  try {
+                    const res = await fetch('/api/sessions', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'pop' }),
+                    });
+                    lastSession = (await res.json()).session;
+                  } catch {
+                    // No recap available
+                  }
                   if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
                   const { operatorProfile } = useJarvisStore.getState();
+                  const language = operatorProfile?.language?.trim();
+                  const recapClause = lastSession
+                    ? ` Then, in one short natural sentence, recall what you two covered ${lastSession.when}: "${lastSession.summary}" (paraphrase it naturally; do not read it out word for word).`
+                    : '';
+                  // The remembered language is only a starting point: the operator's reply decides
+                  const languageClause =
+                    language && !/^english$/i.test(language)
+                      ? ` Speak this greeting in ${language}; from the operator's first reply onward, answer in whatever language they use.`
+                      : '';
                   const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
                   const enableHumor = operatorProfile?.enableHumor !== false;
                   const now = new Date();
@@ -666,7 +730,7 @@ export function useGeminiLive() {
                   const greetingPrompt = `Greet ${callsign} warmly and concisely in-character as Jarvis (pronounced as a single word "JAR-vis", never spell it out as letters). It is currently ${localTime} in system timezone ${timezone}. Confirm your systems are online and you are standing by${enableHumor
                       ? ', adding a subtle touch of signature Jarvis dry British wit or playful irony appropriate for the time of day'
                       : ' with refined, composed British professionalism'
-                    }. Keep it under 2 short sentences. Speak aloud directly to ${callsign}. Do not call any tools.`;
+                    }.${recapClause} Keep it under ${lastSession ? 3 : 2} short sentences. Speak aloud directly to ${callsign}. Do not call any tools.${languageClause}`;
                   try {
                     wsRef.current.send(
                       JSON.stringify({
@@ -780,6 +844,7 @@ export function useGeminiLive() {
                 msg.serverContent.input_transcription;
               if (inputTx?.text && inputTx.text.trim()) {
                 addCommsMessage('user', inputTx.text.trim());
+                lastActivityRef.current = Date.now();
               }
 
               if (modelTurn) {
@@ -1080,6 +1145,7 @@ export function useGeminiLive() {
     (text) => {
       if (!text || !text.trim()) return false;
       const trimmed = text.trim();
+      lastActivityRef.current = Date.now();
 
       // Synchronously ensure Web Audio playback context is unlocked on user text dispatch
       if (pcmPlayerRef.current) {
@@ -1147,6 +1213,7 @@ export function useGeminiLive() {
   const sendContentParts = useCallback(
     (parts) => {
       if (!parts || parts.length === 0) return false;
+      lastActivityRef.current = Date.now();
 
       if (pcmPlayerRef.current) {
         pcmPlayerRef.current.initContext();
@@ -1285,6 +1352,42 @@ export function useGeminiLive() {
     };
   }, []);
 
+  // Auto-standby (Phase 8.5): after operator silence, close the link so the wake phrase listener
+  // takes over. Only when that listener can work: wake phrase on, mic live, Web Speech present.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isSetupCompleteRef.current) return;
+      const { operatorProfile, isMuted, pendingCommand } = useJarvisStore.getState();
+      const canWake = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+      if (operatorProfile?.wakeWordEnabled === false || isMuted || pendingCommand || !canWake) return;
+      if (isTurnActiveRef.current || pcmPlayerRef.current?.activeSources?.size > 0) {
+        lastActivityRef.current = Date.now();
+        return;
+      }
+      let limit = AUTO_STANDBY_MS;
+      try {
+        limit = Number(localStorage.getItem('jarvis_auto_standby_ms')) || AUTO_STANDBY_MS;
+      } catch {
+        // Storage blocked: keep the default
+      }
+      if (Date.now() - lastActivityRef.current < limit) return;
+      const phrase = operatorProfile?.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE;
+      saveSessionRecap();
+      disconnectSession();
+      addCommsMessage('system', `[WAKE] No speech for ${Math.round(limit / 1000)} seconds. Standing by: say "${phrase}" to bring Jarvis back.`);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [saveSessionRecap, disconnectSession, addCommsMessage]);
+
+  // Closing the HUD mid-conversation still leaves a recap for next time
+  useEffect(() => {
+    const onPageHide = () => {
+      if (isEstablishedRef.current) saveSessionRecap(true);
+    };
+    window.addEventListener('pagehide', onPageHide);
+    return () => window.removeEventListener('pagehide', onPageHide);
+  }, [saveSessionRecap]);
+
   // Say OS reminders aloud when they come due while the link is up (the desktop notification
   // fires regardless); the server hands each occurrence to one poll only
   useEffect(() => {
@@ -1324,7 +1427,7 @@ export function useGeminiLive() {
   return {
     status,
     connectSession,
-    disconnectSession,
+    disconnectSession: endSession,
     handleBargeIn,
     pcmPlayer,
     getInputByteFrequencyData,

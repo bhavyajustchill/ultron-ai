@@ -153,6 +153,7 @@ Directives & Preferences: ${preferences}
 Active Live Model: ${selectedModel}
 Active Vocal Core: ${voiceName}
 Standby Wake Phrase: "${profile.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE}"
+Usual Language: ${profile.language?.trim() || 'not yet known'} (learned from past conversations; always answer in the language of the operator's current message)
 
 CRITICAL NAME & PRONUNCIATION MANDATE:
 Your name is Jarvis (pronounced as a single word: "JAR-vis").
