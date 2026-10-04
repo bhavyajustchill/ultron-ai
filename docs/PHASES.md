@@ -147,13 +147,13 @@
   - [x] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`. _(On disconnect, standby, auto-standby, and closing the HUD.)_
   - [x] Implement `pop_last_session()` on startup to inject the previous session's context into Jarvis's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
   - [x] Implement silent spoken language detection: automatically record operator language in identity profile and adapt subsequent greetings.
-- [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Scheduled: Phase 8.6)_
-  - [ ] Implement `ProactiveEngine` timer evaluating operator silence duration (15 min silence gate, 20 min cooldown).
-  - [ ] Rotating prompt builder cycling between:
+- [x] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Done in Phase 8.6, `DEC-166`)_
+  - [x] Implement `ProactiveEngine` timer evaluating operator silence duration (15 min silence gate, 20 min cooldown).
+  - [x] Rotating prompt builder cycling between:
     - _Focus 1:_ Operator's active projects & goals in memory.
     - _Focus 2:_ Time of day & operator wellbeing (late-night check-in, rest reminder).
     - _Focus 3:_ Relevant tactical suggestions or technical tips.
-  - [ ] Smart silence gating: abort trigger if Jarvis is speaking or if operator spoke within last 30 seconds.
+  - [x] Smart silence gating: abort trigger if Jarvis is speaking or if operator spoke within last 30 seconds. _(Also while a reply is pending or a tool runs, within a minute of Jarvis's last reply, and while an authorization card is open.)_
 - [x] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Keyboard / mouse / windows in 7.7 (`DEC-157`); processes, wallpaper, and desktop organization in 8.3 (`DEC-163`))_
   - [x] Upgrade `/api/os-control` with robust local Node.js `child_process` / PowerShell execution handlers. _(Plus `/api/input` and `/api/system-settings`, which use `execFile` without a shell.)_
   - [x] Keyboard typing and hotkey execution (`Ctrl+C`, `Ctrl+V`, `Alt+Tab`, `Enter`).
@@ -167,10 +167,10 @@
   - [ ] Drag-and-drop file upload zone on the HUD supporting images (OCR, resize, compress), PDFs (extract text, summarize), CSV/Excel (filter, stats), and audio/video (transcribe, trim).
   - [ ] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/JarvisProjects`.
   - [ ] Self-healing execution loop: execute code, capture terminal stdout/stderr, parse tracebacks, and automatically repair errors up to 5 attempts.
-- [ ] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Scheduled: Phase 8.6)_
-  - [ ] Topic monitoring service checking user-defined topics daily via DuckDuckGo search.
-  - [ ] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
-  - [ ] Telemetry threshold monitor: speak verbal warnings when CPU temperature exceeds 85°C or RAM usage exceeds 92%.
+- [x] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Done in Phase 8.6, `DEC-166`)_
+  - [x] Topic monitoring service checking user-defined topics daily via DuckDuckGo search. _(Google News RSS instead: DuckDuckGo is bot-blocked from this host.)_
+  - [x] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
+  - [x] Telemetry threshold monitor: speak verbal warnings when CPU temperature exceeds 85°C or RAM usage exceeds 92%. _(Plus sustained CPU load ≥ 90 % and battery ≤ 15 % while discharging.)_
 - [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube done in 7.5; OS reminders done in 8.4 (`DEC-164`); Steam and Flights scheduled in 8.8)_
   - [x] Integrate Windows Task Scheduler (`schtasks.exe`) to schedule native OS toast notifications for reminders. _(Shipped for all three OSes: systemd user timers + notify-send on Linux (verified), Task Scheduler via `Register-ScheduledTask` on Windows, launchd on macOS.)_
   - [ ] Game updater tool: Steam AppID lookup, update check, and scheduled off-peak downloads with auto-shutdown.
@@ -240,7 +240,7 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.3 Undo & System Settings (`DEC-163`)** — `undo_last_action` stack (file create / write / replace / append / organize, folder create, volume, dark mode, WiFi off, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
 - [x] **8.4 Scheduled Reminders & Auto-Start (`DEC-164`)** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel, daily / weekday / weekly repeats, and a spoken announcement when the HUD is linked; start-on-login toggle in Settings and by voice (6.8).
 - [x] **8.5 Session Continuity & Language Memory (`DEC-165`)** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
-- [ ] **8.6 Background Intelligence** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).
+- [x] **8.6 Background Intelligence (`DEC-166`)** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).
 - [ ] **8.7 Audio Devices & Theming** — microphone / speaker picker by device name; accent-colour theming across the HUD.
 - [ ] **8.8 Messaging, Flights & Games** — compose WhatsApp / Telegram / email messages via app deep links; flight lookup (Google Flights + summary); Steam library and update check when Steam is installed (6.8).
 - [ ] **8.9 Deep File Processor** — images (resize, compress, convert, OCR via Gemini vision), PDF (summarize, extract), CSV / Excel (stats, filter, sort, export), audio / video (transcribe via Gemini, trim / extract audio via ffmpeg) (6.6).

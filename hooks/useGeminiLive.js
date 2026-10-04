@@ -42,6 +42,31 @@ const REMINDER_POLL_MS = 20 * 1000;
 // Auto-standby after this much operator silence while the wake phrase can bring Jarvis back
 // (localStorage "jarvis_auto_standby_ms" overrides it for testing)
 const AUTO_STANDBY_MS = 2 * 60 * 1000;
+const AWAITING_REPLY_TIMEOUT_MS = 30 * 1000;
+// Background intelligence (Phase 8.6); proactive timings can be overridden the same way
+// ("jarvis_proactive_silence_ms", "jarvis_proactive_cooldown_ms")
+const BACKGROUND_TICK_MS = 15 * 1000;
+const MONITOR_FIRST_CHECK_MS = 5 * 60 * 1000;
+const MONITOR_POLL_MS = 30 * 60 * 1000;
+const PROACTIVE_SILENCE_MS = 15 * 60 * 1000;
+const PROACTIVE_COOLDOWN_MS = 20 * 60 * 1000;
+// ...and never straight after Jarvis has just said something (an alert, a reply)
+const PROACTIVE_AFTER_REPLY_MS = 60 * 1000;
+// Rotated so consecutive check-ins never open the same way
+const PROACTIVE_FOCUS = [
+  ['projects', "the operator's active projects or goals from memory: ask how one is going, or offer one relevant tip"],
+  ['wellbeing', 'the time of day and the operator\'s wellbeing: a short break, water, rest if it is late, or planning the day if it is morning'],
+  ['practical', 'something practical tied to the recent conversation or a monitored topic: a useful suggestion, shortcut, or follow-up'],
+];
+
+// Test-time overrides for the timing constants above (localStorage, milliseconds)
+function msOverride(key, fallback) {
+  try {
+    return Number(localStorage.getItem(key)) || fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 /**
  * Rebuilds the recent conversation from the Comms Log as alternating user / model turns. A resumed
@@ -126,6 +151,14 @@ export function useGeminiLive() {
   // time the operator spoke, typed, or Jarvis was talking
   const recapFromRef = useRef(0);
   const lastActivityRef = useRef(Date.now());
+  // Proactive check-ins (Phase 8.6) count only the operator's own activity
+  const lastOperatorActivityRef = useRef(Date.now());
+  const proactiveRef = useRef({ last: 0, rotation: 0 });
+  // When a completed user turn was last sent and its reply has not finished yet (0 = none). Between
+  // the send and the model's first output Jarvis is silent but busy; a background notice sent then
+  // would arrive as a new turn and cut the pending reply off.
+  const awaitingReplyRef = useRef(0);
+  const lastReplyAtRef = useRef(0);
   const relinkRequestedRef = useRef(false);
 
   const {
@@ -230,6 +263,7 @@ export function useGeminiLive() {
     reconnectAttemptRef.current = 0;
     goAwayPendingRef.current = false;
     isTurnActiveRef.current = false;
+    awaitingReplyRef.current = 0;
     cancelledToolIdsRef.current.clear();
   }, []);
 
@@ -296,6 +330,16 @@ export function useGeminiLive() {
     goAwayPendingRef.current = false;
     connectSessionRef.current?.(apiKeyRef.current, voiceRef.current, { resume: true });
   }, []);
+
+  // Jarvis is mid-exchange: speaking, running a tool, or about to answer a turn just sent
+  // (that last state expires after 30 s in case a reply never completes)
+  const isJarvisBusy = useCallback(
+    () =>
+      isTurnActiveRef.current ||
+      pcmPlayerRef.current?.activeSources?.size > 0 ||
+      (awaitingReplyRef.current > 0 && Date.now() - awaitingReplyRef.current < AWAITING_REPLY_TIMEOUT_MS),
+    []
+  );
 
   // Run `fn` once Jarvis has finished speaking (800 ms grace for a reply that starts as a fresh turn, 20 s cap)
   const runWhenQuiet = useCallback((fn) => {
@@ -370,8 +414,7 @@ export function useGeminiLive() {
         pendingPartsRef.current = [...(pendingPartsRef.current || []), { text }];
         return;
       }
-      const isBusy = isTurnActiveRef.current || pcmPlayerRef.current?.activeSources?.size > 0;
-      if (isBusy && attempt < 40) {
+      if (isJarvisBusy() && attempt < 40) {
         setTimeout(() => notifyJarvis(text, attempt + 1), 750);
         return;
       }
@@ -380,9 +423,10 @@ export function useGeminiLive() {
           clientContent: { turns: [{ role: 'user', parts: [{ text }] }], turnComplete: true },
         })
       );
+      awaitingReplyRef.current = Date.now();
       setStatus('THINKING');
     },
-    [setStatus]
+    [setStatus, isJarvisBusy]
   );
 
   // Follow a background project scaffolding job and brief Jarvis when it completes
@@ -630,6 +674,7 @@ export function useGeminiLive() {
               isEstablishedRef.current = true;
               linkPendingRef.current = false;
               lastActivityRef.current = Date.now();
+              lastOperatorActivityRef.current = Date.now();
               linkUpSinceRef.current = Date.now();
               const isMutedNow = useJarvisStore.getState().isMuted;
               const isPlayingNow = pcmPlayerRef.current?.activeSources?.size > 0;
@@ -691,6 +736,7 @@ export function useGeminiLive() {
                 };
                 try {
                   ws.send(JSON.stringify(queuedMessage));
+                  awaitingReplyRef.current = Date.now();
                   setStatus('THINKING');
                 } catch (err) {
                   console.error('[useGeminiLive] Failed to transmit queued directive:', err);
@@ -740,6 +786,7 @@ export function useGeminiLive() {
                         },
                       })
                     );
+                    awaitingReplyRef.current = Date.now();
                     setStatus('THINKING');
                   } catch (err) {
                     console.error('[useGeminiLive] Failed to dispatch startup greeting:', err);
@@ -845,6 +892,7 @@ export function useGeminiLive() {
               if (inputTx?.text && inputTx.text.trim()) {
                 addCommsMessage('user', inputTx.text.trim());
                 lastActivityRef.current = Date.now();
+                lastOperatorActivityRef.current = Date.now();
               }
 
               if (modelTurn) {
@@ -862,6 +910,7 @@ export function useGeminiLive() {
 
               if (interrupted) {
                 isTurnActiveRef.current = false;
+                awaitingReplyRef.current = 0;
                 const partialText = currentTurnTextRef.current.trim();
                 if (partialText) {
                   addCommsMessage('jarvis', `${partialText} [Interrupted]`);
@@ -894,6 +943,8 @@ export function useGeminiLive() {
 
               if (turnComplete) {
                 isTurnActiveRef.current = false;
+                awaitingReplyRef.current = 0;
+                lastReplyAtRef.current = Date.now();
 
                 const { queries, sources } = groundingRef.current;
                 if (sources.size > 0) {
@@ -1003,6 +1054,7 @@ export function useGeminiLive() {
                             turnComplete: true,
                           },
                         }));
+                        awaitingReplyRef.current = Date.now();
                         setStatus('THINKING');
                         addCommsMessage('system', '[BRIEFING] Phase 2: Intelligence brief transmitting...');
                       } catch (err) {
@@ -1044,6 +1096,7 @@ export function useGeminiLive() {
           const failedBeforeSetup = !isSetupCompleteRef.current;
           isSetupCompleteRef.current = false;
           isTurnActiveRef.current = false;
+          awaitingReplyRef.current = 0;
           goAwayPendingRef.current = false;
           if (goAwayTimerRef.current) {
             clearTimeout(goAwayTimerRef.current);
@@ -1146,6 +1199,7 @@ export function useGeminiLive() {
       if (!text || !text.trim()) return false;
       const trimmed = text.trim();
       lastActivityRef.current = Date.now();
+      lastOperatorActivityRef.current = Date.now();
 
       // Synchronously ensure Web Audio playback context is unlocked on user text dispatch
       if (pcmPlayerRef.current) {
@@ -1170,6 +1224,7 @@ export function useGeminiLive() {
 
         try {
           wsRef.current.send(JSON.stringify(clientMessage));
+          awaitingReplyRef.current = Date.now();
           setStatus('THINKING');
           return true;
         } catch (err) {
@@ -1214,6 +1269,7 @@ export function useGeminiLive() {
     (parts) => {
       if (!parts || parts.length === 0) return false;
       lastActivityRef.current = Date.now();
+      lastOperatorActivityRef.current = Date.now();
 
       if (pcmPlayerRef.current) {
         pcmPlayerRef.current.initContext();
@@ -1229,6 +1285,7 @@ export function useGeminiLive() {
               },
             })
           );
+          awaitingReplyRef.current = Date.now();
           setStatus('THINKING');
           return true;
         } catch (err) {
@@ -1328,6 +1385,7 @@ export function useGeminiLive() {
             turnComplete: true,
           },
         }));
+        awaitingReplyRef.current = Date.now();
         setStatus('THINKING');
       } catch (err) {
         console.error('[useGeminiLive] Failed to dispatch manual briefing Phase 1:', err);
@@ -1360,16 +1418,11 @@ export function useGeminiLive() {
       const { operatorProfile, isMuted, pendingCommand } = useJarvisStore.getState();
       const canWake = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
       if (operatorProfile?.wakeWordEnabled === false || isMuted || pendingCommand || !canWake) return;
-      if (isTurnActiveRef.current || pcmPlayerRef.current?.activeSources?.size > 0) {
+      if (isJarvisBusy()) {
         lastActivityRef.current = Date.now();
         return;
       }
-      let limit = AUTO_STANDBY_MS;
-      try {
-        limit = Number(localStorage.getItem('jarvis_auto_standby_ms')) || AUTO_STANDBY_MS;
-      } catch {
-        // Storage blocked: keep the default
-      }
+      const limit = msOverride('jarvis_auto_standby_ms', AUTO_STANDBY_MS);
       if (Date.now() - lastActivityRef.current < limit) return;
       const phrase = operatorProfile?.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE;
       saveSessionRecap();
@@ -1377,7 +1430,7 @@ export function useGeminiLive() {
       addCommsMessage('system', `[WAKE] No speech for ${Math.round(limit / 1000)} seconds. Standing by: say "${phrase}" to bring Jarvis back.`);
     }, 5000);
     return () => clearInterval(timer);
-  }, [saveSessionRecap, disconnectSession, addCommsMessage]);
+  }, [saveSessionRecap, disconnectSession, addCommsMessage, isJarvisBusy]);
 
   // Closing the HUD mid-conversation still leaves a recap for next time
   useEffect(() => {
@@ -1387,6 +1440,82 @@ export function useGeminiLive() {
     window.addEventListener('pagehide', onPageHide);
     return () => window.removeEventListener('pagehide', onPageHide);
   }, [saveSessionRecap]);
+
+  // Background intelligence (Phase 8.6) while linked: hardware alerts every tick, topic monitors
+  // about every half hour (each topic is checked daily server-side), proactive check-ins after
+  // long operator silence. notifyJarvis waits until Jarvis is idle, so nothing talks over him.
+  useEffect(() => {
+    let monitorDueAt = Date.now() + MONITOR_FIRST_CHECK_MS;
+
+    const tick = async () => {
+      if (!isSetupCompleteRef.current) return;
+
+      try {
+        const { alerts = [] } = await (await fetch('/api/hardware-alerts')).json();
+        for (const alert of alerts) {
+          addCommsMessage('system', `[SYSTEM ALERT] ${alert.message}`);
+          notifyJarvis(`[SYSTEM ALERT] ${alert.message} Tell the operator calmly in one short sentence and suggest one sensible step.`);
+        }
+      } catch {
+        // Sensors unavailable this tick
+      }
+
+      if (Date.now() >= monitorDueAt) {
+        monitorDueAt = Date.now() + MONITOR_POLL_MS;
+        try {
+          const { alerts = [] } = await (await fetch('/api/monitors?due=1')).json();
+          for (const alert of alerts) {
+            useJarvisStore.getState().addIntelResult(
+              {
+                query: `Monitor: ${alert.topic}`,
+                mode: 'news',
+                summary: alert.title,
+                results: [{ title: alert.title, snippet: alert.source, source: alert.source, url: alert.link }],
+              },
+              { reveal: false }
+            );
+            addCommsMessage('system', `[MONITOR] New on "${alert.topic}": ${alert.title} (${alert.source})`);
+            notifyJarvis(`[MONITOR ALERT] A new headline on "${alert.topic}", which the operator asked you to watch: "${alert.title}" (${alert.source}). Tell them in one brief sentence; the link is in the Intel panel.`);
+          }
+        } catch {
+          // Feed unreachable: try again next round
+        }
+      }
+
+      const { operatorProfile, pendingCommand, commsLog } = useJarvisStore.getState();
+      if (operatorProfile?.proactiveEnabled === false || pendingCommand || isJarvisBusy()) return;
+      const now = Date.now();
+      const quietFor = now - lastOperatorActivityRef.current;
+      const silenceNeeded = msOverride('jarvis_proactive_silence_ms', PROACTIVE_SILENCE_MS);
+      if (quietFor < silenceNeeded || now - lastReplyAtRef.current < Math.min(PROACTIVE_AFTER_REPLY_MS, silenceNeeded)) return;
+      if (now - proactiveRef.current.last < msOverride('jarvis_proactive_cooldown_ms', PROACTIVE_COOLDOWN_MS)) return;
+
+      proactiveRef.current.last = now;
+      const [focusName, focus] = PROACTIVE_FOCUS[proactiveRef.current.rotation++ % PROACTIVE_FOCUS.length];
+      const callsign = operatorProfile?.callsign?.trim() || 'the operator';
+      const clock = new Date(now);
+      const hour = clock.getHours();
+      const period = hour < 5 || hour >= 22 ? 'late night' : hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+      const recent = commsLog
+        .filter((m) => m.sender === 'user' || m.sender === 'jarvis')
+        .slice(-4)
+        .map((m) => `${m.sender === 'user' ? 'Operator' : 'Jarvis'}: ${m.text.slice(0, 140)}`)
+        .join(' | ');
+      let topics = [];
+      try {
+        topics = ((await (await fetch('/api/monitors')).json()).topics || []).map((t) => t.topic);
+      } catch {
+        // No monitors
+      }
+      addCommsMessage('system', `[PROACTIVE] Check-in after ${Math.round(quietFor / 60000)} quiet minutes (focus: ${focusName}).`);
+      notifyJarvis(
+        `[PROACTIVE CHECK-IN] ${callsign} has been quiet for ${Math.round(quietFor / 60000)} minutes. It is ${clock.toLocaleDateString('en-GB', { weekday: 'long' })} ${period}, ${clock.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}. Focus: ${focus}.${topics.length ? ` Monitored topics: ${topics.join(', ')}.` : ''}${recent ? ` Recent conversation: ${recent}.` : ''} Say ONE short, natural, genuinely useful sentence to ${callsign}. Do not mention this notice or that you were prompted, do not repeat an earlier check-in, and do not call tools.`
+      );
+    };
+
+    const timer = setInterval(tick, BACKGROUND_TICK_MS);
+    return () => clearInterval(timer);
+  }, [addCommsMessage, notifyJarvis, isJarvisBusy]);
 
   // Say OS reminders aloud when they come due while the link is up (the desktop notification
   // fires regardless); the server hands each occurrence to one poll only

@@ -30,7 +30,7 @@ flowchart TB
         Session["/api/live-session"]
         Files["/api/fs-ops · /api/upload · /api/model-file"]
         Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
-        Intel["/api/web-search · /api/weather · /api/memory · /api/sessions"]
+        Intel["/api/web-search · /api/weather · /api/memory · /api/sessions · /api/monitors · /api/hardware-alerts"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects"]
         Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay"]
@@ -74,6 +74,7 @@ jarvis-mark-ii/
 │       ├── live-session/                   # Session config, persona, tools
 │       ├── memory/                         # Vault CRUD + semantic recall
 │       ├── sessions/                       # Conversation recaps (save / pop once)
+│       ├── monitors/ hardware-alerts/      # Topic monitors, hardware voice alerts
 │       ├── fs-ops/                         # Sandboxed file ops, organizer, documents, open
 │       ├── upload/                         # Upload ingest + text extraction
 │       ├── model-file/[...segments]/       # Sandboxed 3D model serving
@@ -106,7 +107,7 @@ jarvis-mark-ii/
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
 │   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js
-│   ├── reminders.js / autostart.js
+│   ├── reminders.js / autostart.js / hardwareAlerts.js / topicMonitors.js
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored

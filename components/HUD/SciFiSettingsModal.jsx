@@ -215,6 +215,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     liveModel: GEMINI_LIVE_MODEL,
     autoBriefing: true,
     enableHumor: true,
+    proactiveEnabled: true,
     wakeWordEnabled: true,
     wakePhrase: DEFAULT_WAKE_PHRASE,
     clearance: "Class-9 Operative",
@@ -271,6 +272,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           liveModel: GEMINI_LIVE_MODEL,
           autoBriefing: operatorProfile.autoBriefing !== false,
           enableHumor: operatorProfile.enableHumor !== false,
+          proactiveEnabled: operatorProfile.proactiveEnabled !== false,
           wakeWordEnabled: operatorProfile.wakeWordEnabled !== false,
           wakePhrase: operatorProfile.wakePhrase || DEFAULT_WAKE_PHRASE,
           clearance: operatorProfile.clearance || "Class-9 Operative",
@@ -419,6 +421,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       liveModel: GEMINI_LIVE_MODEL,
       autoBriefing: true,
       enableHumor: true,
+      proactiveEnabled: true,
       wakeWordEnabled: true,
       wakePhrase: DEFAULT_WAKE_PHRASE,
       clearance: "Class-9 Operative",
@@ -805,6 +808,27 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                     : "bg-white/5 border border-white/10 text-[#7E859E]"
                   }`}>
                 {draft.enableHumor ? "ENABLED" : "DISABLED"}
+              </button>
+            </div>
+
+            {/* Proactive check-ins (Phase 8.6) */}
+            <div className="flex items-center justify-between p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                  <Radio className="w-3 h-3 text-[#00E5FF]" /> Proactive Check-ins
+                </span>
+                <span className="text-[9px] text-[#7E859E]">
+                  After 15 quiet minutes Jarvis may offer one useful remark (at most every 20 minutes). Hardware and topic alerts are always spoken.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDraft({ ...draft, proactiveEnabled: !draft.proactiveEnabled })}
+                className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.proactiveEnabled
+                    ? "bg-[rgba(0,229,255,0.2)] border border-[#00E5FF] text-[#00E5FF] shadow-[0_0_12px_rgba(0,229,255,0.25)]"
+                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                  }`}>
+                {draft.proactiveEnabled ? "ENABLED" : "DISABLED"}
               </button>
             </div>
 

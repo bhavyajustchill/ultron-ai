@@ -216,12 +216,7 @@ export default function Home() {
     const trimmed = textInput.trim();
     if (!trimmed) return;
 
-    if (!isConnected && status !== "CONNECTING") {
-      const activeKey = userApiKey || loadStoredApiKey();
-      connectSession(activeKey);
-    }
-
-    addCommsMessage("user", trimmed);
+    // sendTextMessage logs the directive and links up first when offline
     sendTextMessage(trimmed);
     setTextInput("");
   };
@@ -254,7 +249,8 @@ export default function Home() {
           if (data.directives && data.directives.length > 0) {
             for (const d of data.directives) {
               if (d.type === "text_directive") {
-                storeState.addCommsMessage("user", `[MOBILE RELAY] ${d.payload}`);
+                // sendTextMessage logs the directive itself as the operator's turn
+                storeState.addCommsMessage("system", "[MOBILE RELAY] Directive received from the paired phone.");
                 sendTextMessage(d.payload);
               } else if (d.type === "os_action") {
                 storeState.addCommsMessage(
