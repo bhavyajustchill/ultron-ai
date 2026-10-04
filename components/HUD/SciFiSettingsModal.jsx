@@ -347,11 +347,15 @@ export function SciFiSettingsModal({ onReconnectSession }) {
         `[SETTINGS] Neural Vault synchronized. Address: "${draft.callsign}", Vocal Core: "${draft.voiceName}", Intelligence Engine: "${GEMINI_LIVE_MODEL.replace("models/", "")}".`
       );
 
-      // Reconnect live session if active or connecting, or if vocal core was changed or humor toggled
+      // Live link: re-link with the new settings and carry the conversation over. Offline: a voice or
+      // humour change connects fresh so the new voice greets the operator.
       const previousHumor = operatorProfile?.enableHumor !== false;
       const humorChanged = draft.enableHumor !== previousHumor;
       const reconnectFn = onReconnectSession || reconnectSession;
-      if (reconnectFn && (status !== "DISCONNECTED" || draft.voiceName !== previousVoice || humorChanged)) {
+      const relinkSession = useJarvisStore.getState().relinkSession;
+      if (status !== "DISCONNECTED" && relinkSession) {
+        relinkSession(draft.voiceName);
+      } else if (reconnectFn && (draft.voiceName !== previousVoice || humorChanged)) {
         addCommsMessage(
           "system",
           `[VOICE LINK] Re-linking live neural channel with calibrated "${draft.voiceName}" vocal core (Humor: ${draft.enableHumor ? "ON" : "OFF"})...`

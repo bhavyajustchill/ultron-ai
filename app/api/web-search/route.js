@@ -135,8 +135,11 @@ async function fetchInstantAnswer(query) {
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const query = (searchParams.get('query') || '').trim();
-    const mode = searchParams.get('mode') || 'search'; // search | news | research
+    const items = (searchParams.get('items') || '').split('|').map((item) => item.trim()).filter(Boolean);
+    const mode = items.length > 1 ? 'compare' : searchParams.get('mode') || 'search'; // search | news | research | price | compare
+    // Compare mode folds the items into the query so every engine sees them
+    const rawQuery = (searchParams.get('query') || '').trim();
+    const query = mode === 'compare' && items.length > 1 ? `${items.join(' vs ')}${rawQuery ? ` (${rawQuery})` : ''}` : rawQuery;
 
     if (!query) {
       return NextResponse.json(

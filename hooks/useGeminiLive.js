@@ -36,6 +36,30 @@ function rememberGroundingUnavailable() {
 // e.g. when the server accepts setup and immediately closes on exhausted quota)
 const STABLE_LINK_MS = 30000;
 
+// Recent dialogue carried into a fresh session when settings change (voice / persona / profile)
+const HANDOFF_TURNS = 20;
+
+/**
+ * Rebuilds the recent conversation from the Comms Log as alternating user / model turns. A resumed
+ * session keeps its original system instruction, so settings changes open a fresh session seeded
+ * with this history instead (verified against 3.8 Live: history kept, new instruction applied).
+ */
+function buildHandoffTurns(commsLog) {
+  const turns = [];
+  for (const { sender, text } of commsLog.slice(-80)) {
+    const role = sender === 'user' ? 'user' : sender === 'jarvis' ? 'model' : null;
+    if (!role || !text) continue;
+    const clean = text.replace(/\s*\[Interrupted\]$/, '').slice(0, 600);
+    const last = turns[turns.length - 1];
+    if (last?.role === role) last.parts[0].text += `\n${clean}`;
+    else turns.push({ role, parts: [{ text: clean }] });
+  }
+  const recent = turns.slice(-HANDOFF_TURNS);
+  // Seeded history starts with the operator (the shape verified against Live)
+  while (recent[0]?.role === 'model') recent.shift();
+  return recent;
+}
+
 /**
  * Parses a protobuf Duration JSON string (e.g. "12s", "0.5s") into milliseconds.
  */
@@ -81,6 +105,8 @@ export function useGeminiLive() {
   const voiceRef = useRef(null);
   const resumeHandleRef = useRef(null);
   const isEstablishedRef = useRef(false);
+  // A connect attempt (including its setup retries) is in flight: sends queue instead of re-linking
+  const linkPendingRef = useRef(false);
   const reconnectAttemptRef = useRef(0);
   const reconnectTimerRef = useRef(null);
   const linkUpSinceRef = useRef(0);
@@ -92,6 +118,7 @@ export function useGeminiLive() {
   const connectSessionRef = useRef(null);
   const projectPollersRef = useRef(new Map());
   const standbyRequestedRef = useRef(false);
+  const relinkRequestedRef = useRef(false);
 
   const {
     status,
@@ -214,6 +241,7 @@ export function useGeminiLive() {
     }
 
     isSetupCompleteRef.current = false;
+    linkPendingRef.current = false;
     pendingTextRef.current = null;
     pendingPartsRef.current = null;
     setStatus('DISCONNECTED');
@@ -261,8 +289,8 @@ export function useGeminiLive() {
     connectSessionRef.current?.(apiKeyRef.current, voiceRef.current, { resume: true });
   }, []);
 
-  // Close the link once Jarvis has finished his farewell (enter_standby tool)
-  const enterStandbyWhenQuiet = useCallback(() => {
+  // Run `fn` once Jarvis has finished speaking (800 ms grace for a reply that starts as a fresh turn, 20 s cap)
+  const runWhenQuiet = useCallback((fn) => {
     const startedAt = Date.now();
     const poll = () => {
       const isSpeaking = isTurnActiveRef.current || pcmPlayerRef.current?.activeSources?.size > 0;
@@ -270,11 +298,27 @@ export function useGeminiLive() {
         setTimeout(poll, 300);
         return;
       }
+      fn();
+    };
+    setTimeout(poll, 800);
+  }, []);
+
+  // Close the link once Jarvis has finished his farewell (enter_standby tool)
+  const enterStandbyWhenQuiet = useCallback(() => {
+    runWhenQuiet(() => {
       disconnectSession();
       addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Jarvis back online.');
-    };
-    setTimeout(poll, 800); // grace period in case the farewell starts as a fresh turn
-  }, [disconnectSession, addCommsMessage]);
+    });
+  }, [runWhenQuiet, disconnectSession, addCommsMessage]);
+
+  // Re-link with fresh settings (voice / persona / profile) while carrying the conversation over
+  const relinkWithHandoff = useCallback((voiceOverride) => {
+    const store = useJarvisStore.getState();
+    const handoff = buildHandoffTurns(store.commsLog);
+    const key = apiKeyRef.current || store.userApiKey || store.loadStoredApiKey();
+    addCommsMessage('system', '[VOICE LINK] Applying updated settings. Re-linking with the recent conversation...');
+    connectSessionRef.current?.(key, voiceOverride, { handoff });
+  }, [addCommsMessage]);
 
   // Deliver a system notice to Jarvis as a user turn once he is idle (queued while offline)
   const notifyJarvis = useCallback(
@@ -376,6 +420,7 @@ export function useGeminiLive() {
         pendingPartsRef.current = queuedParts;
         resetLinkState();
       }
+      linkPendingRef.current = true;
 
       // Unlock browser AudioContext synchronously during user click gesture
       if (pcmPlayerRef.current) {
@@ -428,6 +473,7 @@ export function useGeminiLive() {
             if (sessionData.error === 'MISSING_API_KEY') {
               useJarvisStore.getState().setIsKeyModalOpen(true);
               addCommsMessage('system', 'Gemini API Key required. Please enter your key in the credentials prompt.');
+              linkPendingRef.current = false;
               setStatus('DISCONNECTED');
               return;
             }
@@ -460,6 +506,9 @@ export function useGeminiLive() {
           watchProjectJob,
           requestStandby: () => {
             standbyRequestedRef.current = true;
+          },
+          requestRelink: () => {
+            relinkRequestedRef.current = true;
           },
           media: { playYouTubeQuery, openModelViewer, modelFileUrl },
           runCommandWithApproval,
@@ -536,6 +585,7 @@ export function useGeminiLive() {
             if (msg.setupComplete) {
               isSetupCompleteRef.current = true;
               isEstablishedRef.current = true;
+              linkPendingRef.current = false;
               linkUpSinceRef.current = Date.now();
               const isMutedNow = useJarvisStore.getState().isMuted;
               const isPlayingNow = pcmPlayerRef.current?.activeSources?.size > 0;
@@ -564,6 +614,12 @@ export function useGeminiLive() {
                 startMic().catch((err) => {
                   console.warn('[useGeminiLive] Deferred mic startup warning:', err);
                 });
+              }
+
+              // Settings re-link: seed the fresh session with the recent conversation as history
+              if (options.handoff?.length) {
+                ws.send(JSON.stringify({ clientContent: { turns: options.handoff, turnComplete: false } }));
+                addCommsMessage('system', `[VOICE LINK] Conversation carried over (${options.handoff.length} turns).`);
               }
 
               // Transmit queued text directive / upload parts if sent while connecting
@@ -595,7 +651,7 @@ export function useGeminiLive() {
                 } catch (err) {
                   console.error('[useGeminiLive] Failed to transmit queued directive:', err);
                 }
-              } else if (!isResume) {
+              } else if (!isResume && !options.handoff) {
                 // Phase 1: Dispatch startup spoken greeting after 300ms stabilization pause (Mark-LIII parity)
                 briefingStateRef.current = 'PHASE1';
                 setTimeout(() => {
@@ -898,6 +954,10 @@ export function useGeminiLive() {
                 if (standbyRequestedRef.current) {
                   standbyRequestedRef.current = false;
                   enterStandbyWhenQuiet();
+                } else if (relinkRequestedRef.current) {
+                  // Voice / persona changed by tool: apply it once the confirmation has been spoken
+                  relinkRequestedRef.current = false;
+                  runWhenQuiet(() => relinkWithHandoff());
                 }
               }
             }
@@ -940,6 +1000,7 @@ export function useGeminiLive() {
           if (!isResume && didOpen && failedBeforeSetup && /api key|api_key|credential|authenticat|permission denied/i.test(event.reason || '')) {
             stopMic();
             setStatus('DISCONNECTED');
+            linkPendingRef.current = false;
             addCommsMessage('system', `[VOICE LINK] Gemini rejected the API key (${event.reason}). Please enter a valid key.`);
             useJarvisStore.getState().setIsKeyModalOpen(true);
             return;
@@ -955,10 +1016,25 @@ export function useGeminiLive() {
               'system',
               `[VOICE LINK] Setup refused (${event.reason || `code ${event.code}`}). Retrying without Google Search grounding (skipped for 12 hours)...`
             );
-            connectSessionRef.current?.(customApiKey, overrideVoice, { withoutSearch: true });
+            connectSessionRef.current?.(customApiKey, overrideVoice, { ...options, withoutSearch: true });
             return;
           }
 
+          // Free-tier keys briefly refuse a new session right after another one closes (e.g. a settings
+          // re-link): retry a few times with backoff, keeping any handoff
+          const setupRetry = options.setupRetry || 0;
+          if (!isResume && didOpen && failedBeforeSetup && refusedForQuota && setupRetry < 3) {
+            const delayMs = 2000 * 2 ** setupRetry;
+            setStatus('RECONNECTING');
+            addCommsMessage('system', `[VOICE LINK] Gemini is busy. Retrying the link in ${delayMs / 1000}s...`);
+            setTimeout(
+              () => connectSessionRef.current?.(customApiKey, overrideVoice, { ...options, setupRetry: setupRetry + 1 }),
+              delayMs
+            );
+            return;
+          }
+
+          linkPendingRef.current = false;
           stopMic();
           setStatus('DISCONNECTED');
           addCommsMessage(
@@ -972,6 +1048,7 @@ export function useGeminiLive() {
           scheduleReconnect();
           return;
         }
+        linkPendingRef.current = false;
         setStatus('DISCONNECTED');
         addCommsMessage('system', `Connection failure: ${error.message}`);
         stopMic();
@@ -985,6 +1062,8 @@ export function useGeminiLive() {
       watchProjectJob,
       notifyJarvis,
       enterStandbyWhenQuiet,
+      runWhenQuiet,
+      relinkWithHandoff,
       setStatus,
       addCommsMessage,
       setLatencyMs,
@@ -1042,7 +1121,9 @@ export function useGeminiLive() {
         return true;
       }
 
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      if (linkPendingRef.current) {
+        addCommsMessage('system', 'Link handshake pending. Transmitting upon sync...');
+      } else if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
         if (!activeKey) {
           addCommsMessage('system', 'Gemini API Key required to link live session. Please enter your key in the prompt.');
@@ -1096,7 +1177,9 @@ export function useGeminiLive() {
         return true;
       }
 
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      if (linkPendingRef.current) {
+        addCommsMessage('system', 'Link handshake pending. Transmitting upload upon sync...');
+      } else if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
         if (!activeKey) {
           pendingPartsRef.current = null;
@@ -1203,17 +1286,19 @@ export function useGeminiLive() {
   // Register active connectSession callback into global store for HUD modals
   useEffect(() => {
     connectSessionRef.current = connectSession;
-    const { setReconnectSession } = useJarvisStore.getState();
+    const { setReconnectSession, setRelinkSession } = useJarvisStore.getState();
     if (setReconnectSession) {
       setReconnectSession(connectSession);
     }
+    setRelinkSession?.(relinkWithHandoff);
     return () => {
       const store = useJarvisStore.getState();
       if (store.setReconnectSession) {
         store.setReconnectSession(null);
       }
+      store.setRelinkSession?.(null);
     };
-  }, [connectSession]);
+  }, [connectSession, relinkWithHandoff]);
 
   return {
     status,

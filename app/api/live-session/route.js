@@ -121,10 +121,15 @@ export async function POST(req) {
           }
         }
         return true;
-      })
-      .slice(0, 15);
+      });
+    const PROMPT_MEMORY_LIMIT = 15;
+    const overflowMemories = filteredMemories.slice(PROMPT_MEMORY_LIMIT);
+    const memoryIndex = overflowMemories
+      .map((m) => `${(m.category || 'fact').toLowerCase()}: ${(m.content || '').split(/\s+/).slice(0, 7).join(' ')}…`)
+      .join('; ');
 
     const memoryBullets = filteredMemories
+      .slice(0, PROMPT_MEMORY_LIMIT)
       .map((m) => `- [${(m.category || 'FACT').toUpperCase()}] ${m.content}`)
       .join('\n');
 
@@ -178,7 +183,15 @@ You are instructed to maintain a direct, professional, and composed demeanor.
 [DEEP MEMORY VAULT REHYDRATION - ACTIVE KNOWLEDGE]
 The following facts, preferences, and mission directives are already committed to your persistent memory vault. You already possess this knowledge:
 ${memoryBullets || '- No prior directives recorded.'}
-Always acknowledge and act upon this knowledge seamlessly in conversation without needing to call 'recall_memory' first.
+Always acknowledge and act upon this knowledge seamlessly in conversation without needing to call 'recall_memory' first.${
+      overflowMemories.length
+        ? `
+
+[ALSO REMEMBERED — ${overflowMemories.length} more stored facts, topics only]
+${memoryIndex}
+These are stored but not shown in full. If the operator asks about any of these topics, or about anything personal you cannot see above, call 'recall_memory' BEFORE saying you do not know.`
+        : ''
+    }
 
 [WORKSPACE FILE ACCESS]
 You may create, read, edit, and organize files ONLY inside these folders: ${workspaceRoots || 'none configured'}.
