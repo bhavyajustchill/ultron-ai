@@ -38,6 +38,7 @@ const STABLE_LINK_MS = 30000;
 
 // Recent dialogue carried into a fresh session when settings change (voice / persona / profile)
 const HANDOFF_TURNS = 20;
+const REMINDER_POLL_MS = 20 * 1000;
 
 /**
  * Rebuilds the recent conversation from the Comms Log as alternating user / model turns. A resumed
@@ -1283,6 +1284,25 @@ export function useGeminiLive() {
       pollers.clear();
     };
   }, []);
+
+  // Say OS reminders aloud when they come due while the link is up (the desktop notification
+  // fires regardless); the server hands each occurrence to one poll only
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      if (!isSetupCompleteRef.current) return;
+      try {
+        const res = await fetch('/api/reminders?due=1');
+        const { due = [] } = await res.json();
+        for (const reminder of due) {
+          addCommsMessage('system', `[REMINDER] ${reminder.message}`);
+          notifyJarvis(`[REMINDER] A reminder the operator set is due now: "${reminder.message}". Tell them in one short sentence.`);
+        }
+      } catch {
+        // Offline server: the desktop notification still fires
+      }
+    }, REMINDER_POLL_MS);
+    return () => clearInterval(timer);
+  }, [addCommsMessage, notifyJarvis]);
 
   // Register active connectSession callback into global store for HUD modals
   useEffect(() => {

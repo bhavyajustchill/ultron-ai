@@ -25,6 +25,7 @@ import {
   Square,
   Terminal,
   Ear,
+  Power,
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
@@ -220,6 +221,40 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     role: "Lead Systems Architect",
     preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
   });
+
+  // Start on login is a desktop login entry, applied immediately rather than on Save
+  // undefined while checking, null when the status could not be read
+  const [startOnLogin, setStartOnLogin] = useState(undefined);
+  const [startOnLoginBusy, setStartOnLoginBusy] = useState(false);
+
+  const callStartOnLogin = async (value) => {
+    const res = await fetch("/api/system-settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "start_on_login", value }),
+    });
+    return res.json();
+  };
+
+  useEffect(() => {
+    if (!isSettingsModalOpen) return;
+    callStartOnLogin("status")
+      .then((result) => setStartOnLogin(result.success ? result.start_on_login : null))
+      .catch(() => setStartOnLogin(null));
+  }, [isSettingsModalOpen]);
+
+  const toggleStartOnLogin = async () => {
+    setStartOnLoginBusy(true);
+    try {
+      const result = await callStartOnLogin(startOnLogin ? "off" : "on");
+      if (result.success) setStartOnLogin(result.start_on_login);
+      addCommsMessage("system", `[SETTINGS] ${result.message}`);
+    } catch (err) {
+      addCommsMessage("system", `[SETTINGS] Start on login could not be changed: ${err.message}`);
+    } finally {
+      setStartOnLoginBusy(false);
+    }
+  };
 
   // Sync draft whenever modal opens or profile updates
   useEffect(() => {
@@ -770,6 +805,28 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                     : "bg-white/5 border border-white/10 text-[#7E859E]"
                   }`}>
                 {draft.enableHumor ? "ENABLED" : "DISABLED"}
+              </button>
+            </div>
+
+            {/* Start on Login (applies immediately) */}
+            <div className="flex items-center justify-between p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                  <Power className="w-3 h-3 text-[#00E5FF]" /> Start on Login
+                </span>
+                <span className="text-[9px] text-[#7E859E]">
+                  Starts the Jarvis server and opens this HUD when you log in to the computer. Applies immediately.
+                </span>
+              </div>
+              <button
+                type="button"
+                disabled={startOnLogin == null || startOnLoginBusy}
+                onClick={toggleStartOnLogin}
+                className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all shrink-0 disabled:opacity-50 cursor-pointer disabled:cursor-wait ${startOnLogin
+                    ? "bg-[rgba(0,229,255,0.2)] border border-[#00E5FF] text-[#00E5FF] shadow-[0_0_12px_rgba(0,229,255,0.25)]"
+                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                  }`}>
+                {startOnLogin === undefined ? "CHECKING" : startOnLogin === null ? "UNAVAILABLE" : startOnLogin ? "ENABLED" : "DISABLED"}
               </button>
             </div>
 

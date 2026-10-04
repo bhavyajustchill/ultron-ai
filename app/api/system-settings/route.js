@@ -23,6 +23,7 @@ import {
 } from '@/lib/systemSettings';
 import { prepareConfirm, takeConfirm, cancelConfirm } from '@/lib/confirmGate';
 import { pushUndo } from '@/lib/undoJournal';
+import { getAutostart, enableAutostart, disableAutostart } from '@/lib/autostart';
 import { resolveSafePath, displayPath, SandboxError } from '@/lib/fsSandbox';
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 
@@ -175,6 +176,24 @@ const ACTIONS = {
     };
   },
 
+  async start_on_login({ value, req }) {
+    const current = getAutostart().enabled;
+    if (value === undefined || value === null || String(value).toLowerCase() === 'status') {
+      return { message: `Start on login is ${current ? 'on' : 'off'}.`, start_on_login: current };
+    }
+    const on = wantsOn(value, current);
+    if (on === current) return { message: `Start on login is already ${on ? 'on' : 'off'}.`, start_on_login: on };
+    if (!on) {
+      disableAutostart();
+      return { message: 'Start on login turned off.', start_on_login: false };
+    }
+    const result = enableAutostart({ port: new URL(req.url).port || (req.headers.get('host') || '').split(':')[1] });
+    return {
+      message: `Start on login turned on: at login the Jarvis server starts (if it is not running) and the HUD opens at http://localhost:${result.port}/.`,
+      start_on_login: true,
+    };
+  },
+
   async cancel_power() {
     const cancelled = cancelPower();
     return { message: cancelled ? `Cancelled the pending ${POWER_ACTIONS[cancelled.kind]}.` : 'No power action is pending.' };
@@ -233,7 +252,7 @@ export async function POST(req) {
   }
 
   try {
-    const result = await handler({ value: body.value, body });
+    const result = await handler({ value: body.value, body, req });
     if (result.request) {
       return NextResponse.json({ success: true, action, needs_confirmation: true, request: result.request, message: `Waiting for the operator to authorize "${result.request.title}" on the HUD.` });
     }

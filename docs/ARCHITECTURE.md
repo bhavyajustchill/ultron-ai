@@ -29,7 +29,7 @@ flowchart TB
     subgraph Server ["⚙️ Next.js API routes"]
         Session["/api/live-session"]
         Files["/api/fs-ops · /api/upload · /api/model-file"]
-        Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo"]
+        Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
         Intel["/api/web-search · /api/weather · /api/memory"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects"]
@@ -81,6 +81,7 @@ jarvis-mark-ii/
 │       ├── terminal/                       # Prepare / run / cancel commands
 │       ├── system-settings/                # Dark mode, WiFi, brightness, wallpaper, processes, power
 │       ├── undo/                           # Reverse Jarvis's last action
+│       ├── reminders/                      # OS-native reminders + due announcements
 │       ├── projects/                       # Background project scaffolding jobs
 │       ├── web-search/ weather/            # Grounded search, weather
 │       ├── youtube/ spotify/               # Media deck
@@ -104,6 +105,7 @@ jarvis-mark-ii/
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
 │   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js
+│   ├── reminders.js / autostart.js
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored

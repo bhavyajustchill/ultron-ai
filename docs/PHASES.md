@@ -171,8 +171,8 @@
   - [ ] Topic monitoring service checking user-defined topics daily via DuckDuckGo search.
   - [ ] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
   - [ ] Telemetry threshold monitor: speak verbal warnings when CPU temperature exceeds 85°C or RAM usage exceeds 92%.
-- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube done in 7.5; OS reminders scheduled in 8.4, Steam and Flights in 8.8)_
-  - [ ] Integrate Windows Task Scheduler (`schtasks.exe`) to schedule native OS toast notifications for reminders.
+- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube done in 7.5; OS reminders done in 8.4 (`DEC-164`); Steam and Flights scheduled in 8.8)_
+  - [x] Integrate Windows Task Scheduler (`schtasks.exe`) to schedule native OS toast notifications for reminders. _(Shipped for all three OSes: systemd user timers + notify-send on Linux (verified), Task Scheduler via `Register-ScheduledTask` on Windows, launchd on macOS.)_
   - [ ] Game updater tool: Steam AppID lookup, update check, and scheduled off-peak downloads with auto-shutdown.
   - [ ] Voice-driven YouTube playback control and Google Flights price lookup.
 
@@ -238,7 +238,7 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.1 Self-Describing Tool Registry (`DEC-161`)** — every live tool lives in its own module under `lib/tools/` (declaration + client handler); `/api/live-session` and `useGeminiLive.js` consume the registry instead of a hand-maintained list and a long if-chain.
 - [x] **8.2 Conversational Polish (`DEC-162`)** — instant acknowledgment before slow tools; `[ALSO REMEMBERED]` index of memories that do not fit the prompt; `price` and `compare` web search modes; voice and profile changes keep the conversation (fresh session seeded with recent turns, since resumption keeps the old system instruction).
 - [x] **8.3 Undo & System Settings (`DEC-163`)** — `undo_last_action` stack (file create / write / replace / append / organize, folder create, volume, dark mode, WiFi off, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
-- [ ] **8.4 Scheduled Reminders & Auto-Start** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel; start-on-login toggle (6.8).
+- [x] **8.4 Scheduled Reminders & Auto-Start (`DEC-164`)** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel, daily / weekday / weekly repeats, and a spoken announcement when the HUD is linked; start-on-login toggle in Settings and by voice (6.8).
 - [ ] **8.5 Session Continuity & Language Memory** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
 - [ ] **8.6 Background Intelligence** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).
 - [ ] **8.7 Audio Devices & Theming** — microphone / speaker picker by device name; accent-colour theming across the HUD.

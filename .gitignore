@@ -48,3 +48,8 @@ next-env.d.ts
 # Semantic memory vector cache (regenerated from data/memories.json)
 /data/memory-vectors.json
 /data/memory-vectors.json.tmp
+
+# Jarvis runtime state (reminder registry, autostart log)
+/data/reminders.json
+/data/reminders.json.tmp
+/data/autostart.log
