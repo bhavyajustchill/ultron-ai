@@ -36,7 +36,6 @@ import { JarvisViewport } from "@/components/Canvas3D/JarvisViewport";
 import { ScreenShareModal } from "@/components/Vision/ScreenShareModal";
 import { WebCamPiP } from "@/components/Vision/WebCamPiP";
 import { MobilePairingModal } from "@/components/HUD/MobilePairingModal";
-import { SciFiMemoryModal } from "@/components/HUD/SciFiMemoryModal";
 import { SciFiSettingsModal } from "@/components/HUD/SciFiSettingsModal";
 import { SciFiMemoryVaultModal } from "@/components/HUD/SciFiMemoryVaultModal";
 import { CommsLog } from "@/components/HUD/CommsLog";
@@ -701,9 +700,6 @@ export default function Home() {
           }
         }}
       />
-
-      {/* Sci-Fi Syndicate Neural Memory Modal */}
-      <SciFiMemoryModal />
 
       {/* Sci-Fi Neural Memory Vault Modal */}
       <SciFiMemoryVaultModal />

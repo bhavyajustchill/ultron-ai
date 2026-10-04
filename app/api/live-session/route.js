@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import {
   JARVIS_SYSTEM_INSTRUCTION,
   GEMINI_LIVE_CONFIG,
@@ -10,34 +8,7 @@ import {
 import { getAllowedRoots, displayPath } from '@/lib/fsSandbox';
 import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
 import { toolDeclarations } from '@/lib/tools';
-
-// JARVIS_MEMORY_FILE relocates the vault (used by automated checks)
-const MEMORY_FILE_PATH = path.resolve(
-  /*turbopackIgnore: true*/ process.env.JARVIS_MEMORY_FILE || path.join(process.cwd(), 'data', 'memories.json')
-);
-
-function readPersistedMemory() {
-  try {
-    if (fs.existsSync(MEMORY_FILE_PATH)) {
-      const raw = fs.readFileSync(MEMORY_FILE_PATH, 'utf-8');
-      return JSON.parse(raw);
-    }
-  } catch (err) {
-    console.warn('[/api/live-session] Could not read memories.json:', err);
-  }
-  return {
-    profile: {
-      callsign: 'Bhavya Sir',
-      assistantName: 'Jarvis',
-      voiceName: 'Charon',
-      clearance: 'Class-9 Operative',
-      role: 'Lead Systems Architect',
-      preferences:
-        'Prefers concise, authoritative tactical briefings, high-speed execution, and dark cyberpunk aesthetics.',
-    },
-    memories: [],
-  };
-}
+import { contextPlan, readVault, updateVaultProfile } from '@/lib/memoryVault';
 
 /**
  * Next.js 16 App Router Route Handler: POST /api/live-session
@@ -83,7 +54,7 @@ export async function POST(req) {
     const wsUrl = `${wsBase}/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
 
     // Dynamic prompt rehydration from persistent knowledge vault
-    const memoryData = readPersistedMemory();
+    const memoryData = readVault();
     const profile = memoryData.profile || {};
     const memories = memoryData.memories || [];
 
@@ -99,7 +70,7 @@ export async function POST(req) {
     if (clientVoiceName && profile.voiceName !== clientVoiceName) {
       profile.voiceName = clientVoiceName;
       try {
-        fs.writeFileSync(MEMORY_FILE_PATH, JSON.stringify(memoryData, null, 2), 'utf-8');
+        updateVaultProfile({ voiceName: clientVoiceName });
       } catch (e) {
         console.warn('[/api/live-session] Could not update memories.json with clientVoiceName:', e);
       }
@@ -109,29 +80,13 @@ export async function POST(req) {
 
     const enableHumor = profile.enableHumor !== false;
 
-    const filteredMemories = memories
-      .filter((m) => {
-        if (!enableHumor) {
-          const text = (m.content || '').toLowerCase();
-          if (
-            m.id === 'mem-1789153920000-humor' ||
-            text.includes('humor') ||
-            text.includes('sarcasm') ||
-            text.includes('wit')
-          ) {
-            return false;
-          }
-        }
-        return true;
-      });
-    const PROMPT_MEMORY_LIMIT = 15;
-    const overflowMemories = filteredMemories.slice(PROMPT_MEMORY_LIMIT);
+    // Pinned memories first, then by importance, then newest (the same plan the vault manager shows)
+    const { prompt: promptMemories, recall: overflowMemories } = contextPlan(memories, profile);
     const memoryIndex = overflowMemories
       .map((m) => `${(m.category || 'fact').toLowerCase()}: ${(m.content || '').split(/\s+/).slice(0, 7).join(' ')}…`)
       .join('; ');
 
-    const memoryBullets = filteredMemories
-      .slice(0, PROMPT_MEMORY_LIMIT)
+    const memoryBullets = promptMemories
       .map((m) => `- [${(m.category || 'FACT').toUpperCase()}] ${m.content}`)
       .join('\n');
 

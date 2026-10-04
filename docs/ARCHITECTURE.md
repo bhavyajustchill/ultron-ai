@@ -73,7 +73,7 @@ jarvis-mark-ii/
 │   ├── mobile/page.jsx                     # Mobile companion PWA
 │   └── api/
 │       ├── live-session/                   # Session config, persona, tools
-│       ├── memory/                         # Vault CRUD + semantic recall
+│       ├── memory/                         # Vault manager API: CRUD, bulk, undo, merge, import / export, duplicates, voice edits, semantic recall
 │       ├── sessions/                       # Conversation recaps (save / pop once)
 │       ├── monitors/ hardware-alerts/      # Topic monitors, hardware voice alerts
 │       ├── fs-ops/                         # Sandboxed file ops, organizer, documents, open
@@ -110,7 +110,8 @@ jarvis-mark-ii/
 │   ├── fsSandbox.js / requestGuard.js      # Safety boundaries
 │   ├── folderOrganizer.js / documentForge.js / desktopLauncher.js / appIndex.js
 │   ├── projectScaffolder.js / terminalRunner.js / terminalClient.js / inputControl.js
-│   ├── memoryVectors.js / groundedSearch.js / geminiText.js / memoryVault.js / sessionRecaps.js
+│   ├── memoryVault.js                      # Vault file (atomic writes), validation, context plan, duplicates, import
+│   ├── memoryVectors.js / groundedSearch.js / geminiText.js / sessionRecaps.js
 │   ├── searchProviders.js                  # Keyless + optional-API search sources for search-then-read
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
@@ -155,9 +156,11 @@ jarvis-mark-ii/
               ▼ POST /api/memory { action: 'update_profile' }
 [ data/memories.json ]
               │
-              ├──▶ /api/live-session: profile, address mandate, top memories, allowed folders, wake phrase → system instruction
+              ├──▶ /api/live-session: profile, address mandate, memories in context, allowed folders, wake phrase → system instruction
               └──▶ /api/memory GET ?query=: semantic ranking (lib/memoryVectors.js, data/memory-vectors.json) with keyword fallback
 ```
+
+**Memory vault (Phase 10):** every read and write of `data/memories.json` goes through `lib/memoryVault.js` (temp file + rename, validated fields). `contextPlan()` picks the memories Jarvis gets in full (15 slots: pinned, then importance, then newest; humour memories muted while humour is off) and is shared by `/api/live-session` and the vault manager, so the HUD's IN CONTEXT / ON RECALL badges are exactly what the prompt contains. Writes to `/api/memory` are same-origin only. Deletes, merges, imports, and Jarvis's own stores and voice edits are `memory_changed` records in the undo journal (`lib/undoJournal.js`): spoken "undo" pops the newest, and the HUD's undo toast reverses its specific record (`action: 'restore'`). Voice edits (`memory_vault`) act only when one memory clearly matches by raw embedding similarity (≥ 0.70 and 0.04 ahead, or a distinctive-word lead), otherwise return candidates for Jarvis to ask about.
 
 ---
 

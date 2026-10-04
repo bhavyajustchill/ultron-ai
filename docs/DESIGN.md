@@ -131,9 +131,8 @@ The **wake chip** beside the badge shows `WAKE // SAY "HEY JARVIS"` while the st
 | `TelemetryPanel.jsx` (Systems) | Left floating panel: CPU, memory, GPU, network, host stats, FPS profiler. |
 | `CommsLog.jsx` | Right floating panel: Markdown-rendered transcript, system lines, no backdrop mask over the orb. |
 | `IntelModal.jsx` | Draggable dossier window: web results, grounded sources, briefing headlines. |
-| `TacticalDrawer.jsx` | Bottom drawer: dossier, intel, memory vault, OS & plugins. |
 | `SciFiSettingsModal.jsx` | Identity, voice core matrix with audio previews, toggles (briefing, mic, humour, wake phrase), plugins. |
-| `SciFiMemoryVaultModal.jsx` / `SciFiMemoryModal.jsx` | Memory vault search, categories, and detail view. |
+| `SciFiMemoryVaultModal.jsx` (+ `MemoryVault/`) | Memory vault manager: stats strip with context-slot meter, search (words / meaning), filters, sort, list with IN CONTEXT / ON RECALL / MUTED badges and checkboxes, bulk bar, inline editor, duplicate review, export / import, undo toast, RE-LINK NOW. Two panes on desktop, stacked on phones. |
 | `ApiKeyModal.jsx` | Gemini key entry (stored in browser `localStorage` as `jarvis_gemini_api_key`). |
 | `UploadDropZone.jsx` | Window-wide drop overlay and hidden file picker. |
 | `Media/YouTubePanel.jsx` | Draggable player with queue and volume slider (`FloatingPanel` shell). |

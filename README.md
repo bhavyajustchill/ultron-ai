@@ -67,7 +67,9 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 - **Real-time voice** with 16 selectable male voices (default *Charon*, refined British), optional dry British wit, and natural number pronunciation ("seventy-five percent").
 - **Unlimited-length sessions:** sliding-window context compression, session resumption, seamless socket swaps when Gemini retires a connection (GoAway), and automatic re-sync with back-off after drops.
 - **Settings changes keep the conversation:** changing voice or persona re-links on a fresh session seeded with your recent turns.
-- **Long-term memory vault** (`data/memories.json`): facts, preferences, missions, and your profile. Jarvis stores and recalls them, ranks them by meaning with Gemini Embedding 2 (keyword fallback), and lists what does not fit in his prompt so he can look it up.
+- **Long-term memory vault** (`data/memories.json`): facts, preferences, missions, and your profile. Jarvis stores and recalls them, ranks them by meaning with Gemini Embedding 2 (keyword fallback), and lists what does not fit in his prompt so he can look it up. Fifteen memories are in his context at the start of every conversation: pinned ones first, then the most important, then the newest.
+- **Memory vault manager** (**MEMORIES** button): every memory with its real status (**IN CONTEXT** with its slot, **ON RECALL**, or **MUTED** while humour is off), search by words or by meaning, filters (category, importance, source, context), sorting, an inline editor, pin to context, multi-select pin / recategorise / delete, an undo toast after deletes and merges, a possible-duplicates review (by meaning with a key, by wording without) with merge, JSON export / import, and **RE-LINK NOW** so changes reach Jarvis mid-conversation.
+- **Curate memory by voice** (`memory_vault`): "forget that I'm considering upgrading you", "my sister moved to Pune", "pin my location", "what do you remember about me?". Memories are matched by meaning; when two could match, Jarvis asks which. "Undo" reverses a forget or edit, and memories he stored himself.
 - **Session recaps:** each finished conversation is summarised in a sentence or two and mentioned once in the next greeting ("Earlier today you were planning the Kyoto trip...").
 - **Spoken briefing:** an optional morning briefing with news headlines after the greeting, or on demand with **BRIEFING**.
 - **Instant acknowledgement** before slow tasks, so you are never left waiting in silence.
@@ -184,7 +186,7 @@ Jarvis acts on a real computer, so the defaults are conservative:
 
 ## Live tools reference
 
-Jarvis decides when to use these during a conversation (31 tools, each one module in `lib/tools/`):
+Jarvis decides when to use these during a conversation (32 tools, each one module in `lib/tools/`):
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -192,6 +194,7 @@ Jarvis decides when to use these during a conversation (31 tools, each one modul
 | `get_weather` | Current weather anywhere |
 | `web_search` | Live answers with cited sources: search, news, research, price, compare |
 | `recall_memory`, `store_memory` | Long-term memory vault |
+| `memory_vault` | Forget, correct, pin, or summarise memories by voice |
 | `update_operator_profile` | Callsign, voice, persona, wake phrase, HUD accent |
 | `execute_os_action` | Apps, volume, folders, URLs, minimise, lock |
 | `system_settings` | Dark mode, WiFi, brightness, wallpaper, processes, power, start on login |
