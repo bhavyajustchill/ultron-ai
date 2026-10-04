@@ -171,10 +171,10 @@
   - [x] Topic monitoring service checking user-defined topics daily via DuckDuckGo search. _(Google News RSS instead: DuckDuckGo is bot-blocked from this host.)_
   - [x] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
   - [x] Telemetry threshold monitor: speak verbal warnings when CPU temperature exceeds 85°C or RAM usage exceeds 92%. _(Plus sustained CPU load ≥ 90 % and battery ≤ 15 % while discharging.)_
-- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube done in 7.5; OS reminders done in 8.4 (`DEC-164`); Steam and Flights scheduled in 8.8)_
+- [x] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube in 7.5; OS reminders in 8.4 (`DEC-164`); Steam and Flights in 8.8 (`DEC-168`))_
   - [x] Integrate Windows Task Scheduler (`schtasks.exe`) to schedule native OS toast notifications for reminders. _(Shipped for all three OSes: systemd user timers + notify-send on Linux (verified), Task Scheduler via `Register-ScheduledTask` on Windows, launchd on macOS.)_
-  - [ ] Game updater tool: Steam AppID lookup, update check, and scheduled off-peak downloads with auto-shutdown.
-  - [ ] Voice-driven YouTube playback control and Google Flights price lookup.
+  - [x] Game updater tool: Steam AppID lookup, update check, and scheduled off-peak downloads with auto-shutdown. _(Store search API for AppIDs; `schedule_update` via an OS timer; shutdown after downloads behind the HUD card.)_
+  - [x] Voice-driven YouTube playback control and Google Flights price lookup. _(Flights open live fares in Google Flights; a summary is quoted only from live grounded search.)_
 
 ---
 
@@ -242,7 +242,7 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.5 Session Continuity & Language Memory (`DEC-165`)** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
 - [x] **8.6 Background Intelligence (`DEC-166`)** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).
 - [x] **8.7 Audio Devices & Theming (`DEC-167`)** — microphone / speaker picker by device name; accent-colour theming across the HUD.
-- [ ] **8.8 Messaging, Flights & Games** — compose WhatsApp / Telegram / email messages via app deep links; flight lookup (Google Flights + summary); Steam library and update check when Steam is installed (6.8).
+- [x] **8.8 Messaging, Flights & Games (`DEC-168`)** — compose WhatsApp / Telegram / email messages via app deep links; flight lookup (Google Flights + summary); Steam library and update check when Steam is installed (6.8).
 - [ ] **8.9 Deep File Processor** — images (resize, compress, convert, OCR via Gemini vision), PDF (summarize, extract), CSV / Excel (stats, filter, sort, export), audio / video (transcribe via Gemini, trim / extract audio via ffmpeg) (6.6).
 - [ ] **8.10 Browser Automation (Playwright)** — persistent Jarvis profile in installed Chrome / Edge / Brave; go to URL, search, click by text or CSS, fill forms, extract text / tables, scroll, full-page screenshots shown to Jarvis (6.5).
 - [ ] **8.11 Autonomous Dev Agent** — plan and write multi-file code in a project folder, run it, read errors, and self-heal up to 5 attempts as a background job with HUD progress (6.6).

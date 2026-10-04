@@ -24,6 +24,7 @@ import {
 import { prepareConfirm, takeConfirm, cancelConfirm } from '@/lib/confirmGate';
 import { pushUndo } from '@/lib/undoJournal';
 import { getAutostart, enableAutostart, disableAutostart } from '@/lib/autostart';
+import { startDownloadWatch, stopDownloadWatch, isDownloadWatchActive } from '@/lib/steamLibrary';
 import { resolveSafePath, displayPath, SandboxError } from '@/lib/fsSandbox';
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 
@@ -71,7 +72,7 @@ const ACTIONS = {
       wifi: wifi.unavailable ? wifi : wifi.enabled,
       brightness_percent: brightness.unavailable ? brightness : brightness.percent,
       wallpaper: wallpaper.unavailable ? wallpaper : wallpaper.uri || wallpaper.path,
-      power: powerStatus(),
+      power: { ...powerStatus(), steam_download_watch: isDownloadWatchActive() },
     };
   },
 
@@ -196,7 +197,9 @@ const ACTIONS = {
 
   async cancel_power() {
     const cancelled = cancelPower();
-    return { message: cancelled ? `Cancelled the pending ${POWER_ACTIONS[cancelled.kind]}.` : 'No power action is pending.' };
+    const watchStopped = stopDownloadWatch();
+    if (watchStopped && !cancelled) return { message: 'Stopped waiting to shut down after the Steam downloads.' };
+    return { message: cancelled ? `Cancelled the pending ${POWER_ACTIONS[cancelled.kind]}.${watchStopped ? ' The Steam download watch is off too.' : ''}` : 'No power action is pending.' };
   },
 
   async confirm({ body }) {
@@ -217,6 +220,10 @@ const ACTIONS = {
         ended,
         survivors,
       };
+    }
+    if (payload.action === 'steam_shutdown') {
+      startDownloadWatch(() => schedulePower('shutdown'));
+      return { message: 'Watching the Steam downloads; the computer shuts down once they finish (with the usual grace period, and "cancel" still stops it).' };
     }
     if (payload.action === 'power') {
       const plan = schedulePower(payload.kind);

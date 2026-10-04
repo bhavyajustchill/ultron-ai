@@ -1451,6 +1451,15 @@ export function useGeminiLive() {
     const tick = async () => {
       if (!isSetupCompleteRef.current) return;
 
+      // A turn that never gets an answer (seen on busy free-tier keys) should not leave the HUD
+      // on THINKING forever: say so and go back to listening
+      const waitingSince = awaitingReplyRef.current;
+      if (waitingSince && !isTurnActiveRef.current && Date.now() - waitingSince > AWAITING_REPLY_TIMEOUT_MS) {
+        awaitingReplyRef.current = 0;
+        setStatus(useJarvisStore.getState().isMuted ? 'CONNECTED' : 'LISTENING');
+        addCommsMessage('system', '[VOICE LINK] Gemini has not answered for 30 seconds; the service may be busy. Say it again, or reconnect if it keeps happening.');
+      }
+
       try {
         const { alerts = [] } = await (await fetch('/api/hardware-alerts')).json();
         for (const alert of alerts) {
@@ -1516,7 +1525,7 @@ export function useGeminiLive() {
 
     const timer = setInterval(tick, BACKGROUND_TICK_MS);
     return () => clearInterval(timer);
-  }, [addCommsMessage, notifyJarvis, isJarvisBusy]);
+  }, [addCommsMessage, notifyJarvis, isJarvisBusy, setStatus]);
 
   // Audio devices (Phase 8.7): restore the saved choices, re-open a live mic on the newly chosen
   // input, and route Jarvis's voice to the chosen speaker
