@@ -50,25 +50,26 @@ function UltronViewportComponent({
 
   const status = useJarvisStore((state) => state.status);
 
-  // Audio energy computation callback
+  // Audio energy computation callback: the low speech band of a frequency spectrum, same scale for
+  // Ultron's voice and the operator's microphone
   const getAudioEnergy = useCallback(() => {
+    const speechEnergy = (data) => {
+      if (!data || data.length === 0) return 0;
+      let sum = 0;
+      const count = Math.min(32, data.length);
+      for (let i = 0; i < count; i++) {
+        sum += data[i];
+      }
+      return (sum / (count * 255)) * 1.5;
+    };
     let energy = 0;
     // 1. Ultron speaking output energy
-    if (pcmPlayer && typeof pcmPlayer.getEnergy === "function") {
-      energy = Math.max(energy, pcmPlayer.getEnergy() || 0);
+    if (pcmPlayer && typeof pcmPlayer.getByteFrequencyData === "function") {
+      energy = Math.max(energy, speechEnergy(pcmPlayer.getByteFrequencyData()));
     }
     // 2. Operator speech frequency energy
     if (getInputByteFrequencyData && typeof getInputByteFrequencyData === "function") {
-      const data = getInputByteFrequencyData();
-      if (data && data.length > 0) {
-        let sum = 0;
-        const count = Math.min(32, data.length);
-        for (let i = 0; i < count; i++) {
-          sum += data[i];
-        }
-        const micAvg = sum / (count * 255);
-        energy = Math.max(energy, micAvg * 1.5);
-      }
+      energy = Math.max(energy, speechEnergy(getInputByteFrequencyData()));
     }
     return energy;
   }, [pcmPlayer, getInputByteFrequencyData]);
