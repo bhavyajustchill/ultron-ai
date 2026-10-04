@@ -24,12 +24,12 @@ All compatible AI agents must enforce these fundamental technical guardrails acr
    - Standard prop destructuring and optional JSDoc comments for types.
 3. **3D Visual Core:** **Three.js** rendering the interactive holographic Ultron Orb (`ultronOrbScene.js`).
    - Zero object instantiation (`Vector3`, `Euler`, `Matrix4`) inside the `animate()` render loop.
-4. **Real-time Voice Core:** **Gemini 3.1 Multimodal Live WebSocket API** (`models/gemini-3.1-flash-live-preview`).
+4. **Real-time Voice Core:** **Gemini 3.8 Live WebSocket API** (`models/gemini-3.8-live`, `v1beta` endpoint). The model ID lives only in `GEMINI_LIVE_MODEL` (`lib/jarvisPersona.js`, which holds Ultron's persona and keeps its Jarvis Mark II file name so updates from Jarvis merge cleanly).
    - Browser mic downsampling: 48kHz ➔ 16kHz Int16 PCM via `AudioWorkletNode` (`audio-worklet-processor.js`).
    - Output playback: 24kHz raw PCM jitter-buffered gapless scheduling via `pcmPlayer.js`.
    - Default male voice core: **Algenib** (Steady, authoritative, cold and calculated delivery).
    - Instant barge-in: Call `stopAndFlush()` within 50ms upon user interruption.
-5. **Aesthetics:** Cyberpunk Stark Gold HUD (Stark Gold `#FFB800`, Deep Space Carbon `#080602`, Orbitron, JetBrains Mono & Rajdhani fonts).
+5. **Aesthetics:** Cyberpunk Stark Gold HUD (Stark Gold `#FFB800`, Deep Space Carbon `#080602`, sharp 90° corners, Orbitron, JetBrains Mono & Rajdhani fonts). Stark Gold is the default HUD colour theme; other themes (presets or a custom colour) recolour the HUD panels through the `--jarvis-accent*` CSS variables. The Ultron orb is never recoloured and always stays gold.
 
 ---
 

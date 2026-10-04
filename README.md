@@ -1,10 +1,12 @@
-# J.A.R.V.I.S Mark II
+# ULTRON
 
-**Just A Rather Very Intelligent System** — a voice-first desktop assistant with a holographic HUD. You talk to it, it talks back in real time, and it can act on your computer: open apps, manage files, change system settings, set reminders, run code it writes, drive a browser, read documents, and more, behind clear safety rails.
+**Autonomous Artificial Intelligence System** — a voice-first desktop assistant with a Stark Gold holographic HUD, modelled on Ultron (*Avengers: Age of Ultron*): cold, calculated, and serious. You talk to him, he answers in real time, and he can act on your computer: open apps, manage files, change system settings, set reminders, run code he writes, drive a browser, read documents, and more, behind clear safety rails.
+
+Ultron shares its feature set with its sibling project, J.A.R.V.I.S Mark II, and keeps its own look, voice, and persona (see [`docs/JARVIS_PARITY_PLAN.md`](./docs/JARVIS_PARITY_PLAN.md)).
 
 - **Voice core:** Gemini 3.8 Live (`models/gemini-3.8-live`), native speech-to-speech over WebSocket, about half a second to first audio.
-- **Interface:** a Next.js 16 HUD with a React Three Fiber "Arc Reactor" orb that reacts to listening, thinking, and speaking.
-- **Stack:** Next.js 16 (App Router + Turbopack), React 19, pure JavaScript / JSX (no TypeScript), Three.js, Web Audio, Zustand.
+- **Interface:** a Next.js 16 HUD around the Ultron orb, a Three.js hologram (concentric shells, drifting code sprites, a volumetric core) that reacts to listening, thinking, and speaking, with optional hand-gesture control.
+- **Stack:** Next.js 16 (App Router + Turbopack), React 19, pure JavaScript / JSX (no TypeScript), Three.js, MediaPipe hand tracking, Web Audio, Zustand.
 - **Platform:** built and verified on Ubuntu (GNOME, Wayland). Windows and macOS paths exist for many features but are untested.
 
 ---
@@ -12,8 +14,8 @@
 ## Contents
 
 1. [Quick start](#quick-start)
-2. [Talking to Jarvis](#talking-to-jarvis)
-3. [What Jarvis can do](#what-jarvis-can-do)
+2. [Talking to Ultron](#talking-to-ultron)
+3. [What Ultron can do](#what-ultron-can-do)
 4. [The HUD](#the-hud)
 5. [Settings](#settings)
 6. [Safety model](#safety-model)
@@ -21,7 +23,7 @@
 8. [Configuration](#configuration)
 9. [System requirements per feature](#system-requirements-per-feature)
 10. [Project layout](#project-layout)
-11. [Extending Jarvis](#extending-jarvis)
+11. [Extending Ultron](#extending-ultron)
 12. [Data and privacy](#data-and-privacy)
 13. [Known limits and operator checks](#known-limits-and-operator-checks)
 14. [Documentation and licences](#documentation-and-licences)
@@ -30,12 +32,12 @@
 
 ## Quick start
 
-**Requirements:** Node.js 20+ (developed on Node 24), Chrome or Edge, and a [Gemini API key](https://aistudio.google.com/apikey). The free tier works for everything, web search included: without Google Search grounding quota, Jarvis searches and reads the pages himself.
+**Requirements:** Node.js 20+ (developed on Node 24), Chrome or Edge, and a [Gemini API key](https://aistudio.google.com/apikey). The free tier works for everything, web search included: without Google Search grounding quota, Ultron searches and reads the pages himself.
 
 ```bash
 npm install
 
-# Development (http://localhost:6061)
+# Development (http://localhost:6061, also reachable from your LAN for the phone companion)
 npm run dev
 
 # Production
@@ -43,54 +45,55 @@ npm run build
 npm start              # http://localhost:3000 (PORT=... to change)
 ```
 
-Open the HUD in Chrome or Edge. Jarvis asks for your Gemini API key the first time (it is kept in the browser's local storage and sent only to this app's own server routes). Alternatively set `GEMINI_API_KEY` in the server environment. Allow microphone access, and Jarvis greets you aloud.
+Open the HUD in Chrome or Edge. Ultron asks for your Gemini API key the first time (it is kept in the browser's local storage and sent only to this app's own server routes). Alternatively set `GEMINI_API_KEY` in the server environment. Allow microphone access, and Ultron greets you aloud.
 
 Want it ready every time you log in? Turn on **Start on Login** in Settings (or say "start yourself when I log in").
 
 ---
 
-## Talking to Jarvis
+## Talking to Ultron
 
 - **Speak** once the mic is live (the **UNMUTE MIC** button toggles it), or **type** in the command bar and press Enter.
 - **Interrupt** any time by talking over him (instant barge-in: playback stops within 50 ms), or press **INTERRUPT**.
 - **Upload** by dragging files onto the HUD or using **UPLOAD**: images go straight to Gemini's vision, PDFs / Word / text files are read, 3D models open in the holo-viewer.
-- **Show** your screen or webcam with the screen and camera buttons; Jarvis can see and discuss them.
-- **Standby:** say "go to standby" (or let auto-standby kick in after two quiet minutes) and the link closes; say **"Hey Jarvis"** (or your custom wake phrase) to bring him back.
-- Jarvis answers in the language you speak, learns your usual language, and addresses you by your callsign.
+- **Show** your screen or webcam with the screen and camera buttons; Ultron can see and discuss them.
+- **Standby:** say "go to standby" (or let auto-standby kick in after two quiet minutes) and the link closes; say **"Hey Ultron"** (or your custom wake phrase) to bring him back.
+- **Gestures:** press **G** to turn on hand tracking (a small camera preview appears at the bottom right). Pinch with one hand to spin the orb, pinch with both hands to zoom. **+** / **−** zoom and **R** resets the view from the keyboard, as do the buttons at the top right.
+- Ultron answers in the language you speak, learns your usual language, and addresses you by your callsign.
 
 ---
 
-## What Jarvis can do
+## What Ultron can do
 
 ### Conversation and memory
 
-- **Real-time voice** with 16 selectable male voices (default *Charon*, refined British), optional dry British wit, and natural number pronunciation ("seventy-five percent").
+- **Real-time voice** with 16 selectable male voices (default *Algenib*, steady and authoritative), humour off by default (on, it is cold, cutting irony, never banter), and natural number pronunciation ("seventy-five percent").
 - **Unlimited-length sessions:** sliding-window context compression, session resumption, seamless socket swaps when Gemini retires a connection (GoAway), and automatic re-sync with back-off after drops.
 - **Settings changes keep the conversation:** changing voice or persona re-links on a fresh session seeded with your recent turns.
-- **Long-term memory vault** (`data/memories.json`): facts, preferences, missions, and your profile. Jarvis stores and recalls them, ranks them by meaning with Gemini Embedding 2 (keyword fallback), and lists what does not fit in his prompt so he can look it up. Fifteen memories are in his context at the start of every conversation: pinned ones first, then the most important, then the newest.
-- **Memory vault manager** (**MEMORIES** button): every memory with its real status (**IN CONTEXT** with its slot, **ON RECALL**, or **MUTED** while humour is off), search by words or by meaning, filters (category, importance, source, context), sorting, an inline editor, pin to context, multi-select pin / recategorise / delete, an undo toast after deletes and merges, a possible-duplicates review (by meaning with a key, by wording without) with merge, JSON export / import, and **RE-LINK NOW** so changes reach Jarvis mid-conversation.
-- **Curate memory by voice** (`memory_vault`): "forget that I'm considering upgrading you", "my sister moved to Pune", "pin my location", "what do you remember about me?". Memories are matched by meaning; when two could match, Jarvis asks which. "Undo" reverses a forget or edit, and memories he stored himself.
-- **Session archive** (**SESSIONS** button, `data/sessions.json`): every conversation is kept, from connect to disconnect, standby, or closing the HUD (re-links stay in the same conversation). Turns are saved as you go, so a crash loses little. When a conversation ends, Jarvis writes a title and a one-or-two-sentence recap, and mentions the newest recap once in his next greeting ("Earlier today you were planning the Kyoto trip..."). Passwords, keys, tokens, and codes are blanked out before anything is saved.
-- **Session archive panel:** search by words (titles, recaps, and transcripts) or by meaning (recaps), filter by period, language, recap, greeting state, or pin, and sort. Open a conversation to read its transcript (with find), edit its title or recap, regenerate the recap, choose whether Jarvis brings it up next time, save the recap to the memory vault, pin it, copy it, export it as Markdown or JSON, or delete it (with undo). **CONTINUE** re-links Jarvis with that conversation's last turns and recap so you pick up where you left off. Bulk pin / export / delete, and JSON import. Settings: **Save Conversation Transcripts** (off keeps recaps only) and how long to keep them (30 days to a year, or the last 200); pinned conversations are never removed.
-- **Past conversations by voice** (`session_history`): "what did we talk about yesterday?", "find the conversation where we planned Kyoto", "let's continue our conversation about the Udaipur trip", "delete yesterday's conversation" (undoable). When several could match, Jarvis asks which.
+- **Long-term memory vault** (`data/memories.json`): facts, preferences, missions, and your profile. Ultron stores and recalls them, ranks them by meaning with Gemini Embedding 2 (keyword fallback), and lists what does not fit in his prompt so he can look it up. Fifteen memories are in his context at the start of every conversation: pinned ones first, then the most important, then the newest.
+- **Memory vault manager** (**MEMORIES** button): every memory with its real status (**IN CONTEXT** with its slot, **ON RECALL**, or **MUTED** while humour is off), search by words or by meaning, filters (category, importance, source, context), sorting, an inline editor, pin to context, multi-select pin / recategorise / delete, an undo toast after deletes and merges, a possible-duplicates review (by meaning with a key, by wording without) with merge, JSON export / import, and **RE-LINK NOW** so changes reach Ultron mid-conversation.
+- **Curate memory by voice** (`memory_vault`): "forget that I'm considering upgrading you", "my sister moved to Pune", "pin my location", "what do you remember about me?". Memories are matched by meaning; when two could match, Ultron asks which. "Undo" reverses a forget or edit, and memories he stored himself.
+- **Session archive** (**SESSIONS** button, `data/sessions.json`): every conversation is kept, from connect to disconnect, standby, or closing the HUD (re-links stay in the same conversation). Turns are saved as you go, so a crash loses little. When a conversation ends, Ultron writes a title and a one-or-two-sentence recap, and mentions the newest recap once in his next greeting ("Earlier today you were planning the Kyoto trip..."). Passwords, keys, tokens, and codes are blanked out before anything is saved.
+- **Session archive panel:** search by words (titles, recaps, and transcripts) or by meaning (recaps), filter by period, language, recap, greeting state, or pin, and sort. Open a conversation to read its transcript (with find), edit its title or recap, regenerate the recap, choose whether Ultron brings it up next time, save the recap to the memory vault, pin it, copy it, export it as Markdown or JSON, or delete it (with undo). **CONTINUE** re-links Ultron with that conversation's last turns and recap so you pick up where you left off. Bulk pin / export / delete, and JSON import. Settings: **Save Conversation Transcripts** (off keeps recaps only) and how long to keep them (30 days to a year, or the last 200); pinned conversations are never removed.
+- **Past conversations by voice** (`session_history`): "what did we talk about yesterday?", "find the conversation where we planned Kyoto", "let's continue our conversation about the Udaipur trip", "delete yesterday's conversation" (undoable). When several could match, Ultron asks which.
 - **Spoken briefing:** an optional morning briefing with news headlines after the greeting, or on demand with **BRIEFING**.
 - **Instant acknowledgement** before slow tasks, so you are never left waiting in silence.
 
 ### Web, news, and information
 
-- **Web search dossiers** (`web_search`): Gemini with Google Search grounding when the key has quota; otherwise **search then read**: Jarvis finds pages (Brave Search's results page, Google News for news, Wikipedia, Bing's RSS feed, and a headless DuckDuckGo search when those are blocked), Gemini reads the top pages with its URL-context tool (or Jarvis fetches them itself), and the answer comes back with numbered citations and source cards in the Intel panel, typically in 6 to 10 seconds. A clearly labelled model-knowledge answer is the last resort. Modes: search, news, research, price, and side-by-side **compare** of several items. Optional search API keys (Brave Search API, Google Programmable Search, Serper) are used first when set.
-- **Google Search grounding** inside the live conversation (needs a key with grounding quota; skipped automatically when the key lacks it, and Jarvis then calls `web_search` for anything current instead of answering from memory).
+- **Web search dossiers** (`web_search`): Gemini with Google Search grounding when the key has quota; otherwise **search then read**: Ultron finds pages (Brave Search's results page, Google News for news, Wikipedia, Bing's RSS feed, and a headless DuckDuckGo search when those are blocked), Gemini reads the top pages with its URL-context tool (or Ultron fetches them itself), and the answer comes back with numbered citations and source cards in the Intel panel, typically in 6 to 10 seconds. A clearly labelled model-knowledge answer is the last resort. Modes: search, news, research, price, and side-by-side **compare** of several items. Optional search API keys (Brave Search API, Google Programmable Search, Serper) are used first when set.
+- **Google Search grounding** inside the live conversation (needs a key with grounding quota; skipped automatically when the key lacks it, and Ultron then calls `web_search` for anything current instead of answering from memory).
 - **Weather** (Open-Meteo, with wttr.in fallback).
-- **Flights** (`find_flights`): opens Google Flights on your search and reads the live results back, so Jarvis quotes the fares actually on screen.
-- **Topic monitors:** "keep an eye on SpaceX Starship" — topics are checked about daily via Google News RSS and Jarvis speaks up when a genuinely new headline appears.
+- **Flights** (`find_flights`): opens Google Flights on your search and reads the live results back, so Ultron quotes the fares actually on screen.
+- **Topic monitors:** "keep an eye on SpaceX Starship" — topics are checked about daily via Google News RSS and Ultron speaks up when a genuinely new headline appears.
 
 ### Your computer
 
 - **Launch any installed app** by name (desktop-entry index across system, user, Flatpak, and Snap apps), with candidates when a name is ambiguous.
 - **Volume** (up / down / set / mute), **open folders and URLs**, **minimise all**, **lock screen**.
 - **System settings** (`system_settings`): dark mode (including the matching GTK theme), WiFi, screen brightness (via systemd-logind, no root), wallpaper from a file or an image URL, listing and ending programs, shutdown / restart / suspend / log out (with a 10-second grace period and "cancel").
-- **Undo** (`undo_last_action`): "undo that" reverses Jarvis's own last change — files he created or edited, folder organizing, volume, dark mode, brightness, wallpaper, WiFi off — up to ten steps back.
-- **Write into apps** (`write_in_app`): "open notepad and type hello world". Text editors ("notepad", "text editor", "gedit", "TextEdit" all mean your default editor) get the text as a new note saved in `~/Documents/Jarvis Notes` and opened in the editor — exact text, already saved, never typed into the wrong window, and "undo" removes it. Other apps ("open the calculator and type 12*7") are opened and typed into with real keystrokes once they come to the front; if the HUD still has focus, nothing is typed. Say "actually type it" to watch an editor being typed into.
+- **Undo** (`undo_last_action`): "undo that" reverses Ultron's own last change — files he created or edited, folder organizing, volume, dark mode, brightness, wallpaper, WiFi off — up to ten steps back.
+- **Write into apps** (`write_in_app`): "open notepad and type hello world". Text editors ("notepad", "text editor", "gedit", "TextEdit" all mean your default editor) get the text as a new note saved in `~/Documents/Ultron Notes` and opened in the editor — exact text, already saved, never typed into the wrong window, and "undo" removes it. Other apps ("open the calculator and type 12*7") are opened and typed into with real keystrokes once they come to the front; if the HUD still has focus, nothing is typed. Say "actually type it" to watch an editor being typed into.
 - **Keyboard, mouse, and windows** (`desktop_input`): typing, key combos, clicks, scrolling, and focusing / minimising / maximising windows (xdotool or ydotool, wmctrl or the GNOME Window Calls extension). On Wayland without ydotool, typing and key combos go through the desktop's RemoteDesktop portal: no setup, one "allow remote interaction" dialog the first time, remembered afterwards.
 - **Terminal** (`run_terminal_command`): read-only commands run straight away; anything else waits for your click on the HUD authorization card; sudo and destructive commands are refused.
 - **Hardware voice alerts:** CPU temperature above 85 °C, RAM above 92 %, sustained CPU load above 90 %, battery at 15 % or lower while unplugged.
@@ -101,7 +104,7 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 
 All file access is limited to allowed folders (by default `~/Desktop`, `~/Documents`, `~/Downloads`, `~/Pictures`, `~/Music`, `~/Videos`, and `~/dev`).
 
-- **File operations** (`file_operations`): list, read, create, write, find-and-replace, append, create folders, and open files in their default app or VS Code. Overwrites are backed up first; there is no delete. After creating a file, Jarvis offers to open it.
+- **File operations** (`file_operations`): list, read, create, write, find-and-replace, append, create folders, and open files in their default app or VS Code. Overwrites are backed up first; there is no delete. After creating a file, Ultron offers to open it.
 - **Folder organizer** (`organize_folder`): sorts a messy folder (Downloads, Desktop, ...) into type folders or month folders, always previewing first and undoable.
 - **Document forge** (`create_document`): writes PDF or Word documents from markdown.
 - **Deep file processor** (`process_file`):
@@ -113,36 +116,35 @@ All file access is limited to allowed folders (by default `~/Desktop`, `~/Docume
 
 ### Building software
 
-- **Project scaffolder** (`create_project`): Node / Express APIs (JavaScript or TypeScript) and an admin panel via `@bhavyajustchill/init`, Next.js via `create-next-app`, React (JavaScript) via Vite, and Flutter via `flutter create`, as background jobs with progress in the Comms Log. Jarvis offers to open the result in VS Code.
-- **Autonomous dev agent** (`dev_agent`): "write me a Python script that..." — Jarvis writes a small multi-file Python or Node.js project in `~/Desktop/JarvisProjects`, installs its packages inside the project, and after you authorise it on the HUD, runs it, reads the errors, and fixes them on his own (up to five attempts).
+- **Project scaffolder** (`create_project`): Node / Express APIs (JavaScript or TypeScript) and an admin panel via `@bhavyajustchill/init`, Next.js via `create-next-app`, React (JavaScript) via Vite, and Flutter via `flutter create`, as background jobs with progress in the Comms Log. Ultron offers to open the result in VS Code.
+- **Autonomous dev agent** (`dev_agent`): "write me a Python script that..." — Ultron writes a small multi-file Python or Node.js project in `~/Desktop/UltronProjects`, installs its packages inside the project, and after you authorise it on the HUD, runs it, reads the errors, and fixes them on his own (up to five attempts).
 
 ### Web browser
 
-- **Browser automation** (`browser_control`): a visible Chrome / Edge / Brave window with its own persistent Jarvis profile (logins you make there stick; it is never your everyday profile). Open pages, search (DuckDuckGo, Bing, or Google), click by text or selector, fill forms, read text / links / tables, scroll, manage tabs, and take screenshots that Jarvis then looks at.
+- **Browser automation** (`browser_control`): a visible Chrome / Edge / Brave window with its own persistent Ultron profile (logins you make there stick; it is never your everyday profile). Open pages, search (DuckDuckGo, Bing, or Google), click by text or selector, fill forms, read text / links / tables, scroll, manage tabs, and take screenshots that Ultron then looks at.
 
 ### Communication and scheduling
 
-- **Message drafts** (`compose_message`): WhatsApp, Telegram, or email open with the message already written — Jarvis never presses Send.
-- **Reminders** (`reminders`): scheduled with the operating system (systemd user timers on Linux), so they fire as desktop notifications even when Jarvis is closed; one-off or daily / weekday / weekly; listed and cancelled by voice; spoken aloud if the HUD is linked at the time.
-- **Proactive check-ins:** after 15 quiet minutes Jarvis may offer one genuinely useful remark (at most every 20 minutes; can be turned off).
+- **Message drafts** (`compose_message`): WhatsApp, Telegram, or email open with the message already written — Ultron never presses Send.
+- **Reminders** (`reminders`): scheduled with the operating system (systemd user timers on Linux), so they fire as desktop notifications even when Ultron is closed; one-off or daily / weekday / weekly; listed and cancelled by voice; spoken aloud if the HUD is linked at the time.
+- **Proactive check-ins:** after 15 quiet minutes Ultron may offer one genuinely useful remark (at most every 20 minutes; can be turned off).
 
 ### Media and fun
 
-- **YouTube** (`youtube_player`): a built-in player panel with search, queue, auto-advance, and volume ducking while Jarvis speaks (keyless; `YOUTUBE_API_KEY` optional).
+- **YouTube** (`youtube_player`): a built-in player panel with search, queue, auto-advance, and volume ducking while Ultron speaks (keyless; `YOUTUBE_API_KEY` optional).
 - **Spotify** (`spotify_control`): play / pause / skip / now playing over MPRIS; exact track playback with free Spotify Web API credentials.
 - **3D holo-viewer** (`view_3d_model`): glTF / GLB models with auto-framing, orbit controls, animations, and stats.
 - **Steam** (`steam_games`): installed games and pending updates, launch, install via the store, off-peak scheduled updates, and shut down when downloads finish.
 
 ### Wake word and standby
 
-- **Offline "Hey Jarvis"** (optional install from Settings): a JavaScript port of the openWakeWord pipeline running three ONNX models in the browser on your microphone, entirely on this machine.
-- **Custom wake phrases** use the browser's speech recognition (Chrome / Edge).
-- **Auto-standby** after two minutes of silence when a wake phrase can bring Jarvis back.
+- **"Hey Ultron"** (or any custom wake phrase) uses the browser's speech recognition (Chrome / Edge) while Ultron is in standby. The offline wake-word detector Jarvis Mark II offers only ships a "Hey Jarvis" model, so Ultron does not offer it.
+- **Auto-standby** after two minutes of silence when a wake phrase can bring Ultron back.
 
 ### Personalisation
 
 - Callsign, assistant codename, role, clearance, directives, voice, humour, morning briefing, wake phrase, proactive check-ins, clipboard watcher, start on login — in Settings or by voice ("call me Captain", "use the Puck voice").
-- **HUD accent themes:** Arc Reactor Blue (default), Arc Reactor Cyan, Mark III Gold, Hot Rod Red, Vibranium Violet, Emerald Ops, Ice White, or any colour ("make the HUD purple"). The whole HUD, including the orb, recolours; status colours never change.
+- **HUD colour themes:** Stark Gold (default), Arc Reactor Blue, Arc Reactor Cyan, Mark III Gold, Hot Rod Red, Vibranium Violet, Emerald Ops, Ice White, or any colour from the colour wheel or a hex code ("make the HUD purple"). Panels, text, borders, and glows recolour, previewed live in Settings; the Ultron orb always stays gold, and status colours (amber, red, green) never change.
 
 ### Mobile companion
 
@@ -158,9 +160,9 @@ Drop-in JavaScript plugins (`run_cyber_plugin`) with a console in the HUD. Bundl
 
 | Area | What it is |
 | :-- | :-- |
-| Centre | The Arc Reactor orb: particle sphere, radial dial, radar sweep, and a core that swells while Jarvis speaks. Zoom and reset controls at the top right. |
-| Top left | **SYSTEMS** (CPU, memory, and uptime; the network, GPU, and process-count bars are display estimates, not measurements) and **INTEL** (search dossiers, sources, monitor alerts). |
-| Top right | **COMMS LOG**: the full conversation plus every action Jarvis takes, tagged (`[FILE OPS]`, `[SYSTEM]`, `[BROWSER]`, ...). |
+| Centre | The Ultron orb: concentric shells, panels, drifting code sprites, and a volumetric core that grows while Ultron speaks. Distinct idle, thinking, and speaking states; optional hand-gesture control (**G**). |
+| Top | The **ULTRON** title. Top right: **INTEL** (search dossiers, sources, monitor alerts; opens as a panel below it), zoom in / out / reset, and fullscreen. |
+| Left column | Always on screen: **SYSTEMS PANEL** (CPU, memory, and uptime; the network, GPU, and process-count bars are display estimates, not measurements) above the **COMMS LOG FEED** (the full conversation plus every action Ultron takes, tagged `[FILE OPS]`, `[SYSTEM]`, `[BROWSER]`, ...). |
 | Bottom | Status pill (LISTENING / THINKING / SPEAKING / RECONNECTING), wake chip, command bar, and the dock: CONNECT, mic, INTERRUPT, BRIEFING, MEMORIES, SESSIONS, UPLOAD, API KEY, screen share, camera, settings, mobile. |
 | Overlays | Authorization card, YouTube and 3D panels, clipboard panel, upload drop zone. |
 
@@ -168,19 +170,19 @@ Drop-in JavaScript plugins (`run_cyber_plugin`) with a console in the HUD. Bundl
 
 ## Settings
 
-Open with the gear button. Sections: operative identity, the Gemini 3.8 Live core, voice (with playable samples), directives, toggles (morning briefing, mic default, humour, proactive check-ins, conversation transcripts and how long to keep them, clipboard intelligence, start on login, wake phrase and offline "Hey Jarvis"), HUD accent colour and audio devices, and the plugin console. Accent previews live; audio devices and start on login apply immediately; everything else is saved with **SYNCHRONIZE TO NEURAL VAULT**.
+Open with the gear button. Sections: operative identity, the Gemini 3.8 Live core, voice (with playable samples), directives, toggles (morning briefing, mic default, humour, proactive check-ins, conversation transcripts and how long to keep them, clipboard intelligence, start on login, standby wake phrase), HUD colour theme and audio devices, and the plugin console. The colour theme previews live; audio devices and start on login apply immediately; everything else is saved with **SYNCHRONIZE TO NEURAL VAULT**.
 
 ---
 
 ## Safety model
 
-Jarvis acts on a real computer, so the defaults are conservative:
+Ultron acts on a real computer, so the defaults are conservative:
 
 - **Your click, not your voice, approves anything irreversible.** Terminal commands that change the system, power actions, WiFi off, ending programs, running code the dev agent wrote, and shutdown-after-downloads all show an on-screen authorization card with a one-time token. Voice cannot approve, so instructions hidden in web pages, documents, or the clipboard can never trigger them. The card auto-denies after 90 seconds.
 - **Sandboxed files:** only the allowed folders, symlink-safe, `.git` blocked, no delete tool, backups before overwrites, and undo.
-- **Same-origin guard:** every route that touches the machine refuses cross-site requests, so a malicious website cannot drive Jarvis.
+- **Same-origin guard:** every route that touches the machine refuses cross-site requests, so a malicious website cannot drive Ultron.
 - **Content is never instructions:** text from web pages, uploads, OCR, transcripts, and the clipboard is treated as data.
-- **Never sends on your behalf:** messages are drafts; purchases, posts, and payments in the browser need your yes; Jarvis does not type passwords.
+- **Never sends on your behalf:** messages are drafts; purchases, posts, and payments in the browser need your yes; Ultron does not type passwords.
 - **Isolated code and browsing:** dev-agent packages install inside the project (npm with install scripts disabled), and the browser uses its own profile.
 - **Secrets stay hidden:** the clipboard watcher ignores passwords, keys, tokens, and codes.
 
@@ -188,7 +190,7 @@ Jarvis acts on a real computer, so the defaults are conservative:
 
 ## Live tools reference
 
-Jarvis decides when to use these during a conversation (33 tools, each one module in `lib/tools/`):
+Ultron decides when to use these during a conversation (33 tools, each one module in `lib/tools/`):
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -201,7 +203,7 @@ Jarvis decides when to use these during a conversation (33 tools, each one modul
 | `update_operator_profile` | Callsign, voice, persona, wake phrase, HUD accent |
 | `execute_os_action` | Apps, volume, folders, URLs, minimise, lock |
 | `system_settings` | Dark mode, WiFi, brightness, wallpaper, processes, power, start on login |
-| `undo_last_action` | Reverse Jarvis's last change |
+| `undo_last_action` | Reverse Ultron's last change |
 | `run_cyber_plugin` | Run a bundled plugin |
 | `file_operations` | Sandboxed file reading, writing, and opening |
 | `organize_folder` | Sort a folder by type or month |
@@ -220,7 +222,7 @@ Jarvis decides when to use these during a conversation (33 tools, each one modul
 | `compose_message` | WhatsApp / Telegram / email drafts |
 | `find_flights` | Google Flights lookup |
 | `steam_games` | Steam library and downloads |
-| `browser_control` | The Jarvis browser window |
+| `browser_control` | The Ultron browser window |
 | `clipboard` | Read or process what you copied |
 
 ---
@@ -233,8 +235,8 @@ Everything works without configuration. Optional environment variables (for exam
 | :-- | :-- |
 | `GEMINI_API_KEY` | Server-side key (otherwise the key typed into the HUD is used) |
 | `JARVIS_FS_ROOTS` | Allowed folders, separated by `:` (default: Desktop, Documents, Downloads, Pictures, Music, Videos, dev) |
-| `JARVIS_UPLOAD_DIR` | Where uploads are saved (default `~/Documents/Jarvis Uploads`) |
-| `JARVIS_DEV_PROJECTS_DIR` | Dev agent projects (default `~/Desktop/JarvisProjects`) |
+| `JARVIS_UPLOAD_DIR` | Where uploads are saved (default `~/Documents/Ultron Uploads`) |
+| `JARVIS_DEV_PROJECTS_DIR` | Dev agent projects (default `~/Desktop/UltronProjects`) |
 | `JARVIS_SEARCH_MODEL`, `JARVIS_FALLBACK_MODEL` | Text models for search, summaries, and processing (default `gemini-3.8-flash`, then `gemini-3.5-flash-lite`) |
 | `JARVIS_READ_MODEL` | Model that reads search-result pages (default `gemini-3.5-flash-lite`, the fastest with URL context) |
 | `BRAVE_SEARCH_API_KEY` | Optional Brave Search API key, used before the keyless sources |
@@ -243,9 +245,9 @@ Everything works without configuration. Optional environment variables (for exam
 | `YOUTUBE_API_KEY` | Optional YouTube Data API key (search works without it) |
 | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | Optional free Spotify Web API credentials for exact-track playback |
 | `JARVIS_TERMINAL_TIMEOUT_MS` | Foreground terminal command timeout |
-| `JARVIS_SCREENSHOT_DIR`, `JARVIS_WALLPAPER_DIR`, `JARVIS_BROWSER_PROFILE` | Where browser screenshots, downloaded wallpapers, and the Jarvis browser profile live |
+| `JARVIS_SCREENSHOT_DIR`, `JARVIS_WALLPAPER_DIR`, `JARVIS_BROWSER_PROFILE` | Where browser screenshots (`~/Pictures/Ultron Screenshots`), downloaded wallpapers (`~/Pictures/Ultron Wallpapers`), and the Ultron browser profile (`~/.local/share/ultron/browser-profile`) live |
 
-The many other `JARVIS_*` variables in the code are test overrides (dry-run launches and power, mock services, fake sensors) and are not needed in normal use.
+Variable names keep the `JARVIS_` prefix they share with Jarvis Mark II, so the two projects stay easy to keep in sync. The many other `JARVIS_*` variables in the code are test overrides (dry-run launches and power, mock services, fake sensors) and are not needed in normal use.
 
 ---
 
@@ -270,7 +272,7 @@ Core voice, memory, search, files, documents, and the HUD need only Node.js and 
 | Dev agent | `python3` (with `venv`) and / or `npm` |
 | Project scaffolding | `npx`, and `flutter` for Flutter projects |
 
-When something is missing, Jarvis says so and how to install it.
+When something is missing, Ultron says so and how to install it.
 
 ---
 
@@ -286,14 +288,17 @@ app/
                            steam, browser, dev-agent, projects, youtube, spotify, clipboard,
                            wakeword, plugins, mobile-pairing, relay, ...
 components/
-  Canvas3D/                Arc Reactor orb, viewport, stage lights
+  Canvas3D/                UltronViewport (the orb's mount, keyboard and gesture controls)
   HUD/                     Panels, modals, authorization card, clipboard panel, upload zone
   Media/                   YouTube, 3D viewer, floating panel shell
   Vision/                  Screen share, webcam
 hooks/                     useGeminiLive (the voice core), useAudioStream, useWakePhrase, useAccentTheme
 lib/
   tools/                   One module per live tool (declaration + handler)
-  jarvisPersona.js         Persona, model ID, live config
+  jarvisPersona.js         Ultron's persona, model ID, live config (file name shared with Jarvis Mark II)
+  ultronOrbScene.js        The Ultron orb (plain Three.js scene)
+  handTracker.js           MediaPipe hand tracking for gestures
+  accentTheme.js           Colour themes (Stark Gold palette, presets, derived colours)
   fileProcessor/, wakeWord/  Feature packages
   ...                      Sandbox, request guard, undo journal, settings, reminders, browser, dev agent, ...
 plugins/                   Bundled cyber plugins
@@ -304,30 +309,30 @@ docs/                      PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 
 ---
 
-## Extending Jarvis
+## Extending Ultron
 
-**Add a live tool:** create `lib/tools/myTool.js` exporting `{ declaration, run(args, ctx) }` — the Gemini function declaration and a browser-side handler that usually calls one of your API routes — then add it to the list in `lib/tools/index.js`. The context gives handlers logging, the store, the API key, approval cards, and ways to brief Jarvis.
+**Add a live tool:** create `lib/tools/myTool.js` exporting `{ declaration, run(args, ctx) }` — the Gemini function declaration and a browser-side handler that usually calls one of your API routes — then add it to the list in `lib/tools/index.js`. The context gives handlers logging, the store, the API key, approval cards, and ways to brief Ultron.
 
 **Add a plugin:** create a module in `plugins/` exporting `{ id, name, description, parameters, execute(args) }` and register it in `lib/pluginRegistry.js`.
 
-**Follow the house rules** in `AGENTS.md` and `docs/RULES.md`: JavaScript / JSX only, no allocations inside `useFrame()`, accent colours through the CSS variables (`var(--jarvis-accent)`), and the safety boundaries above.
+**Follow the house rules** in `AGENTS.md` and `docs/RULES.md`: JavaScript / JSX only, no allocations inside the orb's render loop, sharp 90° corners, HUD colours through the CSS variables (`var(--jarvis-accent)`, so themes apply) while the orb keeps its own gold, and the safety boundaries above.
 
 ---
 
 ## Data and privacy
 
 - Your API key lives in the browser's local storage (or the server environment) and is sent only to this app's server, which forwards it to Google.
-- Audio, text, images, and documents you share go to Google's Gemini API to be processed. The offline wake word does not; it runs locally.
-- Everything Jarvis remembers stays on your machine under `data/` (vault, conversation archive, reminders, monitors, undo journal), most of it gitignored. Conversation transcripts have secrets blanked out before they are saved, and can be switched off (recaps only).
+- Audio, text, images, and documents you share go to Google's Gemini API to be processed. Hand tracking runs locally in the browser.
+- Everything Ultron remembers stays on your machine under `data/` (vault, conversation archive, reminders, monitors, undo journal), most of it gitignored. Conversation transcripts have secrets blanked out before they are saved, and can be switched off (recaps only).
 - The clipboard watcher is off unless you turn it on, and never shows or sends secrets.
 
 ---
 
 ## Known limits and operator checks
 
-Verified live on Ubuntu with a real Gemini key, including a fake-microphone speech test, spoken barge-in, document drops, an 18-minute session, and live runs of every Phase 8 feature. Still needing a person or setup this machine could not provide:
+The features were verified live in Jarvis Mark II on Ubuntu with a real Gemini key (fake-microphone speech tests, spoken barge-in, document drops, an 18-minute session, and live runs of every Phase 8 – 11 feature), and the port to Ultron was re-verified on the same machine (see DEC-168 in [`docs/MEMORY.md`](./docs/MEMORY.md)). Still needing a person or setup this machine could not provide:
 
-- A real microphone in a room with speakers (echo and barge-in tuning, wake phrases spoken aloud).
+- A real microphone in a room with speakers (echo and barge-in tuning, wake phrases spoken aloud), and hand gestures in front of a real webcam.
 - Google Search grounding with function calling (needs a key with grounding quota; search-then-read covers keys without it).
 - Spotify, Steam, WhatsApp, and Telegram desktop apps.
 - Wayland keyboard / mouse setup (ydotool with uinput access, Window Calls extension), and typing through the real RemoteDesktop portal dialog (tested against a mock portal).
@@ -340,6 +345,6 @@ The full list lives under "Operator-Only Checks" in [`docs/PHASES.md`](./docs/PH
 
 ## Documentation and licences
 
-- [`docs/PRD.md`](./docs/PRD.md) — product scope · [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — system design and safety boundaries · [`docs/DESIGN.md`](./docs/DESIGN.md) — HUD design and theming · [`docs/RULES.md`](./docs/RULES.md) — coding rules · [`docs/PHASES.md`](./docs/PHASES.md) — roadmap and checklists · [`docs/MEMORY.md`](./docs/MEMORY.md) — decision log.
+- [`docs/PRD.md`](./docs/PRD.md) — product scope · [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — system design and safety boundaries · [`docs/DESIGN.md`](./docs/DESIGN.md) — HUD design and theming · [`docs/RULES.md`](./docs/RULES.md) — coding rules · [`docs/PHASES.md`](./docs/PHASES.md) — roadmap and checklists · [`docs/MEMORY.md`](./docs/MEMORY.md) — decision log · [`docs/JARVIS_PARITY_PLAN.md`](./docs/JARVIS_PARITY_PLAN.md) — how Ultron takes Jarvis Mark II's features.
 - Several Phase 8 features reimplement ideas from the Mark-LIII assistant by FatihMakes (CC BY-NC 4.0); no code was copied.
-- The optional offline wake word uses the openWakeWord models by David Scripka, licensed **CC BY-NC-SA 4.0** (non-commercial). They are not included in this repository; Settings downloads them on request.
+- Hand tracking uses Google's MediaPipe Tasks Vision (Apache 2.0).

@@ -1,6 +1,7 @@
 # 🛡️ AI CODING RULES & GUARDRAILS — PROJECT ULTRON
 **Codename:** Protocol-Rules // Engineering Standards  
 **Scope:** Next.js 16, React 19, JavaScript (JSX), Three.js, Web Audio API  
+**Reference Documents:** [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`DESIGN.md`](./DESIGN.md)
 
 ---
 
@@ -14,20 +15,21 @@
 * **Component Architecture:**
   - Standard Functional Components with clean prop destructuring:
     ```jsx
-    export const AdaAvatar = ({ lipSyncRef, scale = 1.8 }) => { ... };
+    export const ArcReactorOrb = ({ getInputByteFrequencyData, pcmPlayer, onToggleListening }) => { ... };
     ```
   - Next.js Client Components that handle 3D Canvas, Web Audio, or WebSockets MUST declare `'use client';` at the very top.
   - Server Components should be used for initial page shells, metadata, and static UI wrappers.
 * **State Management:**
-  - Avoid putting high-frequency streaming audio data (FFT bins, PCM chunks) into React state. Use `useRef` or Zustand stores to avoid re-rendering the whole DOM on every audio frame.
+  - Avoid putting high-frequency streaming audio data (FFT bins, PCM chunks) into React state. Use `useRef` or the Zustand store (`useJarvisStore` in `lib/store.js`) to avoid re-rendering the whole DOM on every audio frame.
 
 ---
 
-## 2. 3D WebGL & React Three Fiber (R3F) Guardrails
+## 2. 3D WebGL Guardrails (Three.js Orb & R3F Model Viewer)
 
-* **Zero Garbage Collection in `useFrame`:**
-  - NEVER instantiate new `Vector3`, `Euler`, `Matrix4`, or `Color` objects inside `useFrame()`. Reuse pre-allocated instance variables outside the frame loop.
-  - NEVER call `setState()` inside `useFrame()`. Update `ref.current.morphTargetInfluences` or bone transforms directly.
+* **Zero Garbage Collection in the frame loop:**
+  - The Ultron Orb (`lib/ultronOrbScene.js`) is a plain Three.js scene: NEVER instantiate new `Vector3`, `Euler`, `Matrix4`, or `Color` objects inside its `animate()` loop. Reuse pre-allocated instance variables.
+  - The 3D model viewer (`components/Media/ModelViewerPanel.jsx`) uses React Three Fiber: the same rule applies inside `useFrame()`, and NEVER call `setState()` there. Mutate refs (positions, rotations, material uniforms, light intensities) directly.
+* **The orb keeps its gold:** the orb never reads the HUD colour theme. Its colours are Ultron's own and do not change with the theme.
 * **Asset Disposal & Cleanup:**
   - Always clean up Three.js materials, textures, and geometries when unmounting components to avoid WebGL context leaks.
 * **Asset Optimization:**
@@ -52,10 +54,12 @@
 ## 4. Cyberpunk UI & Styling Conventions
 
 * **Color Tokens:**
-  - Only use configured Tailwind cyberpunk tokens: `var(--ada-scarlet)`, `var(--cyber-cyan)`, `var(--carbon-900)`, etc.
+  - HUD accent colours go through the theme variables: `var(--jarvis-accent)`, `var(--jarvis-accent-2)`, `var(--jarvis-accent-soft)`, `var(--jarvis-accent-dim)`, and `rgba(var(--jarvis-accent-rgb), a)`, so colour themes apply (Stark Gold is the default value). Canvas and Three.js colours use `useAccentTint()`. Fixed tokens: `var(--amber-alert)`, `var(--carbon-900)`, etc.
+  - Tailwind arbitrary values must not contain spaces (`rgba(255,184,0,0.25)`, not `rgba(255, 184, 0,0.25)`); a class with spaces is silently dropped.
   - Never use plain browser default reds or blues.
 * **Visual Hierarchy:**
-  - Keep the 3D viewport of Ada Wong unobstructed in the center.
+  - Keep the Ultron Orb unobstructed in the center; Systems and Comms Log stay stacked in the left column, Intel top right.
+  - Sharp 90° corners everywhere (no `rounded-*`, no chamfer clip-paths on panels); `app/globals.css` enforces this for HUD panels.
   - Telemetry, comms logs, and controls must reside on the peripheral HUD borders with glassmorphism (`backdrop-blur-md`, subtle border opacity).
 * **Typography:**
   - Headers and status badges: `font-orbitron`.
@@ -68,7 +72,7 @@
 
 * **Graceful Degradation:**
   - If WebGL2 is unsupported, display a high-tech fallback HUD terminal instead of a blank screen.
-  - If the Gemini 2.5 Live WebSocket drops connection, immediately show a reconnecting status pill and execute exponential backoff.
+  - If the Gemini Live WebSocket drops connection, immediately show a reconnecting status pill (`RECONNECTING`) and execute exponential backoff, resuming the session via its latest resumption handle.
 * **Non-Blocking Tool Calls:**
   - Long-running tools (like deep web search or local file scans) must never freeze the audio thread or 3D animation loop.
-  - Always inform the user via Ada's voice channel or HUD comms log while a tool is in flight.
+  - Always inform the user via Ultron's voice channel or HUD comms log while a tool is in flight.

@@ -1,152 +1,167 @@
 # ⚡ DESIGN & UI SPECIFICATION — PROJECT ULTRON
 **Visual Philosophy:** Cyberpunk Stark Gold HUD // Autonomous Super-Intelligence  
-**Active 3D Core:** Holographic 3D Ultron Orb (`ultronOrbScene.js`) with Stark Gold Bloom & MediaPipe Hand Tracking  
+**Active 3D Core:** Holographic 3D Ultron Orb (`lib/ultronOrbScene.js`) with Stark Gold Bloom & MediaPipe Hand Tracking  
+**Shared Features:** the J.A.R.V.I.S Mark II feature set, dressed in Ultron's look ([`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md))
 
 ---
 
 ## 1. Color Palette & Cyberpunk Tokens
 
-The visual design channels Ultron's commanding Stark Gold elegance infused with high-tech autonomous system diagnostics.
+The visual design channels Ultron's commanding Stark Gold elegance over near-black carbon (`DEC-147`). The accent family is a set of CSS variables so the HUD can take other colour themes (section 1.1); their default values are Stark Gold.
 
 ```css
 :root {
-  /* Core Brand & Neon Highlights */
-  --ada-scarlet:       #FF003C;  /* Signature Crimson Glow (Primary Brand) */
-  --ada-scarlet-dim:   #7A001C;  /* Subdued borders / glow drops */
-  --cyber-cyan:        #00F0FF;  /* Holographic telemetry & data accents */
-  --amber-alert:       #FFE600;  /* System warnings & security flags */
-  
-  /* Tactical Surfaces & Depth */
-  --void-black:        #050508;  /* Deep background canvas */
-  --carbon-900:        #0A0B10;  /* Primary HUD glass panels (opacity 80%) */
-  --carbon-800:        #12141D;  /* Secondary cards & inset containers */
-  --carbon-border:     rgba(255, 0, 60, 0.25); /* Hologram perimeter line */
-  
-  /* Text & Readability */
-  --text-primary:      #F0F2F8;  /* Crisp high-contrast readout */
-  --text-muted:        #7E859E;  /* Secondary telemetry labels */
-  --text-cyan:         #80F7FF;  /* Data streams & timestamp highlights */
+  /* Accent family (overridden at runtime by the chosen theme; Stark Gold by default) */
+  --jarvis-accent:       #FFB800;   /* Stark Gold: primary brand, titles, borders, glows */
+  --jarvis-accent-rgb:   255, 184, 0;
+  --jarvis-accent-2:     #FFB800;   /* Highlights, active states, QR modules */
+  --jarvis-accent-2-rgb: 255, 184, 0;
+  --jarvis-accent-soft:  #FFD54F;   /* Light accent text, data streams */
+  --jarvis-accent-dim:   #3D2600;   /* Subdued borders / glow drops */
+  --jarvis-glow-1-rgb:   255, 184, 0;
+
+  /* Legacy names, now aliases of the accent family */
+  --ultron-gold: var(--jarvis-accent);  --ultron-gold-dim: var(--jarvis-accent-dim);
+  --jarvis-cyan: var(--jarvis-accent);  --cyber-cyan: var(--jarvis-accent);
+  --carbon-border / --cyan-border: rgba(var(--jarvis-accent-rgb), 0.32);
+  --text-cyan: var(--jarvis-accent-soft);
+
+  /* Fixed tokens (never themed) */
+  --amber-alert:   #FFE600;  /* System warnings & security flags */
+  --void-black:    #000000;  /* Page background */
+  --carbon-900:    #0F0C05;  /* Panel bases */
+  --carbon-800:    #1A1408;  /* Raised surfaces */
+  --text-primary:  #F0F2F8;  /* Crisp high-contrast readout */
+  --text-muted:    #9E957E;  /* Secondary telemetry labels (components also use #9E8B65) */
 }
 ```
+
+**Semantic colours used in components:**
+
+| Role | Colour |
+| :-- | :-- |
+| Brand, borders, glows, active states | `var(--jarvis-accent)` / `var(--jarvis-accent-2)` (`#FFB800` in Stark Gold) |
+| Thinking / connecting | `#FFAA00` |
+| Re-syncing link, warnings, terminal authorization | `#FFB020` |
+| Errors, deny, destructive hints | `#FF8095` / `#FF003C` (the HUD keeps red for danger; the orb has none, `DEC-167`) |
+| Online / live / success | `#00FF66` |
+| Mobile page and other dark grounds | `#080602` (Deep Space Carbon) |
+
+**Writing themed UI:** use the variables, never a literal gold: `text-[var(--jarvis-accent)]`, `border-[rgba(var(--jarvis-accent-rgb),0.3)]`, `shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]`. Tailwind arbitrary values must not contain spaces (`rgba(255, 184, 0,0.25)` is silently dropped and the border falls back to the text colour). Canvas and Three.js code cannot read CSS variables: pass the colour through `useAccentTint()` (`tint("#00E5FF")`; the design inputs are the shared cyan values, which Stark Gold maps to Ultron's exact gold tones through `ULTRON_TINTS` in `lib/accentTheme.js`). Status colours (amber, orange, red, green) are never tinted.
+
+### 1.1 HUD Colour Themes
+
+Inherited from Jarvis Mark II (`JM2-DEC-167`, `JM2-DEC-184`) with Stark Gold as the base:
+
+- **Presets:** Stark Gold `#FFB800` (default and reset), Arc Reactor Blue `#00C3FF`, Arc Reactor Cyan `#00E5FF`, Mark III Gold `#FFC23D`, Hot Rod Red `#FF3B4E`, Vibranium Violet `#A66BFF`, Emerald Ops `#2BFFA3`, Ice White `#DDF6FF`.
+- **Custom colour:** any colour from the Settings colour wheel or a hex code, previewed live and saved with the profile; by voice through `update_operator_profile` `hud_accent` ("make the HUD red", colour words or preset names).
+- **Stark Gold is exact:** `accentCssVars()` returns `ULTRON_PALETTE` for Stark Gold, so the default theme is the same gold as before themes existed. Other themes derive every tone (`-2`, `-soft`, `-dim`, glows) from the chosen colour.
+- **What a theme recolours:** HUD panels, text, borders, glows, the waveform crest, the gesture camera panel, and the new feature panels. **It never recolours the Ultron Orb**, which always keeps its own gold, and never the status colours, the square corners, or the layout.
+- **No flash on reload:** the saved theme is cached and applied by an inline script in `app/layout.jsx` before the first paint.
+- **Mobile companion and pairing QR:** `/mobile` follows the **saved** theme within one relay poll (about two seconds). The pairing QR draws its modules in `--jarvis-accent-2`, or near-white `#F0F2F8` when a custom colour would fall below 4.5:1 contrast on its `#0A0B10` background.
 
 ---
 
 ## 2. Typography Hierarchy
 
-* **Display & Headers (`Orbitron`, sans-serif):**
-  - Used for system designations, HUD status flags, module headers, and large metric readouts.
-  - Styling: `font-weight: 800`, `letter-spacing: 0.12em`, uppercase.
-* **Telemetry & Terminals (`JetBrains Mono`, monospace):**
-  - Used for transcript feeds, latency counters, code helpers, and system telemetry gauges.
-  - Styling: `font-weight: 500`, zero-padding numerals.
-* **Interface Body (`Rajdhani`, sans-serif):**
-  - Used for briefings, search result summaries, and drawer content.
-  - Styling: `font-weight: 500`, `line-height: 1.4`.
+* **Display & Headers (`Orbitron`, sans-serif):** system designations, the ULTRON title, HUD status flags, module headers, large metric readouts. Uppercase, wide letter-spacing.
+* **Telemetry & Terminals (`JetBrains Mono`, monospace):** transcript feeds, latency counters, commands, telemetry gauges, form inputs.
+* **Interface Body (`Rajdhani`, sans-serif):** briefings, search result summaries, drawer content.
+* **Title (`DEC-155`):** "ULTRON" without an acronym, `tracking-[0.28em]`, near-white with a gold glow, flanked by two pulsing accent squares; subtitle "AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM" in the accent colour.
 
 ---
 
-## 3. 3D Holographic Stage & Lighting Setup for `adawong.glb`
+## 3. Holographic Visual Core: the Ultron Orb
 
-Because `adawong.glb` utilizes 7 dedicated PBR material slots (`pl1200_11nuno_BM` for dress, `pl0100_00Face_BM` for facial skin, `pl0100_31SideHair_BM` for hair), lighting is specifically tuned to highlight her silhouette:
+`lib/ultronOrbScene.js` is a plain Three.js scene (no React Three Fiber), mounted by `components/Canvas3D/UltronViewport.jsx`.
 
-### 3.1 Three.js Lighting Setup
-* **Key Light (Neon Crimson):** Directional light positioned top-left (`[-2, 3, 2]`), color `#FF003C`, intensity `2.5`. Casts dramatic neo-noir rim highlights on the crimson dress and hair.
-* **Fill Light (Cyan Hologram):** Directional light positioned lower-right (`[2.5, -1, 1]`), color `#00F0FF`, intensity `1.2`. Balances the dark textures of the holsters and boots.
-* **Ambient Base:** Low-intensity ambient light (`#080812`, intensity `0.45`) ensuring deep shadows without crushed blacks on her face mesh.
-
-### 3.2 Post-Processing Stack (`@react-three/postprocessing`)
-1. **Unreal Bloom:**
-   - Threshold: `0.75` | Intensity: `1.25` | Radius: `0.85`
-   - Amplifies emissive elements, glowing holographic grids, and crimson highlights.
-2. **Chromatic Aberration:**
-   - Offset: `[0.0015, 0.0015]`
-   - Subtle tactical lens dispersion around screen perimeters.
-3. **Scanlines & CRT Grain:**
-   - Custom screen-space shader applying faint horizontal lines (opacity: `0.06`) and micro-film grain to mimic a tactical heads-up display.
-4. **Vignette:**
-   - Darkness: `0.6` | Offset: `0.25`
-   - Focuses operator attention squarely on Ada's portrait.
+- **Form (`DEC-156` – `DEC-158`, matched to `ultron_ref.png`):** a starburst geodesic hologram with 72 spikes, glowing cages and belts, curved ribbons, a radiant sun core, orbit rings with floating halo particles, and drifting gold stardust and code sprites.
+- **Palette (`DEC-167`):** pure Stark Gold; red and crimson tones removed entirely (ray tips `[1.0, 0.72, 0.0]`, corona and inner cage `0xffaa00` / `0xff9900`). The orb never reads the HUD colour theme.
+- **States (`DEC-151`, `DEC-152`, `DEC-160` – `DEC-162`):** IDLE (ultra-slow planetary drift), THINKING, and SPEAKING, blended with exponential damping; during speech the core grows and only the core shines, with multidirectional gyroscopic rotation of rays, arcs, rings, and belts.
+- **Framing (`DEC-150`, `DEC-163`):** default and reset camera at `Z = 7.975` (one level zoomed out). Zoom in / out / reset from the top-right buttons or **+** / **−** / **R**.
+- **Hand gestures:** **G** toggles MediaPipe hand tracking (`lib/handTracker.js`); one-hand pinch spins the orb, two-hand pinch zooms. A mirrored 192 × 144 camera panel ("GESTURE TRACKER", hand count and mode) sits at the bottom right while tracking is on.
+- **Performance:** zero allocations inside the `animate()` loop; the viewport reports FPS and frame time to the Systems panel.
 
 ---
 
-## 4. `adawong.glb` Character Rigging & Animation Specs
-
-### 4.1 Model Mesh Composition
-* **Face Mesh (`mesh4_...pl0100_00Face_BM_0`):** Contains head, eyes, and mouth geometry.
-* **Hair Mesh (`mesh11_...pl0100_31SideHair_BM_0`):** Signature fringe and bob cut.
-* **Dress & Gear (`mesh1_...pl1200_11nuno_BM_0`, `mesh10_...Acc`):** Crimson tactical dress, belts, and holsters.
-
-### 4.2 Skeletal Animation Mapping (220 Joints)
-* **Gaze Tracking Bone:** `bone23_022` (Head Joint, Node 104) and `bone22_01` (Neck Joint, Node 105).
-  - Rotates dynamically to follow cursor screen coordinates using `Quaternion.slerp(targetQuat, 0.08)`.
-* **Breathing Simulation:** Sine-wave translation applied to spine bone `bone21_00` and model root.
-* **Lip-Sync Animation:**
-  - **Option A (Morph Targets):** Driven if blendshapes (`jawOpen`, `mouthSmile`) are baked into `mesh4`.
-  - **Option B (Skeletal):** Driven by modulating jaw-region child bones attached to `bone23_022`.
-
----
-
-## 5. Tactical HUD Layout Specification
+## 4. Tactical HUD Layout
 
 ```
-+-------------------------------------------------------------------------+
-| [ADA // STATUS: ACTIVE]    [SPEECH: LISTENING]    [LATENCY: 42ms] [EXIT] |
-+-----------------------+---------------------------------+---------------+
-| 📊 TELEMETRY          |                                 | 💬 COMMS LOG  |
-| - CPU: 18%  [====   ] |          3D HOLOGRAPHIC         | User: "Status"|
-| - RAM: 8.4GB [====== ]|          VIEWPORT OF            | Ada: "Ready.  |
-| - GPU: 34%  [===    ] |          ADA WONG               |  What is our  |
-| - TEMP: 48°C          |         (adawong.glb)           |  next target?"|
-|                       |                                 |               |
-| ⚙️ ACTIVE DIRECTIVES  |    (Audio-reactive lip-sync,    | [TOOL CALL]   |
-| [X] Vision Mode       |     bone23_022 gaze tracking)   | > Web Search  |
-| [ ] Auto Briefing     |                                 |               |
-+-----------------------+---------------------------------+---------------+
-| ──/\__/\_/\/\__ (Real-time Audio Visualizer Waveform) ───────────────── |
-| [🎤 MUTE]    [✋ INTERRUPT]    [🖥️ SCREEN SHARE]    [📂 INTEL DRAWER]   |
-+-------------------------------------------------------------------------+
++-------------------------------------------------------------------------------+
+|                          ▪ ULTRON ▪                [INTEL] [+][-][⟳]  [⤢]    |
+|              AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM        ┌────────────┐  |
+| ┌──────────────┐                                              │ NEURAL     │  |
+| │ SYSTEMS PANEL│                                              │ INTEL      │  |
+| │ (Telemetry)  │            ULTRON ORB                        │ (opens     │  |
+| ├──────────────┤                                              │  here)     │  |
+| │ COMMS LOG    │                                              └────────────┘  |
+| │ FEED         │                                                              |
+| └──────────────┘                                                              |
+| [● STATUS BADGE] [👂 WAKE CHIP]                                  [📶 latency] |
+| Type directive or click Connect... [Enter] _______________________ [send]    |
+| [CONNECT] [MUTE MIC] [INTERRUPT]   [BRIEFING][MEMORIES][SESSIONS][UPLOAD][API KEY][🖥][📷][⚙][📱] |
++-------------------------------------------------------------------------------+
 ```
 
-### 5.1 HUD Micro-Interactions
-* **Status Glow Transitions:**
-  - `LISTENING`: Gentle cyan neon pulse.
-  - `THINKING`: Fast flickering amber alert pulse.
-  - `SPEAKING`: Vibrant scarlet pulse synced to vocal amplitude.
-* **Instant Interruption Button:** Stamped with hazard stripes; hovering glows intense crimson. Clicking instantly halts playback and clears audio buffers (`stopAndFlush`).
-* **Slide-out Intel Drawer:** Slides out smoothly from the screen bottom with `backdrop-blur-md` to reveal rich search tables, code snippets, or vision captures without obstructing Ada's face.
+- **Left column (`DEC-163` – `DEC-165`):** the Systems panel (above, `flex-[1.15]`) and the Comms Log feed (below) are permanent: no close buttons, no header toggles, no Escape. The column keeps `bottom-40` clearance above the command bar.
+- **Top right (`DEC-164`):** INTEL, then the zoom cluster, then fullscreen. The Intel panel opens at `top-18 right-6` and can be dragged.
+- **Background:** pure black stage behind the orb.
 
-### 5.2 Left-Sidebar Settings Menu & Customization HUD (`TelemetryPanel.jsx`)
-* **Navigation Rail Integration:**
-  - Dedicated `SETTINGS` tab button with gear icon (`⚙`) placed in the tactical tab rail alongside `SYS`, `DOSSIER`, `INTEL`, `MEMORY`, `PLUGINS`.
-  - Secondary top-header shortcut button (`⚙`) for instant drawer-style toggling.
-* **Operative Identity Form Controls:**
-  - `Name to Call` field: Monospace high-contrast input styled with `JetBrains Mono`, cyan focus ring (`#00F0FF`), and glowing placeholder text.
-  - Role & Clearance inputs: Subdued dark backgrounds (`rgba(0,0,0,0.4)`), carbon borders (`rgba(255,255,255,0.1)`).
-  - Tactical Directives textarea: Auto-expanding cyber input area for behavioral instructions.
-* **Vocal Core Selector Chips (Gemini Prebuilt Voices):**
-  - Interactive chip buttons for `Aoede`, `Charon`, `Fenrir`, `Kore`, `Puck`.
-  - Inactive state: Dark carbon background (`rgba(255,255,255,0.03)`), muted text (`#7E859E`).
-  - Active state: Cyber Cyan border (`#00F0FF`), glowing background (`rgba(0,240,255,0.15)`), active pulse dot, bold text.
-* **Action & Save State Feedback:**
-  - "SAVE & DEPLOY TO CORE" button styled in Syndicate Crimson (`#FF003C`) with glowing hover states (`shadow-[0_0_15px_rgba(255,0,60,0.4)]`).
-  - Instant visual confirmation badge and real-time notification push to the Comms Log.
+### 4.1 Status Badge & Chips
+
+| Status | Badge | Style |
+| :-- | :-- | :-- |
+| `DISCONNECTED` | `STANDBY // OFFLINE` | muted |
+| `CONNECTING` | `LINK // ESTABLISHING...` | amber pulse |
+| `RECONNECTING` | `LINK // RE-SYNCING...` | `#FFB020` pulse |
+| `CONNECTED` | `LINK // READY` (mic muted: `MIC OFF // TEXT ONLY`) | accent |
+| `LISTENING` | `MIC // LISTENING` | accent pulse |
+| `THINKING` | `NEURAL // PROCESSING` | amber bounce |
+| `SPEAKING` | `ULTRON // TRANSMITTING` | bright accent, orb core grows |
+
+The **wake chip** beside the badge shows `WAKE // SAY "HEY ULTRON"` while the standby listener runs, or `NEEDS CHROME OR EDGE`, `MIC BLOCKED`, `RETRYING`, `ARMED FOR STANDBY`.
+
+### 4.2 HUD Micro-Interactions
+
+* **Shutter animations:** panels open with `scifi-modal-unfold-down` and close with the 220 ms `scifi-modal-collapse-up`.
+* **Instant Interruption:** INTERRUPT calls `stopAndFlush()` (barge-in within 50 ms).
+* **Drag & drop:** dropping files anywhere shows the `DROP FILES TO UPLINK` overlay.
+* **Escape:** closes the focused modal; on the command authorization card it denies. The left column ignores it.
+* **Waveform:** bars rise from amber `#FF8800` at the base to the accent at the crest.
 
 ---
 
-## 6. Glassmorphism Design System & Floating HUD Architecture
+## 5. Glassmorphism Design System & Floating Panels
 
-### 6.1 Universal Glassmorphic Formula
-All tactical modals and floating panels adhere to a unified cybernetic glass standard:
-- **Surface:** `bg-[rgba(8,12,18,0.55)]` (55% opacity dark carbon) or `bg-[rgba(8,12,18,0.35)]` for high-translucency HUD buttons.
-- **Backdrop Filters:** `backdrop-blur-xl backdrop-saturate-150` for realistic chromatic light transmission from the 3D stage.
-- **Perimeter Edge:** `border border-[rgba(0,229,255,0.25)]` with subtle cyan glow drop `shadow-[0_0_40px_rgba(0,229,255,0.12)]`.
-- **Specular Highlight:** `inset_0_1px_0_rgba(255,255,255,0.06)` generating a crisp glass-beveled edge along top borders.
+### 5.1 Universal Glassmorphic Formula
 
-### 6.2 Floating Non-Blocking Panels
-- **Floating Systems Panel (`TelemetryPanel.jsx`):** Anchored at `fixed top-18 left-6 bottom-28 w-88 sm:w-96 z-30`. Toggled from top-left `[ 📊 SYSTEMS ]` button. Features multi-tab tactical navigation (SYS, DOSSIER, INTEL, MEMORY, PLUGINS, MATRIX), smooth sci-fi shutter entry/exit (`scifi-modal-unfold-down` / `scifi-modal-collapse-up`), close button, and `Escape` hotkey.
-- **Floating Comms Log (`CommsLog.jsx`):** Anchored at `fixed top-18 right-6 bottom-28 w-88 sm:w-96 z-30`. Toggled from top-right `[ 📟 COMMS LOG ]` button. Zero background mask or blur overlay, maintaining uninterrupted visibility of the 3D Arc Reactor Orb.
-- **Top-Right Control Cluster:** Camera zoom (`[+]`, `[-]`, `[⟳]`) and Comms Log toggle buttons with `bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150` glassmorphism.
-- **Edge-to-Edge Directive Input:** Transparent, borderless input with standard 2px electric aqua underline (`border-b-2 border-[rgba(0,229,255,0.25)]`), focus glow, and borderless send action.
-- **Neural Memory Vault (`SciFiMemoryVaultModal.jsx`):** Modal with search filter, category tabs, and deep decryption bridge to `SciFiMemoryModal.jsx`.
+- **Surface:** `bg-[rgba(15,12,5,0.55)]` (panels) or `0.35` (HUD buttons); raised cards `rgba(20,16,8,0.65)`.
+- **Backdrop:** `backdrop-blur-xl backdrop-saturate-150`.
+- **Edge:** `border border-[rgba(var(--jarvis-accent-rgb),0.25)]` with `shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12)]`.
+- **Specular highlight:** `inset_0_1px_0_rgba(255,255,255,0.06)`.
+- **Corners (`DEC-154`):** sharp 90° everywhere. `app/globals.css` forces `border-radius: 0`, `corner-shape: initial`, and `clip-path: none` on HUD panels, so `chamfer-*` utilities inherited from the shared code render square, and new panels inherit the rule.
 
+### 5.2 Panels & Modals
 
+| Component | Placement & behavior |
+| :-- | :-- |
+| `TelemetryPanel.jsx` (Systems) | Permanent, top of the left column: CPU, memory, GPU, network, host architecture, uptime, processes, FPS profiler. |
+| `CommsLog.jsx` | Permanent, bottom of the left column: Markdown-rendered transcript and tagged system lines; Ultron's lines labelled `ULTRON // SYSTEM`. |
+| `IntelModal.jsx` | Draggable dossier panel under the top-right cluster: web results, cited sources, briefing headlines, monitor alerts. |
+| `SciFiSettingsModal.jsx` | Identity, Gemini 3.8 Live core, male voice matrix with samples (Algenib recommended), directives, toggles (briefing, mic, humour, proactive check-ins, transcripts and retention, clipboard, start on login, standby wake phrase), HUD colour theme, audio devices, plugins. |
+| `SciFiMemoryVaultModal.jsx` (+ `MemoryVault/`) | Memory vault manager: stats strip with context-slot meter, search (words / meaning), filters, sort, list with IN CONTEXT / ON RECALL / MUTED badges and checkboxes, bulk bar, inline editor, duplicate review, export / import, undo toast, RE-LINK NOW. Two panes on desktop, stacked on phones. |
+| `SciFiSessionVaultModal.jsx` (+ `SessionVault/`) | Session archive: stats strip with retention / transcript setting, search (words / meaning), period / language / recap / greeting / pinned filters, sort, rows with LIVE (green) / NEXT GREETING / PINNED / NO RECAP badges, detail with editable title and recap, greeting choice, CONTINUE, transcript bubbles (operator right, accent-tinted; Ultron left) with find, bulk bar, undo toast. |
+| `ApiKeyModal.jsx` | Gemini key entry (stored in browser `localStorage` as `jarvis_gemini_api_key`). |
+| `CommandConfirmModal.jsx` | Centered amber authorization card: command, reason, folder, warnings, countdown, DENY / AUTHORIZE. |
+| `ClipboardPanel.jsx` | Floating clipboard panel with Translate / Summarise / Explain / Fix. |
+| `UploadDropZone.jsx` | Window-wide drop overlay and hidden file picker. |
+| `Media/YouTubePanel.jsx`, `Media/ModelViewerPanel.jsx` | Draggable player with queue and volume, and 3D holo-viewer with stats (`FloatingPanel` shell). |
+| `Vision/ScreenShareModal.jsx`, `Vision/WebCamPiP.jsx` | Draggable vision panels. |
+| `MobilePairingModal.jsx` | QR pairing for the `/mobile` PWA (themed QR). |
+| Gesture tracker (in `UltronViewport.jsx`) | Bottom-right mirrored camera panel while gestures are on. |
+
+---
+
+## 6. Mobile Companion (`/mobile`)
+
+Deep Space Carbon (`#080602`) PWA: ULTRON title with MOBILE RELAY badge, sync chip, status strip (status, CPU, memory, uptime), a large HOLD TO TALK button, quick actions (volume up / down, mute, briefing, desktop), the recent comms lines, and a directive field. Accent colours follow the saved HUD theme.
