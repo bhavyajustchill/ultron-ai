@@ -1,6 +1,6 @@
 # Implementation Plan — Ultron × Jarvis Mark II Parity
 
-**Status:** Proposed, not started. Awaiting the operator's go-ahead (AGENTS.md §4B).
+**Status:** Carried out on branch `experimental` (Phase 12, DEC-168 in [`MEMORY.md`](./MEMORY.md)); `master` is untouched until the operator merges.
 **Written:** 2026-10-04 (revised: Ultron keeps its original orb and look)
 **Source of features:** `jarvis-mark-ii` (`~/dev/_Fun/jarvis-mark-ii`), branch `experimental` at `311b327` (Phases 6.x – 12). The HUD colour themes come from `ce2ed17`, the last Jarvis commit that had them: Jarvis removed them in `311b327` (DEC-189), and they now live in Ultron.
 **Target:** this repo (`ultron-ai`), `master` at `40ef578`
