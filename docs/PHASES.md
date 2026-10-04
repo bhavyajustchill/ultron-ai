@@ -28,7 +28,7 @@
 [Phase U: Ultron Identity (DEC-146 – DEC-167)]  ✔ implemented
         │
         ▼
-[Phase 12: J.A.R.V.I.S Mark II Parity Port (DEC-168)]  ◀ ACTIVE
+[Phase 12: J.A.R.V.I.S Mark II Parity Port (DEC-168)]  ✔ implemented
 ```
 
 Phases 0 – 11 were built in the shared codebase and in J.A.R.V.I.S Mark II; Phase U is Ultron's own identity work; Phase 12 brought Phases 8 – 11 into Ultron under Ultron's look.
@@ -323,4 +323,4 @@ Operator request (2026-10-05): everything built in J.A.R.V.I.S Mark II should wo
 - [x] **12.2 Ultron's orb** — `UltronViewport` and `ultronOrbScene` stay the centre stage, rewired to the current store and events; Jarvis's arc reactor orb, stage, and post-processing are not used.
 - [x] **12.3 Ultron's look and identity** — every screen back to its reference (Stark Gold, square corners, left column, Intel top right, ULTRON title); the new panels (memory vault, session archive, authorization card, clipboard, media panels) dressed the same way; colour themes with Stark Gold first that never recolour the orb; Ultron persona with all current guidelines; Algenib; "Hey Ultron"; Ultron's own folders, notifications, and OS-level names so it never collides with a Jarvis install.
 - [x] **12.4 Docs** — README, AGENTS, PRD, ARCHITECTURE, RULES, DESIGN, PHASES, and MEMORY updated; Jarvis's decisions listed as `JM2-DEC-NNN`.
-- [ ] **12.5 Verification** — clean build, the Phase 9 – 11 test suites against Ultron with scratch data, theme checks, and a live Gemini 3.8 Live voice run in character.
+- [x] **12.5 Verification** — clean build; screenshots of every screen against the pre-port references; the Phase 9 – 11 suites against Ultron with scratch data (write into apps 29/29, search 27/27 + keyed 6/6, vault API and UI, session API and UI) with four expected differences: export file names are `ultron-*`, one "yesterday" check fails on Jarvis too because its seed date is fixed, and the Escape checks need a longer wait under software rendering of the heavier orb; theme checks (Stark Gold default, blue and red previews recolour the HUD and QR, the orb stays gold); live Gemini 3.8 Live runs in character (greeting, identity, telemetry, memory, "make the HUD red" and back to Stark Gold, archive with recap, greeting recall, "what did we talk about earlier today" through `session_history`, no reply ever calling itself Jarvis).
