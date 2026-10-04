@@ -33,7 +33,7 @@ flowchart TB
         Intel["/api/web-search · /api/weather · /api/memory · /api/sessions · /api/monitors · /api/hardware-alerts"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects"]
-        Integrations["/api/messages · /api/flights · /api/steam"]
+        Integrations["/api/messages · /api/flights · /api/steam · /api/browser"]
         Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay"]
     end
 
@@ -88,6 +88,7 @@ jarvis-mark-ii/
 │       ├── reminders/                      # OS-native reminders + due announcements
 │       ├── projects/                       # Background project scaffolding jobs
 │       ├── messages/ flights/ steam/       # Compose links, Google Flights, Steam library
+│       ├── browser/                        # Jarvis browser window (Playwright)
 │       ├── web-search/ weather/            # Grounded search, weather
 │       ├── youtube/ spotify/               # Media deck
 │       ├── system-telemetry/ plugins/      # Host metrics, plugin runner
@@ -114,6 +115,7 @@ jarvis-mark-ii/
 │   ├── accentTheme.js / audioDevices.js     # HUD accent theme, microphone / speaker choice
 │   ├── messageComposer.js / flights.js / steamLibrary.js
 │   ├── fileProcessor/                      # common, images, pdf, sheets, media
+│   ├── browserAgent.js                     # Playwright-driven browser with its own profile
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored

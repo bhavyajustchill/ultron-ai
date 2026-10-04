@@ -2,6 +2,28 @@ import { NextResponse } from 'next/server';
 import { FlightError, buildFlightSearch } from '@/lib/flights';
 import { groundedSearch } from '@/lib/groundedSearch';
 import { openWithDefaultApp } from '@/lib/desktopLauncher';
+import { findBrowser, runBrowserAction } from '@/lib/browserAgent';
+
+const FARES_TEXT_CHARS = 3500;
+const RESULTS_WAIT_MS = Number(process.env.JARVIS_FLIGHTS_WAIT_MS ?? 5000);
+
+/**
+ * Opens the search in the Jarvis browser window (Phase 8.10) and reads the results text back, so
+ * Jarvis can quote the fares actually on screen. Null when no browser can be driven.
+ */
+async function readFaresInBrowser(url) {
+  // Dry-run checks never open windows (a headless test browser is allowed)
+  if (process.env.JARVIS_LAUNCH_DRY_RUN === '1' && process.env.JARVIS_BROWSER_HEADLESS !== '1') return null;
+  if (!findBrowser()) return null;
+  try {
+    await runBrowserAction('open', { url });
+    await new Promise((resolve) => setTimeout(resolve, RESULTS_WAIT_MS)); // results load after the page
+    const { text } = await runBrowserAction('extract', { what: 'text' });
+    return text.slice(0, FARES_TEXT_CHARS);
+  } catch {
+    return null;
+  }
+}
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 
 /**
@@ -27,7 +49,8 @@ export async function POST(req) {
     throw error;
   }
 
-  const opened = body.open === false ? { success: true, skipped: true } : await openWithDefaultApp(search.url);
+  const pageText = body.open === false ? null : await readFaresInBrowser(search.url);
+  const opened = body.open === false || pageText !== null ? { success: true } : await openWithDefaultApp(search.url);
   const apiKey = req.headers.get('x-gemini-api-key') || process.env.GEMINI_API_KEY || '';
   let summary = null;
   let sources = [];
@@ -47,7 +70,8 @@ export async function POST(req) {
     url: search.url,
     summary,
     results: sources,
-    message: `${opened.success ? 'Google Flights is open with live fares' : `Could not open the browser (${opened.error}); the link is ${search.url}`} for: ${search.query}.${summary ? ` Summary from a live web search: ${summary}` : ' No live summary is available on this key, so point the operator to the fares on screen instead of quoting prices from memory.'}`,
+    page_text: pageText,
+    message: `${opened.success ? 'Google Flights is open with live fares' : `Could not open the browser (${opened.error}); the link is ${search.url}`} for: ${search.query}.${pageText ? ' The results page text is in page_text: quote airlines, times, and fares from it.' : ''}${summary ? ` Summary from a live web search: ${summary}` : pageText ? '' : ' No live summary is available on this key, so point the operator to the fares on screen instead of quoting prices from memory.'}`,
     ...(opened.dryRun ? { dry_run: true, command: opened.command } : {}),
   });
 }
