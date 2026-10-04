@@ -350,9 +350,6 @@ export default function Home() {
 
   return (
     <main className="relative w-screen h-screen bg-[#010e16] text-[#F0F2F8] overflow-hidden select-none">
-      {/* Background Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(var(--jarvis-accent-rgb),0.08),rgba(1,14,22,0.98))] pointer-events-none" />
-
       {/* TOP MIDDLE BRANDING: J.A.R.V.I.S // JUST A RATHER VERY INTELLIGENT SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
         <div className="flex items-center gap-3">

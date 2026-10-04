@@ -2,13 +2,19 @@
   "profile": {
     "callsign": "Bhavya Sir",
     "assistantName": "Jarvis",
-    "voiceName": "Algenib",
+    "voiceName": "Charon",
     "liveModel": "models/gemini-3.8-live",
     "autoBriefing": false,
     "enableHumor": false,
     "clearance": "MERN Expert",
     "role": "Software Engineer",
-    "preferences": "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor."
+    "preferences": "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
+    "language": "English",
+    "proactiveEnabled": true,
+    "clipboardWatch": false,
+    "accentColor": "#00C3FF",
+    "wakeWordEnabled": true,
+    "wakePhrase": "Hey Jarvis"
   },
   "memories": [
     {

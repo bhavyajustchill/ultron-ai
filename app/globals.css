@@ -2,17 +2,15 @@
 
 :root {
   /* Accent family (Phase 8.7): the HUD derives every cyan tone from these; a chosen accent
-     theme overrides them at runtime (lib/accentTheme.js) */
-  --jarvis-accent: #00e5ff;
-  --jarvis-accent-rgb: 0, 229, 255;
-  --jarvis-accent-2: #00f0ff;
-  --jarvis-accent-2-rgb: 0, 240, 255;
-  --jarvis-accent-soft: #70f0ff;
-  --jarvis-accent-dim: #00364d;
-  --jarvis-glow-1-rgb: 0, 215, 255;
-  --jarvis-glow-2-rgb: 0, 170, 220;
-  --jarvis-glow-3-rgb: 0, 115, 165;
-  --jarvis-glow-4-rgb: 1, 35, 55;
+     theme overrides them at runtime (lib/accentTheme.js). First-paint values are the default
+     Arc Reactor Blue (#00C3FF) = accentCssVars(DEFAULT_ACCENT). */
+  --jarvis-accent: #00c3ff;
+  --jarvis-accent-rgb: 0, 195, 255;
+  --jarvis-accent-2: #00ceff;
+  --jarvis-accent-2-rgb: 0, 206, 255;
+  --jarvis-accent-soft: #70ddff;
+  --jarvis-accent-dim: #002c4d;
+  --jarvis-glow-1-rgb: 0, 181, 255;
 
   /* Core Brand & Neon Highlights (JARVIS Electric Aqua-Cyan Theme) */
   --jarvis-cyan: var(--jarvis-accent);

@@ -29,7 +29,7 @@ All compatible AI agents must enforce these fundamental technical guardrails acr
    - Output playback: 24kHz raw PCM jitter-buffered gapless scheduling via `pcmPlayer.js`.
    - Default male voice core: **Charon** (Refined British timbre).
    - Instant barge-in: Call `stopAndFlush()` within 50ms upon user interruption.
-5. **Aesthetics:** Cyberpunk Tactical HUD (Electric Aqua-Cyan `#00E5FF`, Neon Cyan `#00F0FF`, Carbon `#010E16`, Orbitron & JetBrains Mono fonts).
+5. **Aesthetics:** Cyberpunk Tactical HUD (default theme Arc Reactor Blue `#00C3FF`; colours are authored in Electric Aqua-Cyan `#00E5FF` / Neon Cyan `#00F0FF`, which is also the secondary Arc Reactor Cyan theme; Carbon `#010E16`, Orbitron & JetBrains Mono fonts).
 
 ---
 

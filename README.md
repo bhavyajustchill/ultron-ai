@@ -137,7 +137,7 @@ All file access is limited to allowed folders (by default `~/Desktop`, `~/Docume
 ### Personalisation
 
 - Callsign, assistant codename, role, clearance, directives, voice, humour, morning briefing, wake phrase, proactive check-ins, clipboard watcher, start on login — in Settings or by voice ("call me Captain", "use the Puck voice").
-- **HUD accent themes:** Arc Reactor Cyan, Mark III Gold, Hot Rod Red, Vibranium Violet, Emerald Ops, Ice White, or any colour ("make the HUD purple"). The whole HUD, including the orb, recolours; status colours never change.
+- **HUD accent themes:** Arc Reactor Blue (default), Arc Reactor Cyan, Mark III Gold, Hot Rod Red, Vibranium Violet, Emerald Ops, Ice White, or any colour ("make the HUD purple"). The whole HUD, including the orb, recolours; status colours never change.
 
 ### Mobile companion
 

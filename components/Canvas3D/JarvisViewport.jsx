@@ -14,6 +14,19 @@ import {
 // Default camera distance: 5.265 (calibrated in-between current 4.68 and 1 zoom-out step 5.85: (4.68 + 5.85) / 2 = 5.265)
 const DEFAULT_CAMERA_Z = 5.265;
 
+// Backdrop glow: one oval of the theme glow colour fading smoothly into the theme's dark accent, fitted to the
+// operator's reference photo. Centre 12vh above the orb, bottom edge on the chat textbox's underline (64px above
+// the screen bottom), alpha 0.7 * (1 - t^2)^1.5 sampled every 10% so the fade has no visible bands. The opaque
+// dark-accent base fills everything outside the oval and keeps anything underneath from showing through.
+const BACKDROP_STOPS = Array.from({ length: 11 }, (_, i) => {
+  const t = i / 10;
+  return `rgba(var(--jarvis-glow-1-rgb), ${(0.7 * (1 - t * t) ** 1.5).toFixed(3)}) ${i * 10}%`;
+}).join(", ");
+const BACKDROP_STYLE = {
+  backgroundColor: "var(--jarvis-accent-dim)",
+  backgroundImage: `radial-gradient(ellipse 110vh calc(62vh - 64px) at 50% 38vh, ${BACKDROP_STOPS})`,
+};
+
 /**
  * CameraSynchronizer — Synchronizes Three.js camera position, fov, and OrbitControls target
  * for the Arc Reactor Orb visual core.
@@ -141,7 +154,7 @@ function JarvisViewportComponent({
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none bg-[radial-gradient(circle_at_50%_50%,rgba(var(--jarvis-glow-1-rgb),0.45)_0%,rgba(var(--jarvis-glow-2-rgb),0.30)_25%,rgba(var(--jarvis-glow-3-rgb),0.18)_50%,rgba(var(--jarvis-glow-4-rgb),0.85)_75%,#010e16_100%)]">
+    <div className="relative w-full h-full overflow-hidden select-none" style={BACKDROP_STYLE}>
 
 
       {/* 3D R3F CANVAS */}
