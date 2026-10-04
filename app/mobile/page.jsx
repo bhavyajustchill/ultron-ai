@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Terminal,
 } from "lucide-react";
+import { applyAccentToDocument } from "@/lib/accentTheme";
 
 export default function MobileRemotePage() {
   const [token, setToken] = useState("");
@@ -41,6 +42,7 @@ export default function MobileRemotePage() {
   }, []);
 
   // Poll desktop state from /api/relay every 1.8 seconds
+  const accentRef = useRef(null);
   useEffect(() => {
     let isMounted = true;
 
@@ -49,6 +51,11 @@ export default function MobileRemotePage() {
         const res = await fetch("/api/relay?client=mobile");
         if (res.ok && isMounted) {
           const data = await res.json();
+          // Follow the HUD's saved accent theme (cached for the next visit's first paint)
+          if (data.accentColor && data.accentColor !== accentRef.current) {
+            accentRef.current = data.accentColor;
+            applyAccentToDocument(data.accentColor);
+          }
           if (data.desktopState) {
             setDesktopState((prev) => ({
               ...prev,

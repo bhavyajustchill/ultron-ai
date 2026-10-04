@@ -4,7 +4,7 @@ import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useJarvisStore } from "@/lib/store";
-import { ACCENT_TINT } from "@/lib/accentTheme";
+import { useAccentTint } from "@/hooks/useAccentTheme";
 
 // Core plasma sphere: brightest where the surface faces the camera and fading to nothing at the limb (no hard
 // outline), with faint slowly rotating surface noise so it reads as a 3D ball. uHeat (thinking / speaking) widens
@@ -136,7 +136,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
   const isMuted = useJarvisStore((state) => state.isMuted);
   // Accent theme (Phase 8.7): colours below are designed in cyan and tinted into the chosen accent;
   // anything built from them is rebuilt only when the theme changes, never per frame
-  const tint = ACCENT_TINT;
+  const tint = useAccentTint();
   // Core plasma sphere initial uniforms. R3F copies each uniform into the material, so later writes go
   // through coreMatRef rather than this object.
   const coreUniforms = useMemo(

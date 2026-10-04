@@ -1,5 +1,6 @@
 import { Orbitron, JetBrains_Mono, Rajdhani } from "next/font/google";
 import "./globals.css";
+import { ACCENT_VARS_CACHE_KEY } from "@/lib/accentTheme";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -39,11 +40,18 @@ export const metadata = {
   },
 };
 
+// Applies the cached HUD accent theme before first paint (hooks/useAccentTheme.js keeps it current)
+const ACCENT_BOOT_SCRIPT = `try{var v=JSON.parse(localStorage.getItem(${JSON.stringify(ACCENT_VARS_CACHE_KEY)})||"null");if(v)for(var k in v)document.documentElement.style.setProperty(k,v[k])}catch(e){}`;
+
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${orbitron.variable} ${jetbrainsMono.variable} ${rajdhani.variable} h-full antialiased dark`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: ACCENT_BOOT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col bg-[var(--void-black)] text-[var(--text-primary)] select-none">
         {children}
       </body>

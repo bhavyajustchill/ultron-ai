@@ -142,11 +142,11 @@ All file access is limited to allowed folders (by default `~/Desktop`, `~/Docume
 ### Personalisation
 
 - Callsign, assistant codename, role, clearance, directives, voice, humour, morning briefing, wake phrase, proactive check-ins, clipboard watcher, start on login — in Settings or by voice ("call me Captain", "use the Puck voice").
-- **One look:** the HUD and the orb are Arc Reactor Blue (`#00C3FF`) on deep carbon, with fixed status colours (amber for thinking and warnings, red for errors).
+- **HUD accent themes:** Arc Reactor Blue (default), Arc Reactor Cyan, Mark III Gold, Hot Rod Red, Vibranium Violet, Emerald Ops, Ice White, or any colour ("make the HUD purple"). The whole HUD, including the orb, recolours; status colours never change.
 
 ### Mobile companion
 
-Scan the QR code from the mobile button to open `/mobile` on your phone (same Wi-Fi): a PWA with push-to-talk relay to the desktop, status, and remote desktop actions. It uses the same Arc Reactor Blue as the HUD.
+Scan the QR code from the mobile button to open `/mobile` on your phone (same Wi-Fi): a PWA with push-to-talk relay to the desktop, status, and remote desktop actions. It follows the HUD's saved accent theme, picking up a change within about two seconds.
 
 ### Plugins
 
@@ -168,7 +168,7 @@ Drop-in JavaScript plugins (`run_cyber_plugin`) with a console in the HUD. Bundl
 
 ## Settings
 
-Open with the gear button. Sections: operative identity, the Gemini 3.8 Live core, voice (with playable samples), directives, toggles (morning briefing, mic default, humour, proactive check-ins, conversation transcripts and how long to keep them, clipboard intelligence, start on login, wake phrase and offline "Hey Jarvis"), audio devices, and the plugin console. Audio devices and start on login apply immediately; everything else is saved with **SYNCHRONIZE TO NEURAL VAULT**.
+Open with the gear button. Sections: operative identity, the Gemini 3.8 Live core, voice (with playable samples), directives, toggles (morning briefing, mic default, humour, proactive check-ins, conversation transcripts and how long to keep them, clipboard intelligence, start on login, wake phrase and offline "Hey Jarvis"), HUD accent colour and audio devices, and the plugin console. Accent previews live; audio devices and start on login apply immediately; everything else is saved with **SYNCHRONIZE TO NEURAL VAULT**.
 
 ---
 
@@ -198,7 +198,7 @@ Jarvis decides when to use these during a conversation (33 tools, each one modul
 | `recall_memory`, `store_memory` | Long-term memory vault |
 | `memory_vault` | Forget, correct, pin, or summarise memories by voice |
 | `session_history` | Past conversations: list, find, continue, delete |
-| `update_operator_profile` | Callsign, voice, persona, wake phrase |
+| `update_operator_profile` | Callsign, voice, persona, wake phrase, HUD accent |
 | `execute_os_action` | Apps, volume, folders, URLs, minimise, lock |
 | `system_settings` | Dark mode, WiFi, brightness, wallpaper, processes, power, start on login |
 | `undo_last_action` | Reverse Jarvis's last change |
@@ -290,7 +290,7 @@ components/
   HUD/                     Panels, modals, authorization card, clipboard panel, upload zone
   Media/                   YouTube, 3D viewer, floating panel shell
   Vision/                  Screen share, webcam
-hooks/                     useGeminiLive (the voice core), useAudioStream, useWakePhrase
+hooks/                     useGeminiLive (the voice core), useAudioStream, useWakePhrase, useAccentTheme
 lib/
   tools/                   One module per live tool (declaration + handler)
   jarvisPersona.js         Persona, model ID, live config
