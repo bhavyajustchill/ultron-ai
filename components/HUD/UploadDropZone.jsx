@@ -46,7 +46,7 @@ async function buildParts(file, upload) {
 
   if (upload.kind === "document") {
     if (!upload.text) {
-      return [{ text: `${header} No readable text could be extracted (it may be a scanned or image-only document).` }];
+      return [{ text: `${header} No readable text could be extracted (it may be a scanned or image-only document); process_file with action "summarize" or "text" on that path can still read a scanned PDF.` }];
     }
     const meta = [
       upload.pages ? `${upload.pages} pages` : null,
@@ -66,7 +66,7 @@ async function buildParts(file, upload) {
     return [{ text: `${header} It is a 3D model and is now displayed in the HUD holo-viewer.` }];
   }
 
-  return [{ text: `${header} Its contents cannot be read directly.` }];
+  return [{ text: `${header} Its contents are not inlined here; for spreadsheets, audio, or video use process_file on that path (stats, preview, transcribe, trim, and so on).` }];
 }
 
 /**

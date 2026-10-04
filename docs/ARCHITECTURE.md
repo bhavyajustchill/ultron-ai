@@ -28,7 +28,7 @@ flowchart TB
 
     subgraph Server ["⚙️ Next.js API routes"]
         Session["/api/live-session"]
-        Files["/api/fs-ops · /api/upload · /api/model-file"]
+        Files["/api/fs-ops · /api/upload · /api/model-file · /api/file-processor"]
         Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
         Intel["/api/web-search · /api/weather · /api/memory · /api/sessions · /api/monitors · /api/hardware-alerts"]
         Media["/api/youtube · /api/spotify"]
@@ -77,6 +77,7 @@ jarvis-mark-ii/
 │       ├── sessions/                       # Conversation recaps (save / pop once)
 │       ├── monitors/ hardware-alerts/      # Topic monitors, hardware voice alerts
 │       ├── fs-ops/                         # Sandboxed file ops, organizer, documents, open
+│       ├── file-processor/                 # Images, PDFs, spreadsheets, audio / video
 │       ├── upload/                         # Upload ingest + text extraction
 │       ├── model-file/[...segments]/       # Sandboxed 3D model serving
 │       ├── os-control/                     # Apps, volume, folders, URLs, lock
@@ -112,6 +113,7 @@ jarvis-mark-ii/
 │   ├── reminders.js / autostart.js / hardwareAlerts.js / topicMonitors.js
 │   ├── accentTheme.js / audioDevices.js     # HUD accent theme, microphone / speaker choice
 │   ├── messageComposer.js / flights.js / steamLibrary.js
+│   ├── fileProcessor/                      # common, images, pdf, sheets, media
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored
