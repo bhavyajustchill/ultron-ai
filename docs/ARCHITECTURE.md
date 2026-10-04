@@ -88,6 +88,7 @@ jarvis-mark-ii/
 │       ├── reminders/                      # OS-native reminders + due announcements
 │       ├── projects/                       # Background project scaffolding jobs
 │       ├── dev-agent/                      # Write / run / self-heal small projects
+│       ├── wakeword/                       # Offline "Hey Jarvis" models (install / serve)
 │       ├── messages/ flights/ steam/       # Compose links, Google Flights, Steam library
 │       ├── browser/                        # Jarvis browser window (Playwright)
 │       ├── web-search/ weather/            # Grounded search, weather
@@ -118,8 +119,9 @@ jarvis-mark-ii/
 │   ├── fileProcessor/                      # common, images, pdf, sheets, media
 │   ├── browserAgent.js                     # Playwright-driven browser with its own profile
 │   ├── devAgent.js                         # Autonomous dev agent jobs
+│   ├── wakeWord/                           # Offline wake word: detector, listener, models
 ├── plugins/                                # Drop-in cyber plugins
-├── public/                                 # audio-worklet-processor.js, voice samples
+├── public/                                 # audio-worklet-processor.js, wakeword-worklet.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored
 └── docs/                                   # PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 ```
@@ -165,3 +167,11 @@ jarvis-mark-ii/
 | Undo | `data/fs-journal/undo-stack.json` (last 10 actions); undoing a created file moves it into the journal, and is refused once the operator has edited it |
 | Uploaded / fetched content | Persona rules treat it as content, never instructions; it can never approve a command |
 | Secrets | The Gemini key stays in the browser (`localStorage`) and is forwarded per request header to same-origin routes only |
+
+---
+
+## 7. Third-Party Models
+
+| Model | Licence | How it gets here |
+| :-- | :-- | :-- |
+| openWakeWord `melspectrogram`, `embedding_model`, `hey_jarvis_v0.1` (offline wake word) | CC BY-NC-SA 4.0 (non-commercial; code Apache-2.0) | Not committed. Settings → Standby Wake Phrase → INSTALL OFFLINE downloads them from the openWakeWord v0.5.1 release into `data/wakeword/` (gitignored), checked against pinned SHA-256 sums. |

@@ -1,18 +1,26 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { matchesWakePhrase } from '@/lib/wakePhrase';
+import { matchesWakePhrase, normalizeWords, DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
+import { startOfflineWakeListener } from '@/lib/wakeWord/listener';
+import { listAudioDevices, resolveDevice } from '@/lib/audioDevices';
+import { useJarvisStore } from '@/lib/store';
 
 const MAX_RESTART_DELAY_MS = 15000;
 
+const isDefaultPhrase = (phrase) => normalizeWords(phrase).join(' ') === normalizeWords(DEFAULT_WAKE_PHRASE).join(' ');
+
 /**
- * Standby wake-phrase listener (Phase 7.6) on the browser's Web Speech API (Chrome / Edge).
- * Listens only while `active` (Jarvis is offline), restarts itself when the recognizer
- * times out, backs off on repeated errors, and calls `onWake` once per detection.
- * Returns the listener state: 'off' | 'listening' | 'unsupported' | 'blocked' | 'error'.
+ * Standby wake-phrase listener. The default "Hey Jarvis" runs fully offline on the openWakeWord
+ * models when they are installed (Phase 8.12); any custom phrase — or a failure to start the
+ * offline engine — uses the browser's Web Speech API (Chrome / Edge, Phase 7.6). Listens only while
+ * `active` (Jarvis is offline) and calls `onWake` once per detection.
+ * Returns: 'off' | 'listening' | 'listening-offline' | 'unsupported' | 'blocked' | 'error'.
  */
 export function useWakePhrase({ enabled, active, phrase, onWake }) {
   const [state, setState] = useState('off');
+  const [offlineFailed, setOfflineFailed] = useState(false);
+  const offlineReady = useJarvisStore((s) => s.offlineWakeReady);
   const onWakeRef = useRef(onWake);
 
   useEffect(() => {
@@ -23,6 +31,36 @@ export function useWakePhrase({ enabled, active, phrase, onWake }) {
     if (!enabled || !active) {
       setState('off');
       return undefined;
+    }
+
+    if (offlineReady && !offlineFailed && isDefaultPhrase(phrase)) {
+      let stop = null;
+      let cancelled = false;
+      (async () => {
+        const choice = useJarvisStore.getState().audioInput;
+        const device = choice?.id ? resolveDevice((await listAudioDevices()).inputs, choice) : null;
+        const stopListener = await startOfflineWakeListener({
+          deviceId: device?.id,
+          onWake: () => {
+            setState('off');
+            onWakeRef.current?.();
+          },
+        });
+        if (cancelled) stopListener();
+        else {
+          stop = stopListener;
+          setState('listening-offline');
+        }
+      })().catch((err) => {
+        if (cancelled) return;
+        console.warn('[useWakePhrase] Offline wake word unavailable, using Web Speech:', err);
+        if (/NotAllowed|Permission/i.test(err?.name || err?.message || '')) setState('blocked');
+        else setOfflineFailed(true); // falls through to Web Speech on the next run of this effect
+      });
+      return () => {
+        cancelled = true;
+        stop?.();
+      };
     }
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
@@ -89,7 +127,7 @@ export function useWakePhrase({ enabled, active, phrase, onWake }) {
         // Not running
       }
     };
-  }, [enabled, active, phrase]);
+  }, [enabled, active, phrase, offlineReady, offlineFailed]);
 
   return state;
 }

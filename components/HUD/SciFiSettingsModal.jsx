@@ -260,6 +260,23 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     if (isSettingsModalOpen) refreshAudioDevices(false);
   }, [isSettingsModalOpen]);
 
+  // Offline "Hey Jarvis" models (Phase 8.12): installed on request because of their licence
+  const offlineWakeReady = useJarvisStore((state) => state.offlineWakeReady);
+  const [wakeModelBusy, setWakeModelBusy] = useState(false);
+  const changeWakeModels = async (action) => {
+    setWakeModelBusy(true);
+    try {
+      const res = await fetch("/api/wakeword", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
+      const result = await res.json();
+      useJarvisStore.getState().setOfflineWakeReady(Boolean(result.installed));
+      addCommsMessage("system", `[WAKE] ${result.message}`);
+    } catch (err) {
+      addCommsMessage("system", `[WAKE] Could not change the offline wake word: ${err.message}`);
+    } finally {
+      setWakeModelBusy(false);
+    }
+  };
+
   // Start on login is a desktop login entry, applied immediately rather than on Save
   // undefined while checking, null when the status could not be read
   const [startOnLogin, setStartOnLogin] = useState(undefined);
@@ -932,6 +949,20 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 className="w-full bg-black/50 border border-[rgba(var(--jarvis-accent-rgb),0.25)] focus:border-[var(--jarvis-accent)] outline-none px-2.5 py-1.5 chamfer-xs text-xs text-white font-mono disabled:opacity-40"
                 aria-label="Wake phrase"
               />
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <span className="text-[9px] text-[#7E859E] leading-relaxed">
+                  {offlineWakeReady
+                    ? "Offline \"Hey Jarvis\" is installed: the default phrase is heard on this computer without the browser speech service."
+                    : "Optional: install the offline \"Hey Jarvis\" detector (about 4 MB; openWakeWord models, CC BY-NC-SA 4.0, non-commercial use)."}
+                </span>
+                <button
+                  type="button"
+                  disabled={wakeModelBusy}
+                  onClick={() => changeWakeModels(offlineWakeReady ? "remove" : "install")}
+                  className="px-2.5 py-1 chamfer-btn text-[9px] font-mono font-bold border border-white/10 bg-white/5 text-[#B8BDCC] hover:border-[var(--jarvis-accent)] shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-wait">
+                  {wakeModelBusy ? "WORKING..." : offlineWakeReady ? "REMOVE OFFLINE" : "INSTALL OFFLINE"}
+                </button>
+              </div>
             </div>
           </div>
 

@@ -1478,7 +1478,7 @@ export function useGeminiLive() {
     const timer = setInterval(() => {
       if (!isSetupCompleteRef.current) return;
       const { operatorProfile, isMuted, pendingCommand } = useJarvisStore.getState();
-      const canWake = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+      const canWake = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition) || useJarvisStore.getState().offlineWakeReady;
       if (operatorProfile?.wakeWordEnabled === false || isMuted || pendingCommand || !canWake) return;
       if (isJarvisBusy()) {
         lastActivityRef.current = Date.now();

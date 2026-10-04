@@ -111,6 +111,11 @@ export default function Home() {
     loadStoredApiKey();
     loadStoredMicMuted();
     loadMemories();
+    // Offline "Hey Jarvis" (Phase 8.12) is used when its models are installed
+    fetch("/api/wakeword")
+      .then((res) => res.json())
+      .then((data) => useJarvisStore.getState().setOfflineWakeReady(Boolean(data.installed)))
+      .catch(() => {});
   }, [loadStoredApiKey, loadStoredMicMuted, loadMemories]);
 
   const {
@@ -153,6 +158,7 @@ export default function Home() {
   });
   const wakeChip = {
     listening: { text: `WAKE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] animate-pulse", Icon: Ear },
+    "listening-offline": { text: `WAKE // OFFLINE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] animate-pulse", Icon: Ear },
     unsupported: { text: "WAKE // NEEDS CHROME OR EDGE", color: "text-[#7E859E] border-[rgba(255,255,255,0.15)]", Icon: EarOff },
     blocked: { text: "WAKE // MIC BLOCKED", color: "text-[#FF8095] border-[rgba(255,0,60,0.4)]", Icon: EarOff },
     error: { text: "WAKE // RETRYING", color: "text-[#FFB020] border-[rgba(255,176,32,0.4)]", Icon: Ear },
