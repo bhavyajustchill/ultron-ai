@@ -159,6 +159,8 @@ export function useGeminiLive() {
   // the send and the model's first output Jarvis is silent but busy; a background notice sent then
   // would arrive as a new turn and cut the pending reply off.
   const awaitingReplyRef = useRef(0);
+  // Set when the operator talks over Jarvis: the interrupted reply's late transcript is dropped
+  const bargedInRef = useRef(false);
   const lastReplyAtRef = useRef(0);
   const relinkRequestedRef = useRef(false);
 
@@ -211,12 +213,19 @@ export function useGeminiLive() {
       briefingTimeoutRef.current = null;
     }
     briefingStateRef.current = 'IDLE';
+    // Keep what Jarvis had already said in the Comms Log, then ignore the rest of that reply's
+    // transcript until the server confirms the interruption
+    const partial = currentTurnTextRef.current.trim();
+    if (partial && (isPlaying || isTurnActiveRef.current)) {
+      addCommsMessage('jarvis', `${partial} [Interrupted]`);
+      bargedInRef.current = true;
+    }
     currentTurnTextRef.current = '';
     if (isPlaying && wsRef.current && isSetupCompleteRef.current) {
       const isMutedNow = useJarvisStore.getState().isMuted;
       setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
     }
-  }, [setStatus]);
+  }, [setStatus, addCommsMessage]);
 
   // Send 16kHz Int16 audio chunk over WebSocket
   const handleAudioChunk = useCallback(
@@ -872,8 +881,11 @@ export function useGeminiLive() {
             if (msg.goAway) {
               const timeLeftMs = parseDurationMs(msg.goAway.timeLeft, 5000);
               console.log(`[useGeminiLive] GoAway received, ${timeLeftMs}ms left on this connection.`);
+              addCommsMessage('system', `[VOICE LINK] Gemini is retiring this connection (${Math.round(timeLeftMs / 1000)}s left); moving to a fresh one at the next pause, conversation kept.`);
               goAwayPendingRef.current = true;
-              if (!isTurnActiveRef.current) {
+              // Swap now only if nothing is in flight: a reply being spoken, or one still owed for a
+              // turn just sent, would be lost with the old socket (turn complete triggers the swap)
+              if (!isJarvisBusy()) {
                 resumeAfterGoAway();
               } else if (!goAwayTimerRef.current) {
                 goAwayTimerRef.current = setTimeout(resumeAfterGoAway, Math.max(0, timeLeftMs - 1000));
@@ -942,7 +954,7 @@ export function useGeminiLive() {
               const outputTx =
                 msg.serverContent.outputTranscription ||
                 msg.serverContent.output_transcription;
-              if (outputTx?.text) {
+              if (outputTx?.text && !bargedInRef.current) {
                 currentTurnTextRef.current += outputTx.text;
               }
 
@@ -956,7 +968,8 @@ export function useGeminiLive() {
                 lastOperatorActivityRef.current = Date.now();
               }
 
-              if (modelTurn) {
+              // Audio parts or their transcription both mean Jarvis's reply is under way
+              if (modelTurn || outputTx?.text) {
                 isTurnActiveRef.current = true;
               }
 
@@ -972,6 +985,7 @@ export function useGeminiLive() {
               if (interrupted) {
                 isTurnActiveRef.current = false;
                 awaitingReplyRef.current = 0;
+                bargedInRef.current = false;
                 const partialText = currentTurnTextRef.current.trim();
                 if (partialText) {
                   addCommsMessage('jarvis', `${partialText} [Interrupted]`);
@@ -1005,6 +1019,7 @@ export function useGeminiLive() {
               if (turnComplete) {
                 isTurnActiveRef.current = false;
                 awaitingReplyRef.current = 0;
+                bargedInRef.current = false;
                 lastReplyAtRef.current = Date.now();
 
                 const { queries, sources } = groundingRef.current;
@@ -1240,6 +1255,7 @@ export function useGeminiLive() {
       resetLinkState,
       scheduleReconnect,
       resumeAfterGoAway,
+      isJarvisBusy,
       watchProjectJob,
       watchDevJob,
       notifyJarvis,

@@ -78,7 +78,9 @@ export async function POST(req) {
       );
     }
 
-    const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+    // JARVIS_LIVE_WS_BASE points the HUD at a mock Live server in automated checks
+    const wsBase = process.env.JARVIS_LIVE_WS_BASE || 'wss://generativelanguage.googleapis.com';
+    const wsUrl = `${wsBase}/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
 
     // Dynamic prompt rehydration from persistent knowledge vault
     const memoryData = readPersistedMemory();

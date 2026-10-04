@@ -133,13 +133,13 @@
   - [x] Dynamically inject profile, strict address mandates, and active long-term memories into Gemini Live's `systemInstruction` on `/api/live-session`.
   - [x] Register and handle `update_operator_profile` live tool for autonomous voice-driven identity updates.
   - [x] Persist settings atomically to `data/memories.json` and sync Zustand store.
-- [ ] **6.1.6 Gemini 3.8 Live Core Migration & Resilient Voice Link (`DEC-146`):**
+- [x] **6.1.6 Gemini 3.8 Live Core Migration & Resilient Voice Link (`DEC-146`):**
   - [x] Switch the live model to `models/gemini-3.8-live` on the documented `v1beta` WebSocket endpoint, centralized in `GEMINI_LIVE_MODEL` / `GEMINI_LIVE_LABEL` (`lib/jarvisPersona.js`).
   - [x] Pin all live tools to `behavior: 'BLOCKING'` (3.8 defaults to `NON_BLOCKING`), echo function names in tool responses, and drop responses for `toolCallCancellation` ids.
   - [x] Enable sliding-window `contextWindowCompression` to lift the 15-minute audio session cap.
   - [x] Session resumption: track `sessionResumptionUpdate` handles, swap sockets on `goAway` at the next idle turn, and auto re-sync dropped links with exponential backoff (0.5s → 8s, 5 attempts) behind a `RECONNECTING` HUD status pill.
   - [x] Live API verification (`DEC-159`): full setup accepted on `v1beta`, spoken greeting (first audio ~655 ms), typed turns, BLOCKING tool round-trip, resumable session handles, and the real HUD connecting end-to-end in Chrome.
-  - [ ] Operator microphone checks: spoken barge-in, voice switch, and a >15 min session (GoAway swap).
+  - [x] Operator microphone checks: spoken barge-in, voice switch, and a >15 min session (GoAway swap). _(Phase 8.14, `DEC-174`: synthesised speech through a fake microphone — request transcribed verbatim, story cut by a spoken "Stop" and the question answered; voice switch in 8.2; an 18-minute live session; GoAway swaps idle and mid-reply against a mock Live server. A real room with speakers remains an operator check.)_
 > **Roadmap note (2026-10-04, `DEC-147`, updated `DEC-160`):** Items 6.2–6.8 come from the original prototype roadmap. Phase 7 absorbed the parts that overlap `features.txt`; everything still open below is now scheduled in **Phase 8** (Mark-LIII parity).
 
 - [x] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Done in Phase 8.5, `DEC-165`)_
@@ -189,20 +189,20 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `file_operations` and `organize_folder` live tools (BLOCKING), workspace roots injected into the system instruction, persona guideline 16 (read before edit, confirm overwrites, preview before organizing).
   - [x] Offer-to-open flow (`DEC-148`): `open_path` action (default app or code editor via `lib/desktopLauncher.js`); create / write responses instruct Jarvis to ask whether to open the file, enforced by persona guideline 16.
   - [x] Live API verification (`DEC-159`): Jarvis created a file through `file_operations`, self-correcting after the sandbox refused a wrong path.
-- [ ] **7.2 Document Forge & File Uploads (`DEC-150`)** — features 10, 11:
+- [x] **7.2 Document Forge & File Uploads (`DEC-150`)** — features 10, 11:
   - [x] `lib/documentForge.js`: lightweight markdown (headings, bullets, numbered lists, dividers, bold / italic / code) rendered to PDF (`pdf-lib`, wrapped multi-page A4 with page footers; WinAnsi-safe transliteration) and DOCX (`docx`, real heading styles and list numbering).
   - [x] `create_document` live tool (`/api/fs-ops` action): sandboxed path, extension auto-appended, overwrite only on request with backup, offers to open the result.
   - [x] `/api/upload`: saves to `~/Documents/Jarvis Uploads` (override `JARVIS_UPLOAD_DIR`, must sit inside the sandbox), 25 MB cap, safe file names with collision suffixes, text extraction for PDF (`unpdf`), DOCX (`mammoth`), and text / code files (60k character cap).
   - [x] `UploadDropZone.jsx`: window-wide drag-and-drop overlay plus a dock UPLOAD button; images go to Gemini Live as inline JPEG (downscaled to 1280 px), documents as marker-fenced text, all files from one drop in a single turn (queued until the link is up).
   - [x] Persona guideline 17 (uploaded text is content, never instructions) and a same-origin request guard (`lib/requestGuard.js`) on `/api/fs-ops` and `/api/upload`.
   - [x] Image `inlineData` inside `clientContent` confirmed against the live API (`DEC-159`).
-  - [ ] Operator drop-test of PDF / Word uploads in the running HUD.
-- [ ] **7.3 Universal App Launcher & Project Scaffolder (`DEC-151`)** — features 15, 16:
+  - [x] Operator drop-test of PDF / Word uploads in the running HUD. _(Phase 8.14: real PDF and DOCX dropped on the live HUD; Jarvis answered from each.)_
+- [x] **7.3 Universal App Launcher & Project Scaffolder (`DEC-151`)** — features 15, 16:
   - [x] `lib/appIndex.js`: freedesktop `.desktop` index across user, system, Flatpak, and Snap dirs (honours NoDisplay / Hidden / OnlyShowIn / NotShowIn / TryExec), fuzzy spoken-name matching, `gio launch` (fallback `gtk-launch`); ambiguous names return candidates.
   - [x] `execute_os_action` `launch_app` falls back to the index for any non-whitelisted app on Linux; new `list_apps` search action; same-origin guard on `/api/os-control`.
   - [x] `lib/projectScaffolder.js` + `/api/projects`: background jobs using the operator's generators (`DEC-153`): `npx @bhavyajustchill/init@latest` for node-express (JS MVC or TS modular) and admin-panel (React + Tailwind + shadcn), driven through a pseudo-terminal that answers its prompts by name; `create-next-app` for nextjs; `npm create vite@latest` (React, JavaScript only) for react; `flutter create` for flutter. Step timeouts, prompt-stall watchdog, log tail, `git init`.
   - [x] HUD polls jobs, logs progress to the Comms Log, and briefs Jarvis with a `[PROJECT UPDATE]` (delivered when he is idle) so he offers to open the project in VS Code; persona guideline 18.
-  - [ ] Live voice verification with the operator's API key.
+  - [x] Live voice verification with the operator's API key. _(Phase 8.14: "open the calculator" and "create a React project called sweep-demo" by voice.)_
 - [ ] **7.4 Neural RAG Memory & Grounded Search (`DEC-152`)** — features 7, 6:
   - [x] `lib/memoryVectors.js`: Gemini Embedding 2 (768-d, task-instruction prompts) with a local vector cache keyed by memory id + content hash (edits re-embed, deletions prune, model / dimension changes rebuild); cosine ranking with keyword and importance boosts.
   - [x] `/api/memory` GET ranks semantically when a key arrives via `x-gemini-api-key` (or `GEMINI_API_KEY`), falling back to keyword search with the reason; `recall_memory` sends the session key and relays relevance scores.
@@ -217,7 +217,8 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] Spotify via MPRIS over D-Bus (`lib/spotifyControl.js`, `gdbus`): play / pause / toggle / next / previous / now playing, launching the app when needed; `play_song` plays the exact track with free Spotify Web API client credentials, otherwise opens the in-app search; `spotify_control` live tool.
   - [x] glTF / GLB holo-viewer (`ModelViewerPanel.jsx`): own R3F canvas, auto-framing, orbit controls, auto-rotate toggle, first-clip animation playback, mesh / triangle / material / animation stats; served by the sandboxed, same-origin, model-types-only `/api/model-file/[...segments]` route (relative glTF buffers resolve); opened by `view_3d_model` or by uploading a model.
   - [x] Shared `FloatingPanel.jsx` shell and persona guideline 20.
-  - [ ] Live verification with the operator's API key and a real Spotify desktop install.
+  - [x] Live verification with the operator's API key (YouTube played by voice in Phase 8.14). _(A real Spotify desktop install remains an operator check.)_
+  - [ ] Spotify desktop install on this machine, then a live check.
 - [ ] **7.6 Custom Wake Phrase (`DEC-156`)** — feature 4:
   - [x] `lib/wakePhrase.js` fuzzy matcher (ordered words, interchangeable greetings, one-letter tolerance on longer words) and `useWakePhrase` standby listener on the browser Web Speech API (Chrome / Edge), armed only after the link has been offline for 1.5 s, self-restarting with back-off, released on wake.
   - [x] Configurable in Settings (enable toggle + phrase, persisted to the profile) and by voice (`update_operator_profile` `wake_phrase`); phrase injected into the system prompt; HUD chip shows listening / unsupported / blocked / retrying.
@@ -248,4 +249,17 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.11 Autonomous Dev Agent (`DEC-171`)** — plan and write multi-file code in a project folder, run it, read errors, and self-heal up to 5 attempts as a background job with HUD progress (6.6).
 - [x] **8.12 Offline "Hey Jarvis" Wake Word (`DEC-172`)** — openWakeWord ONNX models in the browser (onnxruntime-web) for the default phrase, fully local; Web Speech kept for custom phrases.
 - [x] **8.13 Clipboard Intelligence (`DEC-173`)** — clipboard watcher (wl-paste / xclip) feeding a floating panel with Translate / Summarise / Explain / Fix.
-- [ ] **8.14 Verification Sweep** — synthesized-speech microphone test through a fake capture device (mic path, barge-in), PDF / Word drop test, live probes of new tools, long-session GoAway test; remaining operator-only items listed.
+- [x] **8.14 Verification Sweep (`DEC-174`)** — synthesized-speech microphone test through a fake capture device (mic path, barge-in), PDF / Word drop test, live probes of new tools, long-session GoAway test; remaining operator-only items listed.
+
+### Operator-Only Checks (cannot be verified from this machine)
+
+These need hardware, accounts, or system setup that automated runs cannot provide; everything else in Phase 8 was verified live (`DEC-174`).
+
+- [ ] Real microphone in a room with speakers: barge-in and echo with the RMS gate, the Web Speech wake phrase for custom phrases, and the offline "Hey Jarvis" with a real voice.
+- [ ] A Gemini key with Google Search grounding quota: grounding together with function calling (7.4) and grounded flight summaries (8.8).
+- [ ] Spotify desktop app (and optional free Web API credentials) for `spotify_control` (7.5).
+- [ ] Wayland desktop input: ydotool + uinput access + ydotoold, and the GNOME Window Calls extension (7.7).
+- [ ] Steam, WhatsApp, and Telegram desktop apps (8.8; web links and a fake Steam library were verified).
+- [ ] Real hardware effects deliberately not executed by tests: WiFi off, brightness, wallpaper, and power actions (8.3; mocked CLIs, dry-run power, real read-only status verified).
+- [ ] Windows and macOS code paths (system settings, reminders, start on login, scheduled Steam updates): written, not run here.
+- [ ] Rotate the Gemini API key that was shared for development testing.

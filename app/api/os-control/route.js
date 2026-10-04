@@ -10,6 +10,9 @@ import { pushUndo } from '@/lib/undoJournal';
 
 const execAsync = promisify(exec);
 
+// Actions that change what is on the operator's screen (skipped in dry-run checks)
+const DESKTOP_VISIBLE_ACTIONS = new Set(['open_folder', 'open_url', 'minimize_all', 'lock_screen', 'lock_workstation']);
+
 // In-memory action execution audit log
 const actionHistory = [];
 
@@ -47,6 +50,10 @@ function findAvailableBinary(candidates) {
  * Prevents blocking the HTTP request and handles Linux/Windows environment inheritance.
  */
 function launchDetachedGui(commandOrBinary, args = []) {
+  // Automated checks never open real windows (same switch as lib/desktopLauncher.js)
+  if (process.env.JARVIS_LAUNCH_DRY_RUN === '1') {
+    return Promise.resolve({ success: true, dryRun: true, output: `Dry run: ${[commandOrBinary, ...args].join(' ')}` });
+  }
   return new Promise((resolve) => {
     try {
       const isShellCmd = typeof commandOrBinary === 'string' && commandOrBinary.includes(' ');
@@ -538,7 +545,10 @@ export async function POST(req) {
     let result = { success: false, message: '' };
     const timestamp = new Date().toLocaleTimeString();
 
-    switch (action) {
+    // Automated checks never open folders / pages or lock the operator's screen
+    if (process.env.JARVIS_LAUNCH_DRY_RUN === '1' && DESKTOP_VISIBLE_ACTIONS.has(action)) {
+      result = { success: true, message: `Dry run: ${action.replace(/_/g, ' ')}${target ? ` ${target}` : ''}.`, dryRun: true };
+    } else switch (action) {
       // 1. Application Launch
       case 'launch_app': {
         result = await launchApplication(target);
