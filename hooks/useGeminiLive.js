@@ -9,6 +9,7 @@ import { modelFileUrl, openModelViewer, playYouTubeQuery } from '@/lib/mediaClie
 import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
 import { runCommandWithApproval, requestOperatorApproval } from '@/lib/terminalClient';
 import { TOOLS_BY_NAME } from '@/lib/tools';
+import { listAudioDevices, resolveDevice } from '@/lib/audioDevices';
 
 // Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
 const MAX_RECONNECT_ATTEMPTS = 5;
@@ -243,7 +244,7 @@ export function useGeminiLive() {
   );
 
   // Audio Stream Ingestion Hook
-  const { startMic, stopMic, getInputByteFrequencyData } = useAudioStream({
+  const { startMic, stopMic, getInputByteFrequencyData, isMicActive } = useAudioStream({
     onAudioChunk: handleAudioChunk,
     onUserSpeaking: handleBargeIn,
   });
@@ -1516,6 +1517,35 @@ export function useGeminiLive() {
     const timer = setInterval(tick, BACKGROUND_TICK_MS);
     return () => clearInterval(timer);
   }, [addCommsMessage, notifyJarvis, isJarvisBusy]);
+
+  // Audio devices (Phase 8.7): restore the saved choices, re-open a live mic on the newly chosen
+  // input, and route Jarvis's voice to the chosen speaker
+  const audioInput = useJarvisStore((state) => state.audioInput);
+  const audioOutput = useJarvisStore((state) => state.audioOutput);
+  useEffect(() => {
+    useJarvisStore.getState().loadAudioDevices();
+  }, []);
+  const lastInputRef = useRef(undefined);
+  useEffect(() => {
+    const previous = lastInputRef.current;
+    lastInputRef.current = audioInput?.id || null;
+    if (previous === undefined || previous === lastInputRef.current || !isMicActive()) return;
+    stopMic();
+    startMic().catch((err) => addCommsMessage('system', `[AUDIO] Could not open the chosen microphone: ${err.message}`));
+  }, [audioInput, isMicActive, stopMic, startMic, addCommsMessage]);
+  useEffect(() => {
+    const player = pcmPlayerRef.current;
+    if (!player) return;
+    (async () => {
+      let deviceId = '';
+      if (audioOutput?.id) {
+        const { outputs } = await listAudioDevices();
+        deviceId = resolveDevice(outputs, audioOutput)?.id || '';
+      }
+      const routed = await player.setOutputDevice(deviceId).catch(() => false);
+      if (audioOutput?.id && !routed) addCommsMessage('system', '[AUDIO] This browser cannot choose a speaker; Jarvis keeps using the system default output.');
+    })();
+  }, [audioOutput, addCommsMessage]);
 
   // Say OS reminders aloud when they come due while the link is up (the desktop notification
   // fires regardless); the server hands each occurrence to one poll only

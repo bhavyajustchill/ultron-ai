@@ -39,7 +39,7 @@ export function renderInlineMarkdown(text, isJarvis = false) {
       tokens.push(
         <code
           key={`code-${key++}`}
-          className="px-1.5 py-0.5 mx-0.5 chamfer-xs bg-[rgba(0,240,255,0.1)] border border-[rgba(0,240,255,0.25)] text-[#00F0FF] font-mono text-[10px]"
+          className="px-1.5 py-0.5 mx-0.5 chamfer-xs bg-[rgba(var(--jarvis-accent-2-rgb),0.1)] border border-[rgba(var(--jarvis-accent-2-rgb),0.25)] text-[var(--jarvis-accent-2)] font-mono text-[10px]"
         >
           {codeContent}
         </code>
@@ -89,7 +89,7 @@ export function renderInlineMarkdown(text, isJarvis = false) {
             href={linkMatch[2]}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#00F0FF] underline hover:text-[#FF003C] transition-colors"
+            className="text-[var(--jarvis-accent-2)] underline hover:text-[#FF003C] transition-colors"
           >
             {linkMatch[1]}
           </a>
@@ -148,10 +148,10 @@ export function MarkdownText({ content, isJarvis = false }) {
           return (
             <div
               key={`cb-${pIdx}`}
-              className="my-1.5 chamfer-sm border border-[rgba(0,240,255,0.25)] bg-[rgba(5,5,8,0.92)] overflow-hidden font-mono"
+              className="my-1.5 chamfer-sm border border-[rgba(var(--jarvis-accent-2-rgb),0.25)] bg-[rgba(5,5,8,0.92)] overflow-hidden font-mono"
             >
               {part.lang && (
-                <div className="px-2 py-0.5 text-[9px] text-[#00F0FF] bg-[rgba(0,240,255,0.08)] border-b border-[rgba(0,240,255,0.15)] flex justify-between">
+                <div className="px-2 py-0.5 text-[9px] text-[var(--jarvis-accent-2)] bg-[rgba(var(--jarvis-accent-2-rgb),0.08)] border-b border-[rgba(var(--jarvis-accent-2-rgb),0.15)] flex justify-between">
                   <span>{part.lang.toUpperCase()}</span>
                 </div>
               )}
@@ -202,7 +202,7 @@ export function MarkdownText({ content, isJarvis = false }) {
           if (trimmed.startsWith('### ')) {
             flushList();
             elements.push(
-              <h4 key={`h3-${lIdx}`} className="font-['Orbitron',sans-serif] font-bold text-xs text-[#00F0FF] my-1 tracking-wider">
+              <h4 key={`h3-${lIdx}`} className="font-['Orbitron',sans-serif] font-bold text-xs text-[var(--jarvis-accent-2)] my-1 tracking-wider">
                 {renderInlineMarkdown(trimmed.substring(4), isJarvis)}
               </h4>
             );

@@ -322,18 +322,18 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       }
       className={`fixed z-35 ${!position ? "top-[52vh] right-6" : ""
         } ${isMinimized ? "w-72 sm:w-80" : "w-80 sm:w-96"
-        } chamfer-lg border border-[rgba(0,229,255,0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(0,229,255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(0,229,255,0.25)] border-[rgba(0,229,255,0.5)]" : ""
+        } chamfer-lg border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""
         } ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>
       {/* Top Accent Gradient Line */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#00E5FF] via-[#70E8FF] to-[#00E5FF] animate-pulse shrink-0" />
+      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
 
       {/* Header */}
       <div
         onPointerDown={handlePointerDown}
-        className="flex items-center justify-between px-3 py-2 border-b border-[rgba(0,229,255,0.18)] bg-[rgba(0,229,255,0.04)] select-none cursor-grab active:cursor-grabbing">
+        className="flex items-center justify-between px-3 py-2 border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] select-none cursor-grab active:cursor-grabbing">
         <div className="flex items-center gap-2 pointer-events-none">
-          <GripHorizontal className="w-3.5 h-3.5 text-[#00E5FF]/60" />
-          <div className="p-1 chamfer-xs bg-[rgba(0,229,255,0.12)] border border-[rgba(0,229,255,0.3)] text-[#00E5FF]">
+          <GripHorizontal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]/60" />
+          <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.12)] border border-[rgba(var(--jarvis-accent-rgb),0.3)] text-[var(--jarvis-accent)]">
             <Monitor className="w-3 h-3" />
           </div>
           <div>
@@ -342,7 +342,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
                 SCREEN OPTIC // INTERROGATION
               </span>
               {isStreaming && (
-                <span className="px-1 py-0.2 chamfer-xs bg-[rgba(0,229,255,0.25)] border border-[#00E5FF] text-[#00E5FF] text-[8px] font-mono animate-pulse">
+                <span className="px-1 py-0.2 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.25)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] text-[8px] font-mono animate-pulse">
                   REC
                 </span>
               )}
@@ -359,7 +359,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
           </button>
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Close Window (Esc)">
             <X className="w-3 h-3" />
           </button>
@@ -370,10 +370,10 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       <div
         className={`relative w-full aspect-video bg-[#050508] flex items-center justify-center overflow-hidden border-b border-[rgba(255,255,255,0.06)] ${isMinimized ? "hidden" : "block"}`}>
         {/* Tactical Corner Reticles */}
-        <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[#00F0FF] pointer-events-none z-10" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[#00F0FF] pointer-events-none z-10" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[#00F0FF] pointer-events-none z-10" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[#00F0FF] pointer-events-none z-10" />
+        <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[var(--jarvis-accent-2)] pointer-events-none z-10" />
+        <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[var(--jarvis-accent-2)] pointer-events-none z-10" />
+        <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[var(--jarvis-accent-2)] pointer-events-none z-10" />
+        <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[var(--jarvis-accent-2)] pointer-events-none z-10" />
 
         {/* Active Video Element */}
         <video
@@ -393,7 +393,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
         {/* Fallback Standby Display */}
         {!isScreenSharing && (
           <div className="flex flex-col items-center justify-center gap-2 p-4 text-center z-10">
-            <div className="p-2 chamfer-md border border-[rgba(0,240,255,0.3)] bg-[rgba(0,240,255,0.05)] text-[#00F0FF] animate-pulse">
+            <div className="p-2 chamfer-md border border-[rgba(var(--jarvis-accent-2-rgb),0.3)] bg-[rgba(var(--jarvis-accent-2-rgb),0.05)] text-[var(--jarvis-accent-2)] animate-pulse">
               <Monitor className="w-6 h-6" />
             </div>
             <div className="max-w-xs">
@@ -406,7 +406,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
             </div>
             <button
               onClick={startScreenCapture}
-              className="mt-1 flex items-center gap-1.5 px-3 py-1 chamfer-btn bg-[#00F0FF] hover:bg-[#38f4ff] text-black text-[10px] font-mono font-semibold shadow-[0_0_12px_rgba(0,240,255,0.4)] transition-all cursor-pointer">
+              className="mt-1 flex items-center gap-1.5 px-3 py-1 chamfer-btn bg-[var(--jarvis-accent-2)] hover:bg-[#38f4ff] text-black text-[10px] font-mono font-semibold shadow-[0_0_12px_rgba(var(--jarvis-accent-2-rgb),0.4)] transition-all cursor-pointer">
               <Video className="w-3 h-3" />
               <span>ENGAGE CAPTURE</span>
             </button>
@@ -415,14 +415,14 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
 
         {/* Real-time Streaming Overlay Indicator */}
         {isStreaming && (
-          <div className="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 chamfer-xs bg-[rgba(0,240,255,0.85)] text-black text-[8px] font-mono font-bold tracking-widest shadow-[0_0_10px_rgba(0,240,255,0.6)]">
+          <div className="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 chamfer-xs bg-[rgba(var(--jarvis-accent-2-rgb),0.85)] text-black text-[8px] font-mono font-bold tracking-widest shadow-[0_0_10px_rgba(var(--jarvis-accent-2-rgb),0.6)]">
             <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping" />
             <span>REC // CONTINUOUS</span>
           </div>
         )}
 
         {lastCaptureTime && (
-          <div className="absolute bottom-2 right-2 z-20 px-1.5 py-0.5 chamfer-xs bg-[rgba(10,11,16,0.85)] border border-[rgba(0,240,255,0.3)] text-[8px] font-mono text-[#00F0FF]">
+          <div className="absolute bottom-2 right-2 z-20 px-1.5 py-0.5 chamfer-xs bg-[rgba(10,11,16,0.85)] border border-[rgba(var(--jarvis-accent-2-rgb),0.3)] text-[8px] font-mono text-[var(--jarvis-accent-2)]">
             {lastCaptureTime}
           </div>
         )}
@@ -442,7 +442,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
             <>
               <button
                 onClick={handleTransmitSnapshot}
-                className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(0,240,255,0.1)] border border-[#00F0FF] text-[#00F0FF] hover:bg-[rgba(0,240,255,0.2)] text-[10px] font-mono font-semibold transition-all cursor-pointer"
+                className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(var(--jarvis-accent-2-rgb),0.1)] border border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] hover:bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[10px] font-mono font-semibold transition-all cursor-pointer"
                 title="Transmit current screen frame to J.A.R.V.I.S">
                 <Camera className="w-2.5 h-2.5" />
                 <span>SNAPSHOT</span>
@@ -451,8 +451,8 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
               <button
                 onClick={toggleContinuousStream}
                 className={`flex items-center gap-1 px-2 py-1 chamfer-btn text-[10px] font-mono font-semibold border transition-all cursor-pointer ${isStreaming
-                    ? "border-[#00F0FF] bg-[rgba(0,240,255,0.2)] text-[#00F0FF]"
-                    : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[#F0F2F8] hover:border-[#00F0FF]"
+                    ? "border-[var(--jarvis-accent-2)] bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[var(--jarvis-accent-2)]"
+                    : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[#F0F2F8] hover:border-[var(--jarvis-accent-2)]"
                   }`}
                 title="Stream frames continuously">
                 {isStreaming ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
@@ -464,7 +464,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
                   <select
                     value={visionInterval}
                     onChange={(e) => setVisionInterval(Number(e.target.value))}
-                    className="bg-[#0A0B10] border border-[rgba(255,255,255,0.15)] chamfer-xs px-1.5 py-0.5 text-[9px] font-mono text-[#00F0FF] focus:outline-none focus:border-[#00F0FF]">
+                    className="bg-[#0A0B10] border border-[rgba(255,255,255,0.15)] chamfer-xs px-1.5 py-0.5 text-[9px] font-mono text-[var(--jarvis-accent-2)] focus:outline-none focus:border-[var(--jarvis-accent-2)]">
                     <option value={1000}>1.0s</option>
                     <option value={1500}>1.5s</option>
                     <option value={2000}>2.0s</option>
@@ -475,7 +475,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
             </>
           ) : (
             <div className="text-[9px] font-mono text-[#7E859E] flex items-center gap-1">
-              <Shield className="w-2.5 h-2.5 text-[#00F0FF]" />
+              <Shield className="w-2.5 h-2.5 text-[var(--jarvis-accent-2)]" />
               <span>STANDBY</span>
             </div>
           )}
@@ -485,7 +485,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
           {isScreenSharing && (
             <button
               onClick={stopStream}
-              className="flex items-center gap-1 px-2 py-0.5 chamfer-btn border border-[rgba(0,240,255,0.4)] bg-[rgba(0,240,255,0.1)] text-[#00F0FF] hover:bg-[rgba(0,240,255,0.25)] text-[9px] font-mono transition-all cursor-pointer">
+              className="flex items-center gap-1 px-2 py-0.5 chamfer-btn border border-[rgba(var(--jarvis-accent-2-rgb),0.4)] bg-[rgba(var(--jarvis-accent-2-rgb),0.1)] text-[var(--jarvis-accent-2)] hover:bg-[rgba(var(--jarvis-accent-2-rgb),0.25)] text-[9px] font-mono transition-all cursor-pointer">
               <VideoOff className="w-2.5 h-2.5" />
               <span>TERMINATE</span>
             </button>

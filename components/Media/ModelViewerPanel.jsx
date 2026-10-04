@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { Bounds, Center, Html, OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
 import { Box, Rotate3d } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
+import { useAccentTint } from "@/hooks/useAccentTheme";
 import { modelFileUrl } from "@/lib/mediaClient";
 import { FloatingPanel } from "@/components/Media/FloatingPanel";
 
@@ -82,6 +83,7 @@ function ModelScene({ url, onStats }) {
 export function ModelViewerPanel() {
   const { isOpen, path, name, nonce } = useJarvisStore((state) => state.modelViewer);
   const setModelViewer = useJarvisStore((state) => state.setModelViewer);
+  const tint = useAccentTint();
   const [stats, setStats] = useState(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const handleStats = useCallback((next) => setStats(next), []);
@@ -106,23 +108,23 @@ export function ModelViewerPanel() {
         <button
           onClick={() => setAutoRotate((value) => !value)}
           className={`p-1.5 chamfer-btn border transition-all cursor-pointer ${autoRotate
-            ? "border-[rgba(0,229,255,0.4)] bg-[rgba(0,229,255,0.12)] text-[#00E5FF]"
-            : "border-transparent text-[#7E859E] hover:text-[#00E5FF]"}`}
+            ? "border-[rgba(var(--jarvis-accent-rgb),0.4)] bg-[rgba(var(--jarvis-accent-rgb),0.12)] text-[var(--jarvis-accent)]"
+            : "border-transparent text-[#7E859E] hover:text-[var(--jarvis-accent)]"}`}
           title={autoRotate ? "Stop auto-rotate" : "Auto-rotate"}>
           <Rotate3d className="w-3.5 h-3.5" />
         </button>
       }>
-      <div className="relative w-full h-[340px] chamfer-md overflow-hidden border border-[rgba(0,229,255,0.2)] bg-[radial-gradient(ellipse_at_center,rgba(0,229,255,0.08),rgba(1,14,22,0.95))]">
+      <div className="relative w-full h-[340px] chamfer-md overflow-hidden border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[radial-gradient(ellipse_at_center,rgba(var(--jarvis-accent-rgb),0.08),rgba(1,14,22,0.95))]">
         <ModelErrorBoundary resetKey={url}>
           <Canvas camera={{ position: [3, 2, 3], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
             <ambientLight intensity={0.7} />
             <directionalLight position={[4, 6, 4]} intensity={1.6} />
-            <directionalLight position={[-4, 2, -3]} intensity={0.9} color="#00E5FF" />
-            <gridHelper args={[12, 24, "#00E5FF", "#0b3a46"]} />
+            <directionalLight position={[-4, 2, -3]} intensity={0.9} color={tint("#00E5FF")} />
+            <gridHelper key={tint.accent} args={[12, 24, tint("#00E5FF"), tint("#0b3a46")]} />
             <Suspense
               fallback={
                 <Html center>
-                  <span className="font-mono text-[10px] tracking-widest text-[#00E5FF] whitespace-nowrap">LOADING MODEL…</span>
+                  <span className="font-mono text-[10px] tracking-widest text-[var(--jarvis-accent)] whitespace-nowrap">LOADING MODEL…</span>
                 </Html>
               }>
               <Bounds fit clip observe margin={1.25}>
@@ -143,9 +145,9 @@ export function ModelViewerPanel() {
           ["MATERIALS", stats?.materials],
           ["ANIMATIONS", stats?.animations],
         ].map(([label, value]) => (
-          <div key={label} className="flex flex-col py-1.5 chamfer-xs border border-[rgba(0,229,255,0.15)] bg-[rgba(0,229,255,0.04)]">
+          <div key={label} className="flex flex-col py-1.5 chamfer-xs border border-[rgba(var(--jarvis-accent-rgb),0.15)] bg-[rgba(var(--jarvis-accent-rgb),0.04)]">
             <span className="text-[9px] tracking-wider text-[#7E859E]">{label}</span>
-            <span className="text-xs text-[#00E5FF] font-semibold">{value ?? "—"}</span>
+            <span className="text-xs text-[var(--jarvis-accent)] font-semibold">{value ?? "—"}</span>
           </div>
         ))}
       </div>

@@ -72,8 +72,8 @@ function HologramLoadingFallback() {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#010e16]/80 backdrop-blur-sm z-10 text-center p-6">
       <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
-        <div className="w-16 h-16 border-2 border-dashed border-[#00E5FF] rounded-full animate-spin [animation-duration:4s]" />
-        <Loader2 className="w-8 h-8 text-[#00E5FF] animate-spin absolute" />
+        <div className="w-16 h-16 border-2 border-dashed border-[var(--jarvis-accent)] rounded-full animate-spin [animation-duration:4s]" />
+        <Loader2 className="w-8 h-8 text-[var(--jarvis-accent)] animate-spin absolute" />
       </div>
       <h3 className="font-['Orbitron',sans-serif] text-sm font-bold tracking-widest text-[#F0F2F8] mb-1">
         INITIALIZING QUANTUM REACTOR
@@ -131,8 +131,8 @@ function JarvisViewportComponent({
   if (hasError) {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-xs font-mono">
-        <ShieldAlert className="w-10 h-10 text-[#00E5FF] mb-2" />
-        <p className="text-[#00E5FF] font-bold">3D VIEWPORT HARDWARE ACCELERATION ERROR</p>
+        <ShieldAlert className="w-10 h-10 text-[var(--jarvis-accent)] mb-2" />
+        <p className="text-[var(--jarvis-accent)] font-bold">3D VIEWPORT HARDWARE ACCELERATION ERROR</p>
         <p className="text-[#7E859E] mt-1">
           Please ensure WebGL2 is enabled in your browser settings.
         </p>
@@ -141,7 +141,7 @@ function JarvisViewportComponent({
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none bg-[radial-gradient(circle_at_50%_50%,rgba(0,215,255,0.45)_0%,rgba(0,170,220,0.30)_25%,rgba(0,115,165,0.18)_50%,rgba(1,35,55,0.85)_75%,#010e16_100%)]">
+    <div className="relative w-full h-full overflow-hidden select-none bg-[radial-gradient(circle_at_50%_50%,rgba(var(--jarvis-glow-1-rgb),0.45)_0%,rgba(var(--jarvis-glow-2-rgb),0.30)_25%,rgba(var(--jarvis-glow-3-rgb),0.18)_50%,rgba(var(--jarvis-glow-4-rgb),0.85)_75%,#010e16_100%)]">
 
 
       {/* 3D R3F CANVAS */}

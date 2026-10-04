@@ -72,9 +72,9 @@ export function CommandConfirmModal() {
         {request.reason && <p className="text-[11px] text-[#B8BDCC] leading-relaxed">{request.reason}</p>}
 
         {isSystem ? (
-          <div className="flex flex-col gap-2 p-3 chamfer-sm bg-black/60 border border-[rgba(0,229,255,0.25)]">
-            <span className="flex items-center gap-2 text-[13px] font-bold text-[#00E5FF]">
-              <Power className="w-3.5 h-3.5 shrink-0 text-[#00E5FF]/70" /> {request.title}
+          <div className="flex flex-col gap-2 p-3 chamfer-sm bg-black/60 border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
+            <span className="flex items-center gap-2 text-[13px] font-bold text-[var(--jarvis-accent)]">
+              <Power className="w-3.5 h-3.5 shrink-0 text-[var(--jarvis-accent)]/70" /> {request.title}
             </span>
             {request.detail && (
               <pre className="text-[11px] text-[#B8BDCC] whitespace-pre-wrap break-all select-text max-h-40 overflow-y-auto">{request.detail}</pre>
@@ -82,8 +82,8 @@ export function CommandConfirmModal() {
           </div>
         ) : (
           <>
-            <pre className="flex items-start gap-2 p-3 chamfer-sm bg-black/60 border border-[rgba(0,229,255,0.25)] text-[12px] text-[#00E5FF] whitespace-pre-wrap break-all select-text">
-              <SquareTerminal className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#00E5FF]/70" />
+            <pre className="flex items-start gap-2 p-3 chamfer-sm bg-black/60 border border-[rgba(var(--jarvis-accent-rgb),0.25)] text-[12px] text-[var(--jarvis-accent)] whitespace-pre-wrap break-all select-text">
+              <SquareTerminal className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--jarvis-accent)]/70" />
               <code>{request.command}</code>
             </pre>
 
@@ -91,7 +91,7 @@ export function CommandConfirmModal() {
               <span className="flex items-center gap-1">
                 <FolderOpen className="w-3 h-3" /> {request.cwd}
               </span>
-              {request.background && <span className="text-[#00E5FF]">Runs in the background (output logged to a file)</span>}
+              {request.background && <span className="text-[var(--jarvis-accent)]">Runs in the background (output logged to a file)</span>}
             </div>
           </>
         )}

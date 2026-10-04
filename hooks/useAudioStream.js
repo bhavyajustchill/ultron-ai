@@ -2,6 +2,7 @@
 
 import { useRef, useCallback, useEffect } from 'react';
 import { useJarvisStore } from '@/lib/store';
+import { listAudioDevices, resolveDevice } from '@/lib/audioDevices';
 
 /**
  * useAudioStream — Manages browser microphone capture and off-thread
@@ -45,14 +46,22 @@ export function useAudioStream({ onAudioChunk, onUserSpeaking }) {
     isStartingRef.current = true;
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+      // Chosen microphone (Phase 8.7), resolved by id then label; a missing device falls back to the default
+      const audioConstraints = { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+      const choice = useJarvisStore.getState().audioInput;
+      let stream;
+      if (choice?.id) {
+        const { inputs } = await listAudioDevices();
+        const device = resolveDevice(inputs, choice);
+        if (device) {
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({ audio: { ...audioConstraints, deviceId: { exact: device.id } } });
+          } catch (err) {
+            console.warn('[useAudioStream] Chosen microphone unavailable, using the default:', err);
+          }
+        }
+      }
+      if (!stream) stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints });
 
       mediaStreamRef.current = stream;
 
@@ -271,5 +280,7 @@ export function useAudioStream({ onAudioChunk, onUserSpeaking }) {
     resumeContext,
     getInputByteFrequencyData,
     isRecording: isRecordingRef.current,
+    // Live check for effects (isRecording above is a render-time snapshot)
+    isMicActive: () => isRecordingRef.current || isStartingRef.current,
   };
 }

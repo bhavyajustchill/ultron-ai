@@ -95,7 +95,7 @@ export function YouTubePanel() {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const embedUrl = `https://www.youtube-nocookie.com/embed/${current.id}?autoplay=1&enablejsapi=1&rel=0&playsinline=1&origin=${encodeURIComponent(origin)}`;
 
-  const controlButton = "p-2 chamfer-btn border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed";
+  const controlButton = "p-2 chamfer-btn border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed";
 
   return (
     <FloatingPanel
@@ -108,7 +108,7 @@ export function YouTubePanel() {
         postToPlayer("stopVideo");
         setYouTube({ isOpen: false });
       }}>
-      <div className="relative w-full aspect-video chamfer-md overflow-hidden border border-[rgba(0,229,255,0.2)] bg-black">
+      <div className="relative w-full aspect-video chamfer-md overflow-hidden border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-black">
         <iframe
           key={current.id}
           ref={iframeRef}
@@ -154,7 +154,7 @@ export function YouTubePanel() {
             max={100}
             value={volume}
             onChange={(e) => setYouTube({ volume: Number(e.target.value) })}
-            className="w-24 accent-[#00E5FF] cursor-pointer"
+            className="w-24 accent-[var(--jarvis-accent)] cursor-pointer"
             aria-label="Volume"
           />
           <span className="text-[10px] w-7 text-right">{volume}</span>
@@ -162,14 +162,14 @@ export function YouTubePanel() {
       </div>
 
       {queue.length > 1 && (
-        <ol className="flex flex-col gap-1 max-h-36 overflow-y-auto pr-1 border-t border-[rgba(0,229,255,0.12)] pt-2">
+        <ol className="flex flex-col gap-1 max-h-36 overflow-y-auto pr-1 border-t border-[rgba(var(--jarvis-accent-rgb),0.12)] pt-2">
           {queue.map((video, i) => (
             <li key={video.id}>
               <button
                 onClick={() => goTo(i)}
                 className={`w-full text-left flex items-center gap-2 px-2 py-1 chamfer-xs text-[10px] transition-all cursor-pointer ${i === index
-                  ? "bg-[rgba(0,229,255,0.15)] border border-[rgba(0,229,255,0.4)] text-[#00E5FF]"
-                  : "border border-transparent text-[#B8BDCC] hover:bg-[rgba(0,229,255,0.06)]"}`}>
+                  ? "bg-[rgba(var(--jarvis-accent-rgb),0.15)] border border-[rgba(var(--jarvis-accent-rgb),0.4)] text-[var(--jarvis-accent)]"
+                  : "border border-transparent text-[#B8BDCC] hover:bg-[rgba(var(--jarvis-accent-rgb),0.06)]"}`}>
                 <span className="w-4 shrink-0 text-[#7E859E]">{i + 1}</span>
                 <span className="truncate flex-1">{video.title}</span>
                 <span className="shrink-0 text-[#7E859E]">{video.live ? "LIVE" : video.duration || ""}</span>

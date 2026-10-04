@@ -4,6 +4,7 @@ import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useJarvisStore } from "@/lib/store";
+import { useAccentTint } from "@/hooks/useAccentTheme";
 
 /**
  * ArcReactorOrb — Holographic Radar Reactor Orb with Particle-Only Rotation.
@@ -49,6 +50,9 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
 
   const status = useJarvisStore((state) => state.status);
   const isMuted = useJarvisStore((state) => state.isMuted);
+  // Accent theme (Phase 8.7): colours below are designed in cyan and tinted into the chosen accent;
+  // anything built from them is rebuilt only when the theme changes, never per frame
+  const tint = useAccentTint();
 
   // 1. Procedural Radial Optical Bloom Texture (Seamless Cubic Falloff, Zero Ring Banding)
   const coreBloomTexture = useMemo(() => {
@@ -116,9 +120,10 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           alpha = Math.exp(-1.45 * normR) * window;
         }
 
-        data[idx] = r;
-        data[idx + 1] = g;
-        data[idx + 2] = b;
+        const [tr, tg, tb] = tint.rgb(r, g, b);
+        data[idx] = tr;
+        data[idx + 1] = tg;
+        data[idx + 2] = tb;
         data[idx + 3] = Math.round(Math.min(255, Math.max(0, alpha * 255)));
       }
     }
@@ -127,7 +132,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     const tex = new THREE.CanvasTexture(canvas);
     tex.needsUpdate = true;
     return tex;
-  }, []);
+  }, [tint]);
 
   // 1b. Procedural Polar-Feathered Radar Sweep Beam Texture (Soft Gaussian Leading, Exponential Tail, Hermite Radial)
   const radarSweepTexture = useMemo(() => {
@@ -213,9 +218,10 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         const gVal = Math.round(225 + cyanBlend * 25);
         const bVal = 255;
 
-        data[idx] = rVal;
-        data[idx + 1] = gVal;
-        data[idx + 2] = bVal;
+        const [tr, tg, tb] = tint.rgb(rVal, gVal, bVal);
+        data[idx] = tr;
+        data[idx + 1] = tg;
+        data[idx + 2] = tb;
         data[idx + 3] = Math.round(Math.min(255, combinedAlpha * 255));
       }
     }
@@ -224,7 +230,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     const tex = new THREE.CanvasTexture(canvas);
     tex.needsUpdate = true;
     return tex;
-  }, []);
+  }, [tint]);
 
   // 1c. Procedural Smooth Circular Anti-Aliased Particle Texture (Eliminates Square Quads)
   const circleParticleTexture = useMemo(() => {
@@ -281,7 +287,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     // RGBA: itemSize = 4 for native Three.js USE_COLOR_ALPHA support
     const colors = new Float32Array(tickCount * 2 * 4);
 
-    const electricAqua = new THREE.Color("#00E5FF");
+    const electricAqua = new THREE.Color(tint("#00E5FF"));
 
     for (let i = 0; i < tickCount; i++) {
       const p1X = cosA[i] * rIn;
@@ -333,7 +339,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geom.setAttribute("color", new THREE.BufferAttribute(colors, 4));
     return geom;
-  }, [tickBaseData]);
+  }, [tickBaseData, tint]);
 
   // 3. Stator Bounding Rings
   const { innerStatorGeom, outerStatorGeom } = useMemo(() => {
@@ -402,13 +408,13 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
 
     return {
       // Lower border ring: Glowing Electric Aqua-Cyan comet tail (1/3rd length, clockwise)
-      innerCometTailGeom: createCometTailGeom(0.6, 0.26, 32, "#00E5FF", false, 0.006),
+      innerCometTailGeom: createCometTailGeom(0.6, 0.26, 32, tint("#00E5FF"), false, 0.006),
       // Upper border ring: Glowing Electric Aqua-Cyan comet tail (1/3rd length, clockwise)
-      outerCometTailGeom: createCometTailGeom(0.9, 0.24, 32, "#00E5FF", false, 0.006),
+      outerCometTailGeom: createCometTailGeom(0.9, 0.24, 32, tint("#00E5FF"), false, 0.006),
       // Middle particle orbiter (r=1.18): Glowing Electric Cyan comet line tail matching borders (1/3rd length, counter-clockwise)
-      middleCometTailGeom: createCometTailGeom(1.18, 0.24, 32, "#00E5FF", true, 0.015),
+      middleCometTailGeom: createCometTailGeom(1.18, 0.24, 32, tint("#00E5FF"), true, 0.015),
     };
-  }, []);
+  }, [tint]);
 
   // =========================================================================
   // SPEECH SPIKE CALIBRATION VARIABLES (Tweak these parameters to adjust appearance)
@@ -447,7 +453,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     // RGBA: itemSize = 4 for native Three.js USE_COLOR_ALPHA support
     const colors = new Float32Array(tickCount * 2 * 4);
 
-    const electricAqua = new THREE.Color("#00E5FF");
+    const electricAqua = new THREE.Color(tint("#00E5FF"));
 
     for (let i = 0; i < tickCount; i++) {
       // At rest, outer vertex rests at rIn (length 0 until speech begins)
@@ -497,7 +503,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geom.setAttribute("color", new THREE.BufferAttribute(colors, 4));
     return geom;
-  }, [outerSpectrumBaseData]);
+  }, [outerSpectrumBaseData, tint]);
 
   // 4. 3-Level Organically Scattered Orbital Particle Belts
   // Band 1 (Inner): r=1.02 ± 0.042 (80 particles, Clockwise)
@@ -506,7 +512,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
   // Inter-Band & Boundary Motes: r in [0.96, 1.40] (40 particles)
   // Total: 300 particles, Electric Aqua-Cyan, Ice-Cyan, and Pure White
   const particleCount = 300;
-  const { positions, baseRadii, baseAngles, baseZ, layerIds, colors, scales } = useMemo(() => {
+  const { positions, baseRadii, baseAngles, baseZ, layerIds, colors, baseColors, scales } = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
     const bRadii = new Float32Array(particleCount);
     const bAngles = new Float32Array(particleCount);
@@ -610,9 +616,37 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       baseZ: bZ,
       layerIds: lIds,
       colors: col,
+      baseColors: col.slice(),
       scales: sca,
     };
   }, [particleCount]);
+
+  // Recolour particles in place on a theme change, keeping their positions and opacities
+  useEffect(() => {
+    for (let i = 0; i < particleCount; i++) {
+      const c = i * 4;
+      const [r, g, b] = tint.rgb(baseColors[c] * 255, baseColors[c + 1] * 255, baseColors[c + 2] * 255);
+      colors[c] = r / 255;
+      colors[c + 1] = g / 255;
+      colors[c + 2] = b / 255;
+    }
+    const attribute = pointsRef.current?.geometry?.attributes?.color;
+    if (attribute) attribute.needsUpdate = true;
+  }, [tint, colors, baseColors, particleCount]);
+
+  // Free GPU copies of textures / geometries replaced by a theme change
+  useEffect(() => () => coreBloomTexture?.dispose(), [coreBloomTexture]);
+  useEffect(() => () => radarSweepTexture?.dispose(), [radarSweepTexture]);
+  useEffect(() => () => statorTicksGeometry.dispose(), [statorTicksGeometry]);
+  useEffect(() => () => outerSpectrumGeometry.dispose(), [outerSpectrumGeometry]);
+  useEffect(
+    () => () => {
+      innerCometTailGeom.dispose();
+      outerCometTailGeom.dispose();
+      middleCometTailGeom.dispose();
+    },
+    [innerCometTailGeom, outerCometTailGeom, middleCometTailGeom]
+  );
 
   // Frame Loop — Synchronized speed scaling, speech growth, particle-only rotation, zero GC
   useFrame((state, delta) => {
@@ -837,7 +871,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       <pointLight
         ref={accentLightRef}
         position={[0, 0, 0]}
-        color="#00E5FF"
+        color={tint("#00E5FF")}
         intensity={16}
         distance={12}
         decay={1.3}
@@ -845,7 +879,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       <pointLight
         ref={cyanLightRef}
         position={[0, 0, 0.4]}
-        color="#00F0FF"
+        color={tint("#00F0FF")}
         intensity={6}
         distance={6}
         decay={1.5}
@@ -870,7 +904,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         <mesh position={[0, 0, -0.005]}>
           <sphereGeometry args={[0.185, 32, 32]} />
           <meshBasicMaterial
-            color="#00E5FF"
+            color={tint("#00E5FF")}
             transparent
             opacity={0.45}
             blending={THREE.AdditiveBlending}
@@ -916,7 +950,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         {/* Inner Bounding Ring (Electric Aqua accent) */}
         <lineLoop geometry={innerStatorGeom}>
           <lineBasicMaterial
-            color="#00E5FF"
+            color={tint("#00E5FF")}
             transparent
             opacity={0.65}
             blending={THREE.AdditiveBlending}
@@ -926,7 +960,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         {/* Outer Bounding Ring of Stator (Electric Aqua) */}
         <lineLoop geometry={outerStatorGeom}>
           <lineBasicMaterial
-            color="#00E5FF"
+            color={tint("#00E5FF")}
             transparent
             opacity={0.85}
             blending={THREE.AdditiveBlending}
@@ -948,7 +982,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           <mesh position={[0.6, 0, 0.01]}>
             <sphereGeometry args={[0.014, 14, 14]} />
             <meshBasicMaterial
-              color="#00E5FF"
+              color={tint("#00E5FF")}
               transparent
               opacity={0.9}
               blending={THREE.AdditiveBlending}
@@ -980,7 +1014,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           <mesh position={[0.9, 0, 0.01]}>
             <sphereGeometry args={[0.016, 14, 14]} />
             <meshBasicMaterial
-              color="#00E5FF"
+              color={tint("#00E5FF")}
               transparent
               opacity={0.9}
               blending={THREE.AdditiveBlending}
@@ -1013,7 +1047,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           <mesh position={[1.18, 0, 0.018]}>
             <sphereGeometry args={[0.016, 14, 14]} />
             <meshBasicMaterial
-              color="#00E5FF"
+              color={tint("#00E5FF")}
               transparent
               opacity={0.9}
               blending={THREE.AdditiveBlending}

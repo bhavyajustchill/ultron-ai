@@ -7,32 +7,42 @@
 
 ## 1. Color Palette & Cyberpunk Tokens
 
-The interface is an electric aqua-cyan holographic HUD over a deep carbon void. Tokens live in `app/globals.css` (`:root` + Tailwind `@theme inline`):
+The interface is an electric aqua-cyan holographic HUD over a deep carbon void. Tokens live in `app/globals.css` (`:root` + Tailwind `@theme inline`). Since Phase 8.7 the cyan family is an **accent theme**: every cyan tone is a variable, and an operator-chosen accent re-derives the family at runtime (`lib/accentTheme.js`). The defaults below are the Arc Reactor Cyan theme.
 
 ```css
 :root {
-  --jarvis-cyan:      #00E5FF;  /* Primary brand: electric aqua-cyan */
-  --jarvis-cyan-dim:  #00364D;  /* Subdued borders / glow drops */
-  --cyber-cyan:       #00E5FF;  /* Neon accents */
-  --amber-alert:      #FFE600;  /* THINKING / caution states */
+  /* Accent family (overridden at runtime by the chosen theme) */
+  --jarvis-accent:      #00E5FF;   /* Primary brand: electric aqua-cyan */
+  --jarvis-accent-rgb:  0, 229, 255;
+  --jarvis-accent-2:    #00F0FF;   /* Neon highlights, active states */
+  --jarvis-accent-2-rgb: 0, 240, 255;
+  --jarvis-accent-soft: #70F0FF;   /* Light accent text */
+  --jarvis-accent-dim:  #00364D;   /* Subdued borders / glow drops */
+  --jarvis-glow-1-rgb … --jarvis-glow-4-rgb  /* Backdrop glow behind the orb */
 
+  /* Legacy names, now aliases of the accent family */
+  --jarvis-cyan: var(--jarvis-accent);  --cyber-cyan: var(--jarvis-accent);
+  --carbon-border / --cyan-border: rgba(var(--jarvis-accent-rgb), 0.32);
+  --text-cyan: var(--jarvis-accent-soft);
+
+  --amber-alert:      #FFE600;  /* THINKING / caution states (never themed) */
   --void-black:       #010E16;  /* Page background (Carbon) */
   --carbon-900:       #031520;  /* Panel bases */
   --carbon-800:       #071F30;  /* Raised surfaces */
-  --carbon-border:    rgba(0, 229, 255, 0.32);
-  --cyan-border:      rgba(0, 229, 255, 0.32);
-
   --text-primary:     #F0F2F8;
   --text-muted:       #7E859E;
-  --text-cyan:        #70F0FF;
 }
 ```
+
+**Writing themed UI:** use the variables, never a literal cyan: `text-[var(--jarvis-accent)]`, `border-[rgba(var(--jarvis-accent-rgb),0.3)]`, `shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]`. Three.js and canvas code cannot read CSS variables: design the colour in cyan and pass it through `useAccentTint()` (`tint("#00E5FF")`, or `tint.rgb(r, g, b)` in pixel loops), rebuilding only when the theme changes. Status colours (amber, orange, red, green) are never tinted.
+
+**Accent presets:** Arc Reactor Cyan `#00E5FF` (default), Mark III Gold `#FFC23D`, Hot Rod Red `#FF3B4E`, Vibranium Violet `#A66BFF`, Emerald Ops `#2BFFA3`, Ice White `#DDF6FF`, or any custom hex (Settings colour wheel / hex field, or by voice via `update_operator_profile` `hud_accent`). The cached theme is applied by an inline script before first paint, so reloads never flash cyan.
 
 **Semantic accents used in components:**
 
 | Purpose | Color |
 | :-- | :-- |
-| Neon highlights, active states | `#00F0FF` |
+| Neon highlights, active states | `var(--jarvis-accent-2)` (`#00F0FF` in the default theme) |
 | Thinking / connecting | `#FFE600` |
 | Re-syncing link, warnings, terminal authorization | `#FFB020` |
 | Errors, deny, destructive hints | `#FF8095` / `#FF003C` |

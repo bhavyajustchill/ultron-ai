@@ -1,23 +1,36 @@
 @import "tailwindcss";
 
 :root {
+  /* Accent family (Phase 8.7): the HUD derives every cyan tone from these; a chosen accent
+     theme overrides them at runtime (lib/accentTheme.js) */
+  --jarvis-accent: #00e5ff;
+  --jarvis-accent-rgb: 0, 229, 255;
+  --jarvis-accent-2: #00f0ff;
+  --jarvis-accent-2-rgb: 0, 240, 255;
+  --jarvis-accent-soft: #70f0ff;
+  --jarvis-accent-dim: #00364d;
+  --jarvis-glow-1-rgb: 0, 215, 255;
+  --jarvis-glow-2-rgb: 0, 170, 220;
+  --jarvis-glow-3-rgb: 0, 115, 165;
+  --jarvis-glow-4-rgb: 1, 35, 55;
+
   /* Core Brand & Neon Highlights (JARVIS Electric Aqua-Cyan Theme) */
-  --jarvis-cyan: #00e5ff;
-  --jarvis-cyan-dim: #00364d;
-  --cyber-cyan: #00e5ff;
+  --jarvis-cyan: var(--jarvis-accent);
+  --jarvis-cyan-dim: var(--jarvis-accent-dim);
+  --cyber-cyan: var(--jarvis-accent);
   --amber-alert: #ffe600;
 
   /* Tactical Surfaces & Depth (Deep Space Carbon Cyan) */
   --void-black: #010e16;
   --carbon-900: #031520;
   --carbon-800: #071f30;
-  --carbon-border: rgba(0, 229, 255, 0.32);
-  --cyan-border: rgba(0, 229, 255, 0.32);
+  --carbon-border: rgba(var(--jarvis-accent-rgb), 0.32);
+  --cyan-border: rgba(var(--jarvis-accent-rgb), 0.32);
 
   /* Text & Readability */
   --text-primary: #f0f2f8;
   --text-muted: #7e859e;
-  --text-cyan: #70f0ff;
+  --text-cyan: var(--jarvis-accent-soft);
 
   --background: var(--void-black);
   --foreground: var(--text-primary);
@@ -114,10 +127,10 @@ body {
 .hud-panel {
   background: rgba(5, 11, 18, 0.88);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 240, 255, 0.28);
+  border: 1px solid rgba(var(--jarvis-accent-2-rgb),  0.28);
   box-shadow:
     0 0 15px rgba(0, 0, 0, 0.75),
-    inset 0 0 10px rgba(0, 240, 255, 0.05);
+    inset 0 0 10px rgba(var(--jarvis-accent-2-rgb),  0.05);
   border-radius: 14px;
   corner-shape: bevel;
 }
@@ -125,10 +138,10 @@ body {
 .hud-panel-cyan {
   background: rgba(10, 11, 16, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(var(--jarvis-accent-2-rgb),  0.3);
   box-shadow:
     0 0 15px rgba(0, 0, 0, 0.7),
-    inset 0 0 10px rgba(0, 240, 255, 0.04);
+    inset 0 0 10px rgba(var(--jarvis-accent-2-rgb),  0.04);
   border-radius: 14px;
   corner-shape: bevel;
 }
@@ -244,22 +257,22 @@ body {
 /* Neon Glows */
 .glow-scarlet {
   box-shadow:
-    0 0 15px rgba(0, 229, 255, 0.45),
-    inset 0 0 8px rgba(0, 229, 255, 0.18);
+    0 0 15px rgba(var(--jarvis-accent-rgb),  0.45),
+    inset 0 0 8px rgba(var(--jarvis-accent-rgb),  0.18);
 }
 
 .glow-cyan {
   box-shadow:
-    0 0 15px rgba(0, 229, 255, 0.45),
-    inset 0 0 8px rgba(0, 229, 255, 0.18);
+    0 0 15px rgba(var(--jarvis-accent-rgb),  0.45),
+    inset 0 0 8px rgba(var(--jarvis-accent-rgb),  0.18);
 }
 
 .text-glow-scarlet {
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.85);
+  text-shadow: 0 0 8px rgba(var(--jarvis-accent-rgb),  0.85);
 }
 
 .text-glow-cyan {
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.85);
+  text-shadow: 0 0 8px rgba(var(--jarvis-accent-rgb),  0.85);
 }
 
 /* Custom Scrollbars */
@@ -273,7 +286,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00e5ff;
+  background: var(--jarvis-accent);
   border-radius: 2px;
 }
 
@@ -287,13 +300,13 @@ body {
     opacity: 0;
     transform: translateY(-24px) scaleY(0.06);
     clip-path: inset(0 0 94% 0);
-    filter: brightness(2.2) drop-shadow(0 0 25px rgba(0, 229, 255, 0.6));
+    filter: brightness(2.2) drop-shadow(0 0 25px rgba(var(--jarvis-accent-rgb),  0.6));
   }
   65% {
     opacity: 1;
     transform: translateY(0) scaleY(1.02);
     clip-path: inset(0 0 0% 0);
-    filter: brightness(1.2) drop-shadow(0 0 15px rgba(0, 229, 255, 0.2));
+    filter: brightness(1.2) drop-shadow(0 0 15px rgba(var(--jarvis-accent-rgb),  0.2));
   }
   100% {
     opacity: 1;
@@ -312,7 +325,7 @@ body {
   }
   30% {
     opacity: 1;
-    filter: brightness(1.6) drop-shadow(0 0 20px rgba(0, 229, 255, 0.6));
+    filter: brightness(1.6) drop-shadow(0 0 20px rgba(var(--jarvis-accent-rgb),  0.6));
   }
   100% {
     opacity: 0;

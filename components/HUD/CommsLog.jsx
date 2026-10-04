@@ -85,21 +85,21 @@ export function CommsLog({ sendTextMessage }) {
 
   return (
     <aside
-      className={`fixed top-18 right-6 h-[44vh] max-h-[440px] w-88 sm:w-96 max-w-[calc(100vw-3rem)] z-30 flex flex-col bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(0,229,255,0.25)] shadow-[0_0_40px_rgba(0,229,255,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 ${
+      className={`fixed top-18 right-6 h-[44vh] max-h-[440px] w-88 sm:w-96 max-w-[calc(100vw-3rem)] z-30 flex flex-col bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 ${
         isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
       }`}>
       {/* Top Accent Gradient Line */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#00E5FF] via-[#70E8FF] to-[#00E5FF] animate-pulse shrink-0" />
+      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
 
       {/* Header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-[rgba(0,229,255,0.18)] shrink-0">
+      <div className="px-4 py-2.5 flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] shrink-0">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 chamfer-xs bg-[rgba(0,229,255,0.1)] border border-[rgba(0,229,255,0.3)] shadow-[0_0_8px_rgba(0,229,255,0.25)]">
-            <Terminal className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <div className="p-1.5 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.3)] shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.25)]">
+            <Terminal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           </div>
-          <span className="text-xs font-bold font-['Orbitron',sans-serif] tracking-wider text-[#00E5FF] flex items-center gap-1.5">
+          <span className="text-xs font-bold font-['Orbitron',sans-serif] tracking-wider text-[var(--jarvis-accent)] flex items-center gap-1.5">
             COMMS LOG FEED
-            <span className="text-[9px] font-mono px-1.5 py-0.2 chamfer-xs bg-[rgba(0,229,255,0.15)] border border-[rgba(0,229,255,0.3)] text-[#00E5FF] font-bold">
+            <span className="text-[9px] font-mono px-1.5 py-0.2 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.15)] border border-[rgba(var(--jarvis-accent-rgb),0.3)] text-[var(--jarvis-accent)] font-bold">
               {commsLog.length}
             </span>
           </span>
@@ -108,7 +108,7 @@ export function CommsLog({ sendTextMessage }) {
         <div className="flex items-center gap-2">
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs border border-transparent hover:border-[rgba(0,229,255,0.3)] hover:bg-[rgba(0,229,255,0.1)] text-[#7E859E] hover:text-[#00E5FF] transition-all cursor-pointer"
+            className="p-1 chamfer-xs border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[#7E859E] hover:text-[var(--jarvis-accent)] transition-all cursor-pointer"
             title="Close Comms Log (Esc)">
             <X className="w-3.5 h-3.5" />
           </button>
@@ -129,7 +129,7 @@ export function CommsLog({ sendTextMessage }) {
               key={item.id}
               className={`p-2.5 chamfer-sm border transition-all ${
                 isJarvis
-                  ? "bg-[rgba(0,229,255,0.06)] border-l-2 border-l-[#00E5FF] border-[rgba(0,229,255,0.25)] shadow-[0_0_12px_rgba(0,229,255,0.08)]"
+                  ? "bg-[rgba(var(--jarvis-accent-rgb),0.06)] border-l-2 border-l-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.08)]"
                   : isUser
                     ? "bg-[rgba(0,140,255,0.08)] border-l-2 border-l-[#0088FF] border-[rgba(0,140,255,0.25)]"
                     : "bg-[rgba(255,255,255,0.03)] border-l-2 border-l-[#7E859E] border-[rgba(255,255,255,0.1)]"
@@ -138,8 +138,8 @@ export function CommsLog({ sendTextMessage }) {
                 <div className="flex items-center gap-1.5 font-semibold">
                   {isJarvis && (
                     <>
-                      <Bot className="w-3 h-3 text-[#00E5FF]" />
-                      <span className="text-[#00E5FF] tracking-wider">JARVIS // ASSISTANT</span>
+                      <Bot className="w-3 h-3 text-[var(--jarvis-accent)]" />
+                      <span className="text-[var(--jarvis-accent)] tracking-wider">JARVIS // ASSISTANT</span>
                     </>
                   )}
                   {isUser && (
@@ -171,7 +171,7 @@ export function CommsLog({ sendTextMessage }) {
 
         {commsLog.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[#7E859E] italic text-xs font-mono">
-            <Terminal className="w-6 h-6 opacity-40 text-[#00E5FF] mb-2" />
+            <Terminal className="w-6 h-6 opacity-40 text-[var(--jarvis-accent)] mb-2" />
             <span>Encrypted comms feed active.</span>
             <span className="text-[10px] opacity-75 mt-0.5">
               Speak aloud or type a directive to begin.

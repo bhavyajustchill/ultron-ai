@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
+import { useApplyAccentTheme } from "@/hooks/useAccentTheme";
 import { GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { ApiKeyModal } from "@/components/HUD/ApiKeyModal";
 import { JarvisViewport } from "@/components/Canvas3D/JarvisViewport";
@@ -124,6 +125,9 @@ export default function Home() {
     triggerBriefing,
   } = useGeminiLive();
 
+  // HUD accent theme (Phase 8.7): CSS variables follow the operator's chosen accent
+  useApplyAccentTheme();
+
   // Standby wake phrase: armed once the link has stayed offline for a moment, so startup and
   // reconnect blips never grab the microphone
   const operatorProfile = useJarvisStore((state) => state.operatorProfile);
@@ -148,11 +152,11 @@ export default function Home() {
     },
   });
   const wakeChip = {
-    listening: { text: `WAKE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[#00E5FF] border-[rgba(0,229,255,0.5)] bg-[rgba(0,229,255,0.08)] animate-pulse", Icon: Ear },
+    listening: { text: `WAKE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] animate-pulse", Icon: Ear },
     unsupported: { text: "WAKE // NEEDS CHROME OR EDGE", color: "text-[#7E859E] border-[rgba(255,255,255,0.15)]", Icon: EarOff },
     blocked: { text: "WAKE // MIC BLOCKED", color: "text-[#FF8095] border-[rgba(255,0,60,0.4)]", Icon: EarOff },
     error: { text: "WAKE // RETRYING", color: "text-[#FFB020] border-[rgba(255,176,32,0.4)]", Icon: Ear },
-    off: { text: "WAKE // ARMED FOR STANDBY", color: "text-[#7E859E] border-[rgba(0,229,255,0.2)]", Icon: Ear },
+    off: { text: "WAKE // ARMED FOR STANDBY", color: "text-[#7E859E] border-[rgba(var(--jarvis-accent-rgb),0.2)]", Icon: Ear },
   }[wakeState];
 
   // Auto-initiate voice link upon client mount
@@ -283,29 +287,29 @@ export default function Home() {
         return {
           text: "JARVIS // TRANSMITTING",
           color:
-            "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.15)] shadow-[0_0_15px_rgba(0,229,255,0.4)]",
-          dot: "bg-[#00E5FF] animate-ping",
+            "text-[var(--jarvis-accent)] border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.15)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]",
+          dot: "bg-[var(--jarvis-accent)] animate-ping",
         };
       case "LISTENING":
         return {
           text: "MIC // LISTENING",
           color:
-            "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.1)] shadow-[0_0_15px_rgba(0,229,255,0.3)]",
-          dot: "bg-[#00E5FF] animate-pulse",
+            "text-[var(--jarvis-accent)] border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.3)]",
+          dot: "bg-[var(--jarvis-accent)] animate-pulse",
         };
       case "CONNECTED":
         return isMuted
           ? {
             text: "MIC OFF // TEXT ONLY",
             color:
-              "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.12)] shadow-[0_0_12px_rgba(0,229,255,0.3)]",
-            dot: "bg-[#00E5FF]",
+              "text-[var(--jarvis-accent)] border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.12)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.3)]",
+            dot: "bg-[var(--jarvis-accent)]",
           }
           : {
             text: "LINK // READY",
             color:
-              "text-[#00E5FF] border-[#00E5FF] bg-[rgba(0,229,255,0.1)] shadow-[0_0_12px_rgba(0,229,255,0.25)]",
-            dot: "bg-[#00E5FF] animate-pulse",
+              "text-[var(--jarvis-accent)] border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]",
+            dot: "bg-[var(--jarvis-accent)] animate-pulse",
           };
       case "THINKING":
         return {
@@ -340,18 +344,18 @@ export default function Home() {
   return (
     <main className="relative w-screen h-screen bg-[#010e16] text-[#F0F2F8] overflow-hidden select-none">
       {/* Background Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(0,229,255,0.08),rgba(1,14,22,0.98))] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,rgba(var(--jarvis-accent-rgb),0.08),rgba(1,14,22,0.98))] pointer-events-none" />
 
       {/* TOP MIDDLE BRANDING: J.A.R.V.I.S // JUST A RATHER VERY INTELLIGENT SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
         <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse shadow-[0_0_12px_#00E5FF]" />
-          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(0,229,255,0.45)]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_12px_var(--jarvis-accent)]" />
+          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(var(--jarvis-accent-rgb),0.45)]">
             J.A.R.V.I.S
           </h1>
-          <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse shadow-[0_0_12px_#00E5FF]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_12px_var(--jarvis-accent)]" />
         </div>
-        <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[#00E5FF] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(0,229,255,0.35)] whitespace-nowrap">
+        <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[var(--jarvis-accent)] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(var(--jarvis-accent-rgb),0.35)] whitespace-nowrap">
           JUST A RATHER VERY INTELLIGENT SYSTEM
         </span>
       </div>
@@ -368,11 +372,11 @@ export default function Home() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isTelemetryOpen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
+            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Systems & Telemetry Panel">
-          <Activity className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <Activity className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           <span className="hidden sm:inline tracking-wider">SYSTEMS</span>
         </button>
 
@@ -386,14 +390,14 @@ export default function Home() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isIntelOpen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
+            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Neural Intel & Dossiers Window">
-          <Globe className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <Globe className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           <span className="hidden sm:inline tracking-wider">INTEL</span>
           {intelSearchResults && intelSearchResults.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(0,229,255,0.2)] text-[#00E5FF] font-bold border border-[rgba(0,229,255,0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] font-bold border border-[rgba(var(--jarvis-accent-rgb),0.4)]">
               {intelSearchResults.length}
             </span>
           )}
@@ -403,22 +407,22 @@ export default function Home() {
       {/* TOP RIGHT CLUSTER: ZOOM CONTROLS + COMMS LOG */}
       <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         {/* Camera Zoom & Reset Controls */}
-        <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
+        <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "in" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Zoom In (or scroll up)">
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "out" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Zoom Out (or scroll down)">
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "reset" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Reset Camera View">
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -428,12 +432,12 @@ export default function Home() {
         <button
           onClick={toggleFullscreen}
           className={`flex items-center justify-center px-2.5 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isFullscreen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
+            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title={isFullscreen ? "Exit Fullscreen (Esc)" : "Enter Fullscreen"}>
           {isFullscreen ? (
-            <Minimize2 className="w-3.5 h-3.5 text-[#00E5FF]" />
+            <Minimize2 className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           ) : (
             <Maximize2 className="w-3.5 h-3.5" />
           )}
@@ -449,14 +453,14 @@ export default function Home() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isCommsLogOpen
-            ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-            : "border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.1)] shadow-[0_0_20px_rgba(0,229,255,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
+            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Comms Log Feed">
-          <Terminal className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <Terminal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           <span className="hidden sm:inline tracking-wider">COMMS LOG</span>
           {commsLog && commsLog.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(0,229,255,0.2)] text-[#00E5FF] font-bold border border-[rgba(0,229,255,0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] font-bold border border-[rgba(var(--jarvis-accent-rgb),0.4)]">
               {commsLog.length}
             </span>
           )}
@@ -506,8 +510,8 @@ export default function Home() {
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 text-[#7E859E] border border-[rgba(0,229,255,0.2)] bg-[rgba(8,12,18,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
-            <Wifi className="w-3 h-3 text-[#00E5FF]" />
+          <div className="flex items-center gap-1.5 text-[#7E859E] border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
+            <Wifi className="w-3 h-3 text-[var(--jarvis-accent)]" />
             <span>{latencyMs > 0 ? `${latencyMs}ms` : "STANDBY"}</span>
           </div>
         </div>
@@ -515,7 +519,7 @@ export default function Home() {
         {/* Text Directive Input Bar (Standard Full-Width Underline) */}
         <form
           onSubmit={handleSendText}
-          className="relative w-full flex items-center gap-3 pb-2 pt-1 border-b-2 border-[rgba(0,229,255,0.25)] hover:border-[rgba(0,229,255,0.55)] focus-within:border-[#00E5FF] focus-within:shadow-[0_4px_16px_-2px_rgba(0,229,255,0.4)] transition-all bg-transparent">
+          className="relative w-full flex items-center gap-3 pb-2 pt-1 border-b-2 border-[rgba(var(--jarvis-accent-rgb),0.25)] hover:border-[rgba(var(--jarvis-accent-rgb),0.55)] focus-within:border-[var(--jarvis-accent)] focus-within:shadow-[0_4px_16px_-2px_rgba(var(--jarvis-accent-rgb),0.4)] transition-all bg-transparent">
           <input
             type="text"
             value={textInput}
@@ -535,7 +539,7 @@ export default function Home() {
             disabled={!textInput.trim()}
             title="Transmit directive [Enter]"
             aria-label="Send directive"
-            className="flex items-center justify-center p-2 text-[#00E5FF] hover:text-white disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
+            className="flex items-center justify-center p-2 text-[var(--jarvis-accent)] hover:text-white disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
             <Send className="w-4 h-4" />
           </button>
         </form>
@@ -547,8 +551,8 @@ export default function Home() {
             <button
               onClick={handleToggleConnection}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 chamfer-btn text-xs font-mono font-semibold transition-all cursor-pointer ${isConnected
-                ? "border border-[#00E5FF] bg-[rgba(0,229,255,0.15)] text-[#00E5FF] hover:bg-[rgba(0,229,255,0.25)] shadow-[0_0_12px_rgba(0,229,255,0.3)]"
-                : "bg-[#00E5FF] hover:bg-[#33ebff] text-[#010e16] shadow-[0_0_15px_rgba(0,229,255,0.5)] font-bold"
+                ? "border border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.15)] text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.3)]"
+                : "bg-[var(--jarvis-accent)] hover:bg-[#33ebff] text-[#010e16] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.5)] font-bold"
                 }`}
               title={isConnected ? "Disconnect WebSocket link" : `Establish live ${GEMINI_LIVE_LABEL} link`}>
               <Power className="w-3.5 h-3.5" />
@@ -563,7 +567,7 @@ export default function Home() {
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
                 : isMuted
                   ? "border-[#FFE600] bg-[rgba(255,230,0,0.15)] text-[#FFE600] shadow-[0_0_10px_rgba(255,230,0,0.2)]"
-                  : "border-[rgba(0,229,255,0.4)] bg-[rgba(0,229,255,0.08)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.18)]"
+                  : "border-[rgba(var(--jarvis-accent-rgb),0.4)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.18)]"
                 }`}
               title={isMuted ? "Unmute microphone" : "Mute microphone"}>
               {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
@@ -576,7 +580,7 @@ export default function Home() {
               disabled={!isConnected}
               className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
-                : "border-[rgba(0,229,255,0.5)] bg-[rgba(0,229,255,0.1)] text-[#00E5FF] hover:bg-[rgba(0,229,255,0.25)] hover:border-[#00E5FF] shadow-[0_0_8px_rgba(0,229,255,0.2)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.25)] hover:border-[var(--jarvis-accent)] shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.2)]"
                 }`}
               title="Instantly stop J.A.R.V.I.S's playback within 50ms (Barge-in)">
               <Square className="w-3.5 h-3.5 fill-current" />
@@ -588,16 +592,16 @@ export default function Home() {
             {/* Autonomous Daily / Tactical Briefing Button */}
             <button
               onClick={triggerBriefing}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer shadow-[0_0_10px_rgba(0,229,255,0.15)]"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer shadow-[0_0_10px_rgba(var(--jarvis-accent-rgb),0.15)]"
               title="Execute Autonomous Daily / Tactical Briefing">
-              <SunMedium className="w-3.5 h-3.5 text-[#00E5FF]" />
+              <SunMedium className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
               <span className="hidden sm:inline">BRIEFING</span>
             </button>
 
             {/* Neural Memory Vault Modal Button */}
             <button
               onClick={() => setIsMemoryVaultOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Open Neural Memory Vault">
               <Brain className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">MEMORIES</span>
@@ -606,7 +610,7 @@ export default function Home() {
             {/* File Uplink Button (drag-and-drop works anywhere on the HUD too) */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("jarvis-open-upload"))}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Upload files to J.A.R.V.I.S (or drag and drop anywhere)">
               <Paperclip className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">UPLOAD</span>
@@ -615,7 +619,7 @@ export default function Home() {
             {/* API Key Modal Button */}
             <button
               onClick={() => setIsKeyModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(0,229,255,0.3)] bg-[rgba(0,229,255,0.06)] text-[#00E5FF] hover:border-[#00E5FF] hover:bg-[rgba(0,229,255,0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Configure Gemini API Key">
               <Key className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">API KEY</span>
@@ -631,8 +635,8 @@ export default function Home() {
                 }
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isScreenSharing || isScreenModalOpen
-                ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF]"
-                : "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF]"
+                ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
               title={isScreenModalOpen ? "Close Screen Vision" : "Open Screen Vision"}>
               <Monitor className="w-3.5 h-3.5" />
@@ -647,8 +651,8 @@ export default function Home() {
                 }
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isWebcamOpen
-                ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF]"
-                : "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF]"
+                ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
               title={isWebcamOpen ? "Close Webcam PiP" : "Open Webcam PiP"}>
               <Camera className="w-3.5 h-3.5" />
@@ -656,7 +660,7 @@ export default function Home() {
 
             <button
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-1.5 chamfer-btn text-xs border border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF] transition-all cursor-pointer"
+              className="p-1.5 chamfer-btn text-xs border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] transition-all cursor-pointer"
               title="Open Operative Settings">
               <Settings className="w-3.5 h-3.5" />
             </button>
@@ -670,8 +674,8 @@ export default function Home() {
                 }
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isMobileModalOpen
-                ? "border-[#00E5FF] bg-[rgba(0,229,255,0.2)] text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)]"
-                : "border-[rgba(0,229,255,0.25)] bg-[rgba(0,229,255,0.04)] text-[#7E859E] hover:text-[#00E5FF] hover:border-[#00E5FF]"
+                ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
               title={isMobileModalOpen ? "Close Smartphone Pairing" : "Pair Smartphone via QR Code"}>
               <Smartphone className="w-3.5 h-3.5" />
