@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpDown, Brain, Database, Download, Layers, Pin, Plus, RefreshCw, Search, Sparkles, Undo2, Upload, X } from "lucide-react";
+import { ArrowUpDown, Brain, Database, Download, Layers, Pin, Plus, RefreshCw, Search, Sparkles, Upload, X } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { BulkBar, MemoryRow } from "@/components/HUD/MemoryVault/MemoryList";
 import { MemoryEditor } from "@/components/HUD/MemoryVault/MemoryEditor";
 import { DuplicateReview } from "@/components/HUD/MemoryVault/DuplicateReview";
+import { VaultToast, useVaultToast } from "@/components/HUD/MemoryVault/VaultToast";
 import { CATEGORIES, IMPORTANCE, ghostButton, inputClass, solidButton, sourceKind } from "@/components/HUD/MemoryVault/vaultUi";
 
 const IMPORTANCE_RANK = { critical: 3, high: 2, medium: 1, low: 0 };
-const TOAST_MS = 10000;
 const groupKey = (group) => group.memories.map((m) => m.id).sort().join("|");
 
 const SORTERS = {
@@ -37,7 +37,7 @@ export function SciFiMemoryVaultModal() {
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
-  const toastTimerRef = useRef(null);
+  const { toast, showToast, clearToast } = useVaultToast();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState("words");
@@ -52,19 +52,12 @@ export function SciFiMemoryVaultModal() {
   const [paneMode, setPaneMode] = useState("detail"); // detail | new | duplicates
   const [checkedIds, setCheckedIds] = useState(() => new Set());
   const [busy, setBusy] = useState(false);
-  const [toast, setToast] = useState(null);
   const [contextChanged, setContextChanged] = useState(false);
   const [duplicates, setDuplicates] = useState({ loading: false, error: null, mode: null, groups: [] });
   const [dismissedGroups, setDismissedGroups] = useState(() => new Set());
 
   const apiKey = () => userApiKey || useJarvisStore.getState().userApiKey || "";
   const limit = stats?.prompt_limit || 15;
-
-  const showToast = useCallback((message, extra = {}) => {
-    clearTimeout(toastTimerRef.current);
-    setToast({ message, ...extra });
-    toastTimerRef.current = setTimeout(() => setToast(null), TOAST_MS);
-  }, []);
 
   // Reload and reset when opened
   useEffect(() => {
@@ -81,7 +74,7 @@ export function SciFiMemoryVaultModal() {
     closeTimeoutRef.current = setTimeout(() => {
       setIsMemoryVaultOpen(false);
       setIsClosing(false);
-      setToast(null);
+      clearToast();
     }, 220); // Matches the 0.22s scifi-modal-collapse-up animation
   }, [isClosing, setIsMemoryVaultOpen]);
 
@@ -93,13 +86,7 @@ export function SciFiMemoryVaultModal() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMemoryVaultOpen, triggerClose]);
 
-  useEffect(
-    () => () => {
-      clearTimeout(closeTimeoutRef.current);
-      clearTimeout(toastTimerRef.current);
-    },
-    []
-  );
+  useEffect(() => () => clearTimeout(closeTimeoutRef.current), []);
 
   // Search by meaning: ranked server-side (debounced), then filtered and shown like any list
   useEffect(() => {
@@ -560,32 +547,7 @@ export function SciFiMemoryVaultModal() {
           </span>
         </div>
 
-        {/* Toast */}
-        {toast && (
-          <div
-            role="status"
-            data-testid="vault-toast"
-            className={`absolute bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-3 px-3.5 py-2 chamfer-sm border text-[11px] shadow-[0_8px_30px_rgba(0,0,0,0.5)] bg-[rgba(3,14,22,0.97)] ${
-              toast.tone === "error" ? "border-[rgba(255,0,60,0.5)] text-[#FF8095]" : "border-[rgba(var(--jarvis-accent-rgb),0.5)] text-[#F0F2F8]"
-            }`}>
-            <span>{toast.message}</span>
-            {toast.undoId && (
-              <button
-                type="button"
-                className="flex items-center gap-1 font-bold text-[var(--jarvis-accent)] hover:text-white cursor-pointer"
-                onClick={() => {
-                  const id = toast.undoId;
-                  setToast(null);
-                  handleUndo(id);
-                }}>
-                <Undo2 className="w-3 h-3" /> UNDO
-              </button>
-            )}
-            <button type="button" className="text-[#7E859E] hover:text-white cursor-pointer" onClick={() => setToast(null)} aria-label="Dismiss">
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        )}
+        <VaultToast toast={toast} onUndo={handleUndo} onDismiss={clearToast} />
       </div>
     </div>
   );

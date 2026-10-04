@@ -54,6 +54,8 @@ next-env.d.ts
 /data/reminders.json.tmp
 /data/autostart.log
 /data/sessions.json
+/data/sessions.json.*.tmp
+/data/session-vectors.json
 /data/monitors.json
 /data/wakeword/
 /data/portal-token.json

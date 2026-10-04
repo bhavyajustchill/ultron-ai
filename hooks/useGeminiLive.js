@@ -148,9 +148,13 @@ export function useGeminiLive() {
   const connectSessionRef = useRef(null);
   const projectPollersRef = useRef(new Map());
   const standbyRequestedRef = useRef(false);
-  // Session continuity (Phase 8.5): Comms Log index the next recap starts from, and the last
-  // time the operator spoke, typed, or Jarvis was talking
-  const recapFromRef = useRef(0);
+  // Session archive (Phase 11): the conversation being recorded, when it started, the Comms Log
+  // index of the first turn not yet sent to the archive, and when turns were last sent
+  const sessionIdRef = useRef(null);
+  const sessionStartedRef = useRef(null);
+  const savedFromRef = useRef(0);
+  const lastFlushRef = useRef(0);
+  // The last time the operator spoke, typed, or Jarvis was talking
   const lastActivityRef = useRef(Date.now());
   // Proactive check-ins (Phase 8.6) count only the operator's own activity
   const lastOperatorActivityRef = useRef(Date.now());
@@ -365,47 +369,109 @@ export function useGeminiLive() {
     setTimeout(poll, 800);
   }, []);
 
-  // Recap the conversation since the last recap (needs two operator turns, otherwise it carries
-  // over into the next one). `beacon` is for the page closing, where only sendBeacon survives.
-  const saveSessionRecap = useCallback((beacon = false) => {
+  // Sends the conversation's new turns to the session archive. `final` ends the session (the server
+  // writes its title and recap); `beacon` is for the page closing, where only sendBeacon survives.
+  const flushSession = useCallback(({ final = false, beacon = false } = {}) => {
+    const id = sessionIdRef.current;
+    if (!id) return;
     const store = useJarvisStore.getState();
     const turns = store.commsLog
-      .slice(recapFromRef.current)
-      .filter((m) => m.sender === 'user' || m.sender === 'jarvis')
-      .map((m) => ({ role: m.sender === 'user' ? 'operator' : 'jarvis', text: m.text.replace(/\s*\[Interrupted\]$/, '') }));
-    if (turns.filter((t) => t.role === 'operator').length < 2) return;
-    recapFromRef.current = store.commsLog.length;
+      .slice(savedFromRef.current)
+      .filter((m) => (m.sender === 'user' || m.sender === 'jarvis') && m.text)
+      .map((m) => ({ role: m.sender === 'user' ? 'operator' : 'jarvis', text: m.text, at: m.at || new Date().toISOString() }));
+    if (!turns.length && !final) return;
+    savedFromRef.current = store.commsLog.length;
+    lastFlushRef.current = Date.now();
+    if (final) {
+      sessionIdRef.current = null;
+      useJarvisStore.setState({ currentSessionId: null });
+    }
     const apiKey = apiKeyRef.current || store.userApiKey || '';
+    const payload = { action: 'append', session_id: id, started_at: sessionStartedRef.current, turns, final };
     if (beacon) {
-      navigator.sendBeacon?.('/api/sessions', JSON.stringify({ action: 'save', turns, apiKey }));
+      navigator.sendBeacon?.('/api/sessions', JSON.stringify({ ...payload, apiKey }));
       return;
     }
     fetch('/api/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-gemini-api-key': apiKey },
-      body: JSON.stringify({ action: 'save', turns }),
+      body: JSON.stringify(payload),
     })
       .then((res) => res.json())
       .then((result) => {
-        if (result.saved) addCommsMessage('system', `[MEMORY] Session recap saved for next time${result.language ? ` (language: ${result.language})` : ''}.`);
+        if (final && result.recap?.saved) {
+          addCommsMessage('system', `[SESSION] Conversation archived as "${result.recap.title || result.session?.title}" with a recap for next time${result.recap.language ? ` (language: ${result.recap.language})` : ''}.`);
+        }
+        useJarvisStore.getState().loadSessions?.();
       })
       .catch(() => {});
   }, [addCommsMessage]);
 
-  // Operator-facing disconnect: recap the conversation, then close the link
+  // Starts recording a new conversation once its link is up (any unfinished one is wrapped up
+  // first); `fromIndex` is where it begins in the Comms Log, so text typed while connecting counts
+  const beginSession = useCallback((fromIndex) => {
+    if (sessionIdRef.current) flushSession({ final: true });
+    sessionIdRef.current = `ses-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    sessionStartedRef.current = new Date().toISOString();
+    savedFromRef.current = Math.min(fromIndex ?? Infinity, useJarvisStore.getState().commsLog.length);
+    lastFlushRef.current = Date.now();
+    useJarvisStore.setState({ currentSessionId: sessionIdRef.current });
+  }, [flushSession]);
+
+  // Operator-facing disconnect: archive the conversation, then close the link
   const endSession = useCallback(() => {
-    saveSessionRecap();
+    flushSession({ final: true });
     disconnectSession();
-  }, [saveSessionRecap, disconnectSession]);
+  }, [flushSession, disconnectSession]);
 
   // Close the link once Jarvis has finished his farewell (enter_standby tool)
   const enterStandbyWhenQuiet = useCallback(() => {
     runWhenQuiet(() => {
-      saveSessionRecap();
+      flushSession({ final: true });
       disconnectSession();
       addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Jarvis back online.');
     });
-  }, [runWhenQuiet, saveSessionRecap, disconnectSession, addCommsMessage]);
+  }, [runWhenQuiet, flushSession, disconnectSession, addCommsMessage]);
+
+  // Reopens an archived conversation: the current one is archived, the old one's last turns are
+  // shown and seeded as history, and new turns are added to the old session
+  const continueSession = useCallback(async (id) => {
+    let session = null;
+    try {
+      session = (await (await fetch(`/api/sessions?id=${encodeURIComponent(id)}`)).json()).session;
+    } catch {
+      // Unreachable server
+    }
+    if (!session) {
+      addCommsMessage('system', '[SESSION] That conversation could not be opened.');
+      return false;
+    }
+    if (sessionIdRef.current === id) return true;
+    if (sessionIdRef.current) flushSession({ final: true });
+
+    const opened = new Date(session.started_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+    addCommsMessage('system', `[SESSION] Continuing "${session.title}" from ${opened}.`);
+    const tail = session.turns.slice(-HANDOFF_TURNS);
+    for (const turn of tail) addCommsMessage(turn.role === 'operator' ? 'user' : 'jarvis', turn.text);
+    const context = `[Earlier conversation from ${opened}${session.summary ? `. Recap: ${session.summary}` : ''}]`;
+    const handoff = buildHandoffTurns(tail.map((t) => ({ sender: t.role === 'operator' ? 'user' : 'jarvis', text: t.text })));
+    if (handoff.length) handoff[0].parts[0].text = `${context}\n${handoff[0].parts[0].text}`;
+    else handoff.push({ role: 'user', parts: [{ text: context }] });
+
+    sessionIdRef.current = id;
+    sessionStartedRef.current = session.started_at;
+    savedFromRef.current = useJarvisStore.getState().commsLog.length;
+    lastFlushRef.current = Date.now();
+    useJarvisStore.setState({ currentSessionId: id });
+
+    const store = useJarvisStore.getState();
+    const key = apiKeyRef.current || store.userApiKey || store.loadStoredApiKey();
+    connectSessionRef.current?.(key, undefined, {
+      handoff,
+      continueNotice: `[SESSION] The operator reopened your conversation "${session.title}" from ${opened}; its last turns are above. In one short sentence, say you are picking up where you left off, then wait for them.`,
+    });
+    return true;
+  }, [addCommsMessage, flushSession]);
 
   // Re-link with fresh settings (voice / persona / profile) while carrying the conversation over
   const relinkWithHandoff = useCallback((voiceOverride) => {
@@ -543,6 +609,8 @@ export function useGeminiLive() {
       const isResume = Boolean(options.resume && sessionDataRef.current);
       const resumeHandle = isResume ? resumeHandleRef.current : null;
       const withoutSearch = Boolean(options.withoutSearch);
+      // Where a new conversation would begin in the Comms Log (recorded once the link is up)
+      const sessionFrom = options.sessionFrom ?? useJarvisStore.getState().commsLog.length;
 
       if (isResume) {
         // Silently retire the previous socket without tearing down mic or playback
@@ -664,6 +732,9 @@ export function useGeminiLive() {
           requestRelink: () => {
             relinkRequestedRef.current = true;
           },
+          // Reopen an archived conversation once Jarvis has finished speaking
+          continueSession: (id) => runWhenQuiet(() => continueSession(id)),
+          currentSessionId: () => sessionIdRef.current,
           media: { playYouTubeQuery, openModelViewer, modelFileUrl },
           runCommandWithApproval,
           requestApproval: requestOperatorApproval,
@@ -750,6 +821,8 @@ export function useGeminiLive() {
               lastActivityRef.current = Date.now();
               lastOperatorActivityRef.current = Date.now();
               linkUpSinceRef.current = Date.now();
+              // A new conversation unless the link was resumed or carries one over
+              if (!isResume && !options.handoff) beginSession(sessionFrom);
               const isMutedNow = useJarvisStore.getState().isMuted;
               const isPlayingNow = pcmPlayerRef.current?.activeSources?.size > 0;
               setStatus(isPlayingNow ? 'SPEAKING' : isMutedNow ? 'CONNECTED' : 'LISTENING');
@@ -783,6 +856,10 @@ export function useGeminiLive() {
               if (options.handoff?.length) {
                 ws.send(JSON.stringify({ clientContent: { turns: options.handoff, turnComplete: false } }));
                 addCommsMessage('system', `[VOICE LINK] Conversation carried over (${options.handoff.length} turns).`);
+                if (options.continueNotice) {
+                  const notice = options.continueNotice;
+                  setTimeout(() => window.dispatchEvent(new CustomEvent('jarvis-notify', { detail: { text: notice } })), 300);
+                }
               }
 
               // Transmit queued text directive / upload parts if sent while connecting
@@ -826,7 +903,7 @@ export function useGeminiLive() {
                     const res = await fetch('/api/sessions', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ action: 'pop' }),
+                      body: JSON.stringify({ action: 'greeting', current_id: sessionIdRef.current }),
                     });
                     lastSession = (await res.json()).session;
                   } catch {
@@ -1216,7 +1293,7 @@ export function useGeminiLive() {
               'system',
               `[VOICE LINK] Setup refused (${event.reason || `code ${event.code}`}). Retrying without Google Search grounding (skipped for 12 hours)...`
             );
-            connectSessionRef.current?.(customApiKey, overrideVoice, { ...options, withoutSearch: true });
+            connectSessionRef.current?.(customApiKey, overrideVoice, { ...options, withoutSearch: true, sessionFrom });
             return;
           }
 
@@ -1228,7 +1305,7 @@ export function useGeminiLive() {
             setStatus('RECONNECTING');
             addCommsMessage('system', `[VOICE LINK] Gemini is busy. Retrying the link in ${delayMs / 1000}s...`);
             setTimeout(
-              () => connectSessionRef.current?.(customApiKey, overrideVoice, { ...options, setupRetry: setupRetry + 1 }),
+              () => connectSessionRef.current?.(customApiKey, overrideVoice, { ...options, setupRetry: setupRetry + 1, sessionFrom }),
               delayMs
             );
             return;
@@ -1266,6 +1343,8 @@ export function useGeminiLive() {
       enterStandbyWhenQuiet,
       runWhenQuiet,
       relinkWithHandoff,
+      beginSession,
+      continueSession,
       setStatus,
       addCommsMessage,
       setLatencyMs,
@@ -1507,12 +1586,12 @@ export function useGeminiLive() {
       const limit = msOverride('jarvis_auto_standby_ms', AUTO_STANDBY_MS);
       if (Date.now() - lastActivityRef.current < limit) return;
       const phrase = operatorProfile?.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE;
-      saveSessionRecap();
+      flushSession({ final: true });
       disconnectSession();
       addCommsMessage('system', `[WAKE] No speech for ${Math.round(limit / 1000)} seconds. Standing by: say "${phrase}" to bring Jarvis back.`);
     }, 5000);
     return () => clearInterval(timer);
-  }, [saveSessionRecap, disconnectSession, addCommsMessage, isJarvisBusy]);
+  }, [flushSession, disconnectSession, addCommsMessage, isJarvisBusy]);
 
   // HUD components can brief Jarvis through a window event (e.g. the clipboard panel's results)
   useEffect(() => {
@@ -1523,14 +1602,25 @@ export function useGeminiLive() {
     return () => window.removeEventListener('jarvis-notify', onNotify);
   }, [notifyJarvis]);
 
-  // Closing the HUD mid-conversation still leaves a recap for next time
+  // Closing the HUD mid-conversation still archives it (with a recap for next time)
   useEffect(() => {
     const onPageHide = () => {
-      if (isEstablishedRef.current) saveSessionRecap(true);
+      if (sessionIdRef.current) flushSession({ final: true, beacon: true });
     };
     window.addEventListener('pagehide', onPageHide);
     return () => window.removeEventListener('pagehide', onPageHide);
-  }, [saveSessionRecap]);
+  }, [flushSession]);
+
+  // Long conversations reach the archive as they happen: every 10 turns, or 2 minutes after the
+  // last save, so a crash loses little
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!sessionIdRef.current) return;
+      const unsent = useJarvisStore.getState().commsLog.slice(savedFromRef.current).filter((m) => m.sender === 'user' || m.sender === 'jarvis').length;
+      if (unsent >= 10 || (unsent > 0 && Date.now() - lastFlushRef.current > 2 * 60 * 1000)) flushSession();
+    }, 15000);
+    return () => clearInterval(timer);
+  }, [flushSession]);
 
   // Background intelligence (Phase 8.6) while linked: hardware alerts every tick, topic monitors
   // about every half hour (each topic is checked daily server-side), proactive check-ins after
@@ -1668,19 +1758,21 @@ export function useGeminiLive() {
   // Register active connectSession callback into global store for HUD modals
   useEffect(() => {
     connectSessionRef.current = connectSession;
-    const { setReconnectSession, setRelinkSession } = useJarvisStore.getState();
+    const { setReconnectSession, setRelinkSession, setContinueSession } = useJarvisStore.getState();
     if (setReconnectSession) {
       setReconnectSession(connectSession);
     }
     setRelinkSession?.(relinkWithHandoff);
+    setContinueSession?.(continueSession);
     return () => {
       const store = useJarvisStore.getState();
       if (store.setReconnectSession) {
         store.setReconnectSession(null);
       }
       store.setRelinkSession?.(null);
+      store.setContinueSession?.(null);
     };
-  }, [connectSession, relinkWithHandoff]);
+  }, [connectSession, relinkWithHandoff, continueSession]);
 
   return {
     status,

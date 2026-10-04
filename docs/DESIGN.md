@@ -88,7 +88,7 @@ The interface is an electric aqua-cyan holographic HUD over a deep carbon void. 
 |                                                                               |
 | [● STATUS BADGE] [👂 WAKE CHIP]                                  [📶 latency] |
 | MIC MUTED // Type directive to J.A.R.V.I.S.. [Enter] ________________ [send]  |
-| [CONNECT] [MUTE] [INTERRUPT]   [BRIEFING][MEMORIES][UPLOAD][API KEY][🖥][📷][⚙][📱] |
+| [CONNECT] [MUTE] [INTERRUPT] [BRIEFING][MEMORIES][SESSIONS][UPLOAD][API KEY][🖥][📷][⚙][📱] |
 +-------------------------------------------------------------------------------+
 ```
 
@@ -132,6 +132,7 @@ The **wake chip** beside the badge shows `WAKE // SAY "HEY JARVIS"` while the st
 | `CommsLog.jsx` | Right floating panel: Markdown-rendered transcript, system lines, no backdrop mask over the orb. |
 | `IntelModal.jsx` | Draggable dossier window: web results, grounded sources, briefing headlines. |
 | `SciFiSettingsModal.jsx` | Identity, voice core matrix with audio previews, toggles (briefing, mic, humour, wake phrase), plugins. |
+| `SciFiSessionVaultModal.jsx` (+ `SessionVault/`) | Session archive: stats strip with retention / transcript setting, search (words / meaning), period / language / recap / greeting / pinned filters, sort, rows with LIVE (green) / NEXT GREETING / PINNED / NO RECAP badges, detail with editable title and recap, greeting choice, CONTINUE, transcript bubbles (operator right, accent-tinted; Jarvis left) with find highlighting, bulk bar, undo toast (shared `MemoryVault/VaultToast.jsx`). |
 | `SciFiMemoryVaultModal.jsx` (+ `MemoryVault/`) | Memory vault manager: stats strip with context-slot meter, search (words / meaning), filters, sort, list with IN CONTEXT / ON RECALL / MUTED badges and checkboxes, bulk bar, inline editor, duplicate review, export / import, undo toast, RE-LINK NOW. Two panes on desktop, stacked on phones. |
 | `ApiKeyModal.jsx` | Gemini key entry (stored in browser `localStorage` as `jarvis_gemini_api_key`). |
 | `UploadDropZone.jsx` | Window-wide drop overlay and hidden file picker. |

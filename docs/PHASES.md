@@ -284,3 +284,13 @@ Operator request (2026-10-04): an interface to manage the persistent long-term m
 
 Verified: 39/39 API checks on a 65-record scratch vault, 7/7 meaning-based checks with the real key on a copy of the real vault, 29/29 headless HUD checks (desktop and phone width), and 4/4 live voice checks with Gemini 3.8 Live (`DEC-187`).
 
+## Phase 11: Session Archive & Recap Manager (`DEC-188`)
+
+Operator request (2026-10-04): manage conversations and their recaps like the memory vault. Until now only three recaps were kept, each deleted once the next greeting mentioned it, and transcripts were never saved (the Comms Log is lost on reload).
+
+- [x] **11.1 Session Archive** — `lib/sessionArchive.js`: one record per conversation (connect to disconnect / standby / page close; re-links stay in the same session) with title, recap, language, times, transcript, pin, and greeting status. Turns are sent as they happen (every ~10 turns or 2 minutes, and at the end), secrets are redacted, recaps and titles are written at the end (stale open sessions are closed and recapped later), the greeting marks a recap "mentioned" instead of deleting it, retention 200 sessions / 180 days (pinned kept), a "Save conversation transcripts" setting, old-format migration, atomic writes, undoable deletes.
+- [x] **11.2 Session Vault Interface** — SESSIONS dock button and a two-pane manager: stats, search by words (titles, recaps, transcripts) or meaning (recaps), filters, sort, LIVE / NEXT GREETING / PINNED badges, editable title and recap, regenerate recap, mention next time / don't mention, transcript viewer with find, continue this conversation, save recap to memory, copy / export (Markdown or JSON), bulk delete / export / pin with undo.
+- [x] **11.3 Voice Session History** — `session_history` live tool: "what did we talk about yesterday?", "find the conversation where we planned Kyoto", "continue that conversation", "forget yesterday's conversation" (undoable).
+
+Verified: 50/50 archive API checks (mock Gemini), 29/29 headless HUD checks, and 9/9 live checks with Gemini 3.8 Live (talk, disconnect, greeting recall, "what did we talk about", continue by voice, remembered old turns, re-archive) (`DEC-188`).
+

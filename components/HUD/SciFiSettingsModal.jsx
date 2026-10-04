@@ -28,6 +28,7 @@ import {
   Power,
   Palette,
   Headphones,
+  History,
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
@@ -221,6 +222,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     enableHumor: true,
     proactiveEnabled: true,
     clipboardWatch: false,
+    keepTranscripts: true,
+    sessionRetentionDays: 180,
     accentColor: DEFAULT_ACCENT,
     wakeWordEnabled: true,
     wakePhrase: DEFAULT_WAKE_PHRASE,
@@ -329,6 +332,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           enableHumor: operatorProfile.enableHumor !== false,
           proactiveEnabled: operatorProfile.proactiveEnabled !== false,
           clipboardWatch: operatorProfile.clipboardWatch === true,
+          keepTranscripts: operatorProfile.keepTranscripts !== false,
+          sessionRetentionDays: [30, 90, 180, 365, 0].includes(Number(operatorProfile.sessionRetentionDays)) ? Number(operatorProfile.sessionRetentionDays) : 180,
           accentColor: normalizeHex(operatorProfile.accentColor) || DEFAULT_ACCENT,
           wakeWordEnabled: operatorProfile.wakeWordEnabled !== false,
           wakePhrase: operatorProfile.wakePhrase || DEFAULT_WAKE_PHRASE,
@@ -489,6 +494,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       enableHumor: true,
       proactiveEnabled: true,
       clipboardWatch: false,
+      keepTranscripts: true,
+      sessionRetentionDays: 180,
       accentColor: DEFAULT_ACCENT,
       wakeWordEnabled: true,
       wakePhrase: DEFAULT_WAKE_PHRASE,
@@ -898,6 +905,40 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   }`}>
                 {draft.proactiveEnabled ? "ENABLED" : "DISABLED"}
               </button>
+            </div>
+
+            {/* Session archive (Phase 11): transcripts and retention */}
+            <div className="flex items-center justify-between gap-2 p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                  <History className="w-3 h-3 text-[var(--jarvis-accent)]" /> Save Conversation Transcripts
+                </span>
+                <span className="text-[9px] text-[#7E859E]">
+                  Keep the full text of each conversation in the Session Archive (on this machine; passwords, keys, and codes are blanked out). Off keeps recaps only.
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <select
+                  aria-label="Keep conversations for"
+                  value={draft.sessionRetentionDays}
+                  onChange={(e) => setDraft({ ...draft, sessionRetentionDays: Number(e.target.value) })}
+                  className="bg-black/60 border border-white/10 text-[10px] font-mono text-[#F0F2F8] px-1.5 py-1 chamfer-sm cursor-pointer">
+                  <option value={30}>KEEP 30 DAYS</option>
+                  <option value={90}>KEEP 90 DAYS</option>
+                  <option value={180}>KEEP 180 DAYS</option>
+                  <option value={365}>KEEP 1 YEAR</option>
+                  <option value={0}>KEEP LAST 200</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setDraft({ ...draft, keepTranscripts: !draft.keepTranscripts })}
+                  className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.keepTranscripts
+                      ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
+                      : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    }`}>
+                  {draft.keepTranscripts ? "ENABLED" : "RECAPS ONLY"}
+                </button>
+              </div>
             </div>
 
             {/* Clipboard intelligence (Phase 8.13), opt-in */}

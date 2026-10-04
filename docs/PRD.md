@@ -61,6 +61,7 @@ Developers and power users who want a voice-first assistant that can act on thei
 - **Semantic Recall (RAG):** Gemini Embedding 2 vectors in a local cache rank memories by meaning, with keyword fallback.
 - **Vault Manager:** The MEMORIES panel shows which memories are in Jarvis's context and lets the operator search, filter, edit, pin, bulk-edit, delete with undo, merge duplicates, and export / import; `memory_vault` does the same curation by voice.
 - **Session Continuity:** Each finished conversation is recapped in a sentence or two and recalled once in the next greeting; the operator's language is learned silently and Jarvis greets in it.
+- **Session Archive:** Every conversation is kept with its title, recap, and (optionally) its transcript, secrets redacted, under a retention limit. The SESSIONS panel searches, edits, exports, deletes (undoable), and continues past conversations; `session_history` does the same by voice.
 
 ### 💠 3.5 Holographic Visual Core
 

@@ -15,6 +15,7 @@ import {
   Settings,
   Smartphone,
   Brain,
+  History,
   Terminal,
   ZoomIn,
   ZoomOut,
@@ -38,6 +39,7 @@ import { WebCamPiP } from "@/components/Vision/WebCamPiP";
 import { MobilePairingModal } from "@/components/HUD/MobilePairingModal";
 import { SciFiSettingsModal } from "@/components/HUD/SciFiSettingsModal";
 import { SciFiMemoryVaultModal } from "@/components/HUD/SciFiMemoryVaultModal";
+import { SciFiSessionVaultModal } from "@/components/HUD/SciFiSessionVaultModal";
 import { CommsLog } from "@/components/HUD/CommsLog";
 import { TelemetryPanel } from "@/components/HUD/TelemetryPanel";
 import { IntelModal } from "@/components/HUD/IntelModal";
@@ -610,6 +612,15 @@ export default function Home() {
               <span className="hidden sm:inline">MEMORIES</span>
             </button>
 
+            {/* Session Archive Button (Phase 11) */}
+            <button
+              onClick={() => useJarvisStore.getState().setIsSessionVaultOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
+              title="Open the Session Archive: past conversations and recaps">
+              <History className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">SESSIONS</span>
+            </button>
+
             {/* File Uplink Button (drag-and-drop works anywhere on the HUD too) */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("jarvis-open-upload"))}
@@ -703,6 +714,9 @@ export default function Home() {
 
       {/* Sci-Fi Neural Memory Vault Modal */}
       <SciFiMemoryVaultModal />
+
+      {/* Session Archive Modal (Phase 11) */}
+      <SciFiSessionVaultModal />
 
       {/* Floating Right-Side Comms Log Panel (No Backdrop Blur) */}
       <CommsLog sendTextMessage={sendTextMessage} />

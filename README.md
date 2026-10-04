@@ -70,7 +70,9 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 - **Long-term memory vault** (`data/memories.json`): facts, preferences, missions, and your profile. Jarvis stores and recalls them, ranks them by meaning with Gemini Embedding 2 (keyword fallback), and lists what does not fit in his prompt so he can look it up. Fifteen memories are in his context at the start of every conversation: pinned ones first, then the most important, then the newest.
 - **Memory vault manager** (**MEMORIES** button): every memory with its real status (**IN CONTEXT** with its slot, **ON RECALL**, or **MUTED** while humour is off), search by words or by meaning, filters (category, importance, source, context), sorting, an inline editor, pin to context, multi-select pin / recategorise / delete, an undo toast after deletes and merges, a possible-duplicates review (by meaning with a key, by wording without) with merge, JSON export / import, and **RE-LINK NOW** so changes reach Jarvis mid-conversation.
 - **Curate memory by voice** (`memory_vault`): "forget that I'm considering upgrading you", "my sister moved to Pune", "pin my location", "what do you remember about me?". Memories are matched by meaning; when two could match, Jarvis asks which. "Undo" reverses a forget or edit, and memories he stored himself.
-- **Session recaps:** each finished conversation is summarised in a sentence or two and mentioned once in the next greeting ("Earlier today you were planning the Kyoto trip...").
+- **Session archive** (**SESSIONS** button, `data/sessions.json`): every conversation is kept, from connect to disconnect, standby, or closing the HUD (re-links stay in the same conversation). Turns are saved as you go, so a crash loses little. When a conversation ends, Jarvis writes a title and a one-or-two-sentence recap, and mentions the newest recap once in his next greeting ("Earlier today you were planning the Kyoto trip..."). Passwords, keys, tokens, and codes are blanked out before anything is saved.
+- **Session archive panel:** search by words (titles, recaps, and transcripts) or by meaning (recaps), filter by period, language, recap, greeting state, or pin, and sort. Open a conversation to read its transcript (with find), edit its title or recap, regenerate the recap, choose whether Jarvis brings it up next time, save the recap to the memory vault, pin it, copy it, export it as Markdown or JSON, or delete it (with undo). **CONTINUE** re-links Jarvis with that conversation's last turns and recap so you pick up where you left off. Bulk pin / export / delete, and JSON import. Settings: **Save Conversation Transcripts** (off keeps recaps only) and how long to keep them (30 days to a year, or the last 200); pinned conversations are never removed.
+- **Past conversations by voice** (`session_history`): "what did we talk about yesterday?", "find the conversation where we planned Kyoto", "let's continue our conversation about the Udaipur trip", "delete yesterday's conversation" (undoable). When several could match, Jarvis asks which.
 - **Spoken briefing:** an optional morning briefing with news headlines after the greeting, or on demand with **BRIEFING**.
 - **Instant acknowledgement** before slow tasks, so you are never left waiting in silence.
 
@@ -159,14 +161,14 @@ Drop-in JavaScript plugins (`run_cyber_plugin`) with a console in the HUD. Bundl
 | Centre | The Arc Reactor orb: particle sphere, radial dial, radar sweep, and a core that swells while Jarvis speaks. Zoom and reset controls at the top right. |
 | Top left | **SYSTEMS** (CPU, memory, and uptime; the network, GPU, and process-count bars are display estimates, not measurements) and **INTEL** (search dossiers, sources, monitor alerts). |
 | Top right | **COMMS LOG**: the full conversation plus every action Jarvis takes, tagged (`[FILE OPS]`, `[SYSTEM]`, `[BROWSER]`, ...). |
-| Bottom | Status pill (LISTENING / THINKING / SPEAKING / RECONNECTING), wake chip, command bar, and the dock: CONNECT, mic, INTERRUPT, BRIEFING, MEMORIES, UPLOAD, API KEY, screen share, camera, settings, mobile. |
+| Bottom | Status pill (LISTENING / THINKING / SPEAKING / RECONNECTING), wake chip, command bar, and the dock: CONNECT, mic, INTERRUPT, BRIEFING, MEMORIES, SESSIONS, UPLOAD, API KEY, screen share, camera, settings, mobile. |
 | Overlays | Authorization card, YouTube and 3D panels, clipboard panel, upload drop zone. |
 
 ---
 
 ## Settings
 
-Open with the gear button. Sections: operative identity, the Gemini 3.8 Live core, voice (with playable samples), directives, toggles (morning briefing, mic default, humour, proactive check-ins, clipboard intelligence, start on login, wake phrase and offline "Hey Jarvis"), HUD accent colour and audio devices, and the plugin console. Accent previews live; audio devices and start on login apply immediately; everything else is saved with **SYNCHRONIZE TO NEURAL VAULT**.
+Open with the gear button. Sections: operative identity, the Gemini 3.8 Live core, voice (with playable samples), directives, toggles (morning briefing, mic default, humour, proactive check-ins, conversation transcripts and how long to keep them, clipboard intelligence, start on login, wake phrase and offline "Hey Jarvis"), HUD accent colour and audio devices, and the plugin console. Accent previews live; audio devices and start on login apply immediately; everything else is saved with **SYNCHRONIZE TO NEURAL VAULT**.
 
 ---
 
@@ -186,7 +188,7 @@ Jarvis acts on a real computer, so the defaults are conservative:
 
 ## Live tools reference
 
-Jarvis decides when to use these during a conversation (32 tools, each one module in `lib/tools/`):
+Jarvis decides when to use these during a conversation (33 tools, each one module in `lib/tools/`):
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -195,6 +197,7 @@ Jarvis decides when to use these during a conversation (32 tools, each one modul
 | `web_search` | Live answers with cited sources: search, news, research, price, compare |
 | `recall_memory`, `store_memory` | Long-term memory vault |
 | `memory_vault` | Forget, correct, pin, or summarise memories by voice |
+| `session_history` | Past conversations: list, find, continue, delete |
 | `update_operator_profile` | Callsign, voice, persona, wake phrase, HUD accent |
 | `execute_os_action` | Apps, volume, folders, URLs, minimise, lock |
 | `system_settings` | Dark mode, WiFi, brightness, wallpaper, processes, power, start on login |
@@ -315,7 +318,7 @@ docs/                      PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 
 - Your API key lives in the browser's local storage (or the server environment) and is sent only to this app's server, which forwards it to Google.
 - Audio, text, images, and documents you share go to Google's Gemini API to be processed. The offline wake word does not; it runs locally.
-- Everything Jarvis remembers stays on your machine under `data/` (vault, recaps, reminders, monitors, undo journal), most of it gitignored.
+- Everything Jarvis remembers stays on your machine under `data/` (vault, conversation archive, reminders, monitors, undo journal), most of it gitignored. Conversation transcripts have secrets blanked out before they are saved, and can be switched off (recaps only).
 - The clipboard watcher is off unless you turn it on, and never shows or sends secrets.
 
 ---

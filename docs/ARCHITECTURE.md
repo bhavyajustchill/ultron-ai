@@ -74,7 +74,7 @@ jarvis-mark-ii/
 │   └── api/
 │       ├── live-session/                   # Session config, persona, tools
 │       ├── memory/                         # Vault manager API: CRUD, bulk, undo, merge, import / export, duplicates, voice edits, semantic recall
-│       ├── sessions/                       # Conversation recaps (save / pop once)
+│       ├── sessions/                       # Conversation archive: append turns, recaps, greeting pick, search, edit, export / import, voice
 │       ├── monitors/ hardware-alerts/      # Topic monitors, hardware voice alerts
 │       ├── fs-ops/                         # Sandboxed file ops, organizer, documents, open
 │       ├── file-processor/                 # Images, PDFs, spreadsheets, audio / video
@@ -111,6 +111,7 @@ jarvis-mark-ii/
 │   ├── folderOrganizer.js / documentForge.js / desktopLauncher.js / appIndex.js
 │   ├── projectScaffolder.js / terminalRunner.js / terminalClient.js / inputControl.js
 │   ├── memoryVault.js                      # Vault file (atomic writes), validation, context plan, duplicates, import
+│   ├── sessionArchive.js                   # Conversation archive: sessions, recaps, greeting, retention, search, export
 │   ├── memoryVectors.js / groundedSearch.js / geminiText.js / sessionRecaps.js
 │   ├── searchProviders.js                  # Keyless + optional-API search sources for search-then-read
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
@@ -161,6 +162,8 @@ jarvis-mark-ii/
 ```
 
 **Memory vault (Phase 10):** every read and write of `data/memories.json` goes through `lib/memoryVault.js` (temp file + rename, validated fields). `contextPlan()` picks the memories Jarvis gets in full (15 slots: pinned, then importance, then newest; humour memories muted while humour is off) and is shared by `/api/live-session` and the vault manager, so the HUD's IN CONTEXT / ON RECALL badges are exactly what the prompt contains. Writes to `/api/memory` are same-origin only. Deletes, merges, imports, and Jarvis's own stores and voice edits are `memory_changed` records in the undo journal (`lib/undoJournal.js`): spoken "undo" pops the newest, and the HUD's undo toast reverses its specific record (`action: 'restore'`). Voice edits (`memory_vault`) act only when one memory clearly matches by raw embedding similarity (≥ 0.70 and 0.04 ahead, or a distinctive-word lead), otherwise return candidates for Jarvis to ask about.
+
+**Session archive (Phase 11):** `useGeminiLive` starts a session id when a fresh link is established (resumes and carry-over re-links keep it) and sends the Comms Log's new operator / Jarvis turns to `POST /api/sessions { action: 'append' }` every 10 turns or 2 minutes, and with `final: true` on disconnect, standby, auto-standby, or page close (`sendBeacon`, key in the body). `lib/sessionArchive.js` keeps `data/sessions.json` (atomic writes): turns are redacted (`redactSecrets` in `lib/clipboard.js`), a final append writes title / recap / language with a Gemini text model (re-recapped when a continued conversation ends again), and a new session closes and recaps any left open by a crash. The greeting takes `action: 'greeting'`: the operator-queued recap, else the newest one if not yet mentioned, which is marked "mentioned". Retention prunes unpinned, ended sessions past the configured days or beyond 200; "recaps only" drops a transcript when its session ends. Deletes and imports are `session_changed` undo records. CONTINUE (HUD or `session_history`) archives the current conversation, shows the old one's last turns, and re-links with them as history plus the recap; new turns append to the old session.
 
 ---
 
