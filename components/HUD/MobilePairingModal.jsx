@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   QrCode,
   Smartphone,
@@ -13,6 +13,20 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
+import { useAccentHex } from "@/hooks/useAccentTheme";
+import { accentCssVars, hexToRgb } from "@/lib/accentTheme";
+
+const QR_BACKGROUND = "#0A0B10";
+const QR_FALLBACK_MODULES = "#F0F2F8";
+
+// WCAG relative luminance, used to keep the themed QR code scannable on its dark background
+function luminance(hex) {
+  const [r, g, b] = hexToRgb(hex).map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
 
 export function MobilePairingModal({ isOpen, onClose }) {
   const {
@@ -24,6 +38,13 @@ export function MobilePairingModal({ isOpen, onClose }) {
   } = useJarvisStore();
 
   const [copied, setCopied] = useState(false);
+  // QR modules in the theme's neon tone; near-white if a dark custom accent would be hard to scan
+  const accent = useAccentHex();
+  const qrModules = useMemo(() => {
+    const neon = accentCssVars(accent)["--jarvis-accent-2"];
+    const contrast = (luminance(neon) + 0.05) / (luminance(QR_BACKGROUND) + 0.05);
+    return contrast >= 4.5 ? neon : QR_FALLBACK_MODULES;
+  }, [accent]);
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef(null);
 
@@ -133,7 +154,7 @@ export function MobilePairingModal({ isOpen, onClose }) {
           ) : mobilePairingData?.qrSvg ? (
             <div
               className="w-56 h-56 flex items-center justify-center p-2 chamfer-sm bg-[#0A0B10] border border-[var(--jarvis-accent-2)]/30 shadow-[0_0_20px_rgba(var(--jarvis-accent-2-rgb),0.2)] [&>svg]:w-full [&>svg]:h-full"
-              dangerouslySetInnerHTML={{ __html: mobilePairingData.qrSvg }}
+              dangerouslySetInnerHTML={{ __html: mobilePairingData.qrSvg.replace(/stroke="#00F0FF"/i, `stroke="${qrModules}"`) }}
             />
           ) : (
             <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-[#FF003C]">

@@ -16,11 +16,13 @@ const DEFAULT_CAMERA_Z = 5.265;
 
 // Backdrop glow: one oval of the theme glow colour fading smoothly into the theme's dark accent, fitted to the
 // operator's reference photo. Centre 12vh above the orb, bottom edge on the chat textbox's underline (64px above
-// the screen bottom), alpha 0.7 * (1 - t^2)^1.5 sampled every 10% so the fade has no visible bands. The opaque
-// dark-accent base fills everything outside the oval and keeps anything underneath from showing through.
+// the screen bottom), alpha BACKDROP_PEAK_ALPHA * (1 - t^2)^1.5 sampled every 10% so the fade has no visible bands.
+// The opaque dark-accent base fills everything outside the oval and keeps anything underneath from showing through.
+// Peak 0.56 (the photo fit was 0.7; the operator asked for a darker oval).
+const BACKDROP_PEAK_ALPHA = 0.56;
 const BACKDROP_STOPS = Array.from({ length: 11 }, (_, i) => {
   const t = i / 10;
-  return `rgba(var(--jarvis-glow-1-rgb), ${(0.7 * (1 - t * t) ** 1.5).toFixed(3)}) ${i * 10}%`;
+  return `rgba(var(--jarvis-glow-1-rgb), ${(BACKDROP_PEAK_ALPHA * (1 - t * t) ** 1.5).toFixed(3)}) ${i * 10}%`;
 }).join(", ");
 const BACKDROP_STYLE = {
   backgroundColor: "var(--jarvis-accent-dim)",

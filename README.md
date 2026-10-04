@@ -141,7 +141,7 @@ All file access is limited to allowed folders (by default `~/Desktop`, `~/Docume
 
 ### Mobile companion
 
-Scan the QR code from the mobile button to open `/mobile` on your phone (same Wi-Fi): a PWA with push-to-talk relay to the desktop, status, and remote desktop actions.
+Scan the QR code from the mobile button to open `/mobile` on your phone (same Wi-Fi): a PWA with push-to-talk relay to the desktop, status, and remote desktop actions. It follows the HUD's saved accent theme, picking up a change within about two seconds.
 
 ### Plugins
 

@@ -18,7 +18,7 @@ The interface is an electric aqua-cyan holographic HUD over a deep carbon void. 
   --jarvis-accent-2-rgb: 0, 206, 255;
   --jarvis-accent-soft: #70DDFF;   /* Light accent text */
   --jarvis-accent-dim:  #002C4D;   /* Subdued borders / glow drops */
-  --jarvis-glow-1-rgb: 0, 181, 255;  /* Backdrop glow: one oval behind the orb fading into --jarvis-accent-dim, which fills the rest of the screen (JarvisViewport BACKDROP_STYLE) */
+  --jarvis-glow-1-rgb: 0, 181, 255;  /* Backdrop glow: one oval behind the orb fading into --jarvis-accent-dim, which fills the rest of the screen (JarvisViewport BACKDROP_STYLE, peak alpha BACKDROP_PEAK_ALPHA = 0.56) */
 
   /* Legacy names, now aliases of the accent family */
   --jarvis-cyan: var(--jarvis-accent);  --cyber-cyan: var(--jarvis-accent);
@@ -37,6 +37,8 @@ The interface is an electric aqua-cyan holographic HUD over a deep carbon void. 
 **Writing themed UI:** use the variables, never a literal cyan: `text-[var(--jarvis-accent)]`, `border-[rgba(var(--jarvis-accent-rgb),0.3)]`, `shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]`. Three.js and canvas code cannot read CSS variables: design the colour in cyan and pass it through `useAccentTint()` (`tint("#00E5FF")`, or `tint.rgb(r, g, b)` in pixel loops), rebuilding only when the theme changes. Status colours (amber, orange, red, green) are never tinted.
 
 **Accent presets:** Arc Reactor Blue `#00C3FF` (default), Arc Reactor Cyan `#00E5FF`, Mark III Gold `#FFC23D`, Hot Rod Red `#FF3B4E`, Vibranium Violet `#A66BFF`, Emerald Ops `#2BFFA3`, Ice White `#DDF6FF`, or any custom hex (Settings colour wheel / hex field, or by voice via `update_operator_profile` `hud_accent`). The cached theme is applied by an inline script before first paint, so reloads never flash the default.
+
+**Mobile companion and pairing QR:** the `/mobile` page uses the same variables (its neon tones are `--jarvis-accent-2`) and follows the **saved** theme: each `/api/relay` poll (1.8 s) carries the profile's `accentColor`, applied with `applyAccentToDocument()` and cached on the phone for the next first paint (an unsaved Settings preview stays desktop-only). The desktop pairing QR code draws its modules in `--jarvis-accent-2`, or near-white `#F0F2F8` when a custom accent would fall below 4.5:1 contrast on its `#0A0B10` background.
 
 **Semantic accents used in components:**
 
