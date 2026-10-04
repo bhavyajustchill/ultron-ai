@@ -81,7 +81,8 @@ Developers and power users who want a voice-first assistant that can act on thei
 
 ### 🔍 3.8 Intelligence & Web Search
 
-- **Grounded Search:** Built-in Google Search grounding in the live session plus `web_search` dossiers via Gemini with Google Search (DuckDuckGo fallback); cited sources land in the Intel panel.
+- **Grounded Search:** Built-in Google Search grounding in the live session plus `web_search` dossiers via Gemini with Google Search; cited sources land in the Intel panel.
+- **Search Then Read:** On keys without grounding quota, `web_search` finds pages from keyless sources (or a configured Brave / Google Programmable Search / Serper key), has Gemini read the top pages, and answers with numbered citations; the live session is told to use it for anything current.
 - **Weather:** Live meteorological telemetry via `get_weather`.
 
 ### 📄 3.9 Documents, Uploads & Projects

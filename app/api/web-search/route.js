@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { fetchLiveWeather } from '../weather/route';
-import { groundedSearch, knowledgeAnswer } from '@/lib/groundedSearch';
+import crypto from 'crypto';
+import { groundedSearch, knowledgeAnswer, readAndAnswer } from '@/lib/groundedSearch';
+import { findSources } from '@/lib/searchProviders';
+
+// Keys without grounding quota answer 429 every time: skip the attempt for a while after one
+const GROUNDING_RETRY_MS = 30 * 60 * 1000;
+const groundingRefusedUntil = new Map();
+const keyId = (apiKey) => crypto.createHash('sha256').update(apiKey).digest('hex').slice(0, 16);
 
 /**
  * Clean and decode DuckDuckGo redirect URLs
@@ -129,8 +136,12 @@ async function fetchInstantAnswer(query) {
 /**
  * GET /api/web-search?query=...&mode=...
  * Performs real-time web search and returns structured intelligence cards.
- * Primary engine: Gemini with Google Search grounding (key from the x-gemini-api-key header
- * or GEMINI_API_KEY); fallbacks: DuckDuckGo HTML, then the DuckDuckGo Instant Answer API.
+ * 1. Gemini with Google Search grounding (key from the x-gemini-api-key header or GEMINI_API_KEY).
+ * 2. Search then read (Phase 9.2): candidate pages from lib/searchProviders (a configured search
+ *    API, else Brave Search, Google News, Wikipedia, Bing RSS, a headless DuckDuckGo search), read
+ *    and summarised by Gemini with citations; without a key, the results themselves.
+ * 3. DuckDuckGo HTML, then the DuckDuckGo Instant Answer API.
+ * 4. The model's own knowledge, labelled as not live.
  */
 export async function GET(req) {
   try {
@@ -197,7 +208,7 @@ export async function GET(req) {
 
     // 1. Grounded Gemini search (Google Search tool) when a key is available
     const apiKey = req.headers.get('x-gemini-api-key') || process.env.GEMINI_API_KEY || '';
-    if (apiKey) {
+    if (apiKey && !(groundingRefusedUntil.get(keyId(apiKey)) > Date.now())) {
       try {
         const grounded = await groundedSearch(query, mode, apiKey);
         return NextResponse.json({
@@ -212,11 +223,50 @@ export async function GET(req) {
           search_queries: grounded.queries,
         });
       } catch (groundedErr) {
-        console.warn('[/api/web-search] Grounded search failed, falling back to DuckDuckGo:', groundedErr.message);
+        if (/\((429|403)\)/.test(groundedErr.message)) groundingRefusedUntil.set(keyId(apiKey), Date.now() + GROUNDING_RETRY_MS);
+        console.warn('[/api/web-search] Grounded search failed, searching and reading pages instead:', groundedErr.message);
       }
     }
 
-    // 2. DuckDuckGo HTML Search
+    // 2. Search then read
+    let found = { results: [], providers: [], failures: [] };
+    try {
+      found = await findSources(query, mode);
+    } catch (sourcesErr) {
+      console.warn('[/api/web-search] Search sources failed:', sourcesErr.message);
+    }
+    if (found.failures.length) console.warn('[/api/web-search] Unavailable sources:', found.failures.join('; '));
+    if (found.results.length) {
+      const base = { success: true, query, mode, providers: found.providers, timestamp: new Date().toLocaleTimeString() };
+      if (apiKey) {
+        try {
+          const answer = await readAndAnswer(query, mode, found.results, apiKey);
+          return NextResponse.json({
+            ...base,
+            engine: answer.engine,
+            count: answer.results.length,
+            summary: answer.summary,
+            results: answer.results,
+            sources_read: answer.read,
+          });
+        } catch (readErr) {
+          console.warn('[/api/web-search] Reading the results failed, returning them as found:', readErr.message);
+        }
+      }
+      const top = found.results
+        .slice(0, 4)
+        .map((r, i) => `${i + 1}. ${r.title} (${r.source})${r.snippet ? `: ${r.snippet.slice(0, 160)}` : ''}`)
+        .join('\n');
+      return NextResponse.json({
+        ...base,
+        engine: found.providers.join('+'),
+        count: found.results.length,
+        summary: `Found ${found.results.length} live results for "${query}" (search snippets; the pages were not read${apiKey ? '' : ' because no Gemini key is connected'}):\n${top}`,
+        results: found.results,
+      });
+    }
+
+    // 3. DuckDuckGo HTML Search
     let results = [];
     let engine = 'duckduckgo';
     try {
@@ -242,7 +292,7 @@ export async function GET(req) {
       console.warn('[web-search] HTML parser failed, using fallback:', htmlErr.message);
     }
 
-    // 3. Fallback to Instant Answer API if HTML parsed zero results
+    // Instant Answer API if HTML parsed zero results
     if (results.length === 0) {
       results = await fetchInstantAnswer(query);
       engine = 'duckduckgo-instant';

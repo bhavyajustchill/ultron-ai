@@ -13,7 +13,7 @@ The system has four layers:
 1. **Client Holographic Surface (browser):** the Arc Reactor Orb (R3F), the tactical HUD, Web Audio mic ingestion (`AudioWorkletNode` → 16 kHz PCM), 24 kHz gapless playback (`lib/pcmPlayer.js`), the wake-phrase listener, uploads, media panels, and the terminal authorization card.
 2. **Live Session Orchestrator (`hooks/useGeminiLive.js`):** opens the Gemini Live WebSocket directly from the browser, sends the setup frame (persona, memories, tools, compression, resumption handle), streams audio / video / client content, executes tool calls against the local API routes, and handles barge-in, GoAway swaps, auto re-sync, background job notices, and standby.
 3. **Next.js API Layer (`app/api/*`):** builds the session configuration and bridges every host capability. Routes that touch the machine reject cross-site requests (`lib/requestGuard.js`); file access is confined to sandbox roots (`lib/fsSandbox.js`).
-4. **Host Integrations:** the desktop session (`.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool or the RemoteDesktop portal, wmctrl / GNOME Window Calls), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search).
+4. **Host Integrations:** the desktop session (`.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool or the RemoteDesktop portal, wmctrl / GNOME Window Calls), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search, URL context) plus keyless search sources (Brave Search, Google News RSS, Wikipedia, Bing RSS).
 
 ```mermaid
 flowchart TB
@@ -92,7 +92,7 @@ jarvis-mark-ii/
 │       ├── clipboard/                      # Clipboard watcher and actions
 │       ├── messages/ flights/ steam/       # Compose links, Google Flights, Steam library
 │       ├── browser/                        # Jarvis browser window (Playwright)
-│       ├── web-search/ weather/            # Grounded search, weather
+│       ├── web-search/ weather/            # Grounded search or search-then-read, weather
 │       ├── youtube/ spotify/               # Media deck
 │       ├── system-telemetry/ plugins/      # Host metrics, plugin runner
 │       └── mobile-pairing/ relay/          # Mobile PWA bridge
@@ -111,6 +111,7 @@ jarvis-mark-ii/
 │   ├── folderOrganizer.js / documentForge.js / desktopLauncher.js / appIndex.js
 │   ├── projectScaffolder.js / terminalRunner.js / terminalClient.js / inputControl.js
 │   ├── memoryVectors.js / groundedSearch.js / geminiText.js / memoryVault.js / sessionRecaps.js
+│   ├── searchProviders.js                  # Keyless + optional-API search sources for search-then-read
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
 │   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js

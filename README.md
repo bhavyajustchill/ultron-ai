@@ -30,7 +30,7 @@
 
 ## Quick start
 
-**Requirements:** Node.js 20+ (developed on Node 24), Chrome or Edge, and a [Gemini API key](https://aistudio.google.com/apikey). The free tier works for everything except Google Search grounding.
+**Requirements:** Node.js 20+ (developed on Node 24), Chrome or Edge, and a [Gemini API key](https://aistudio.google.com/apikey). The free tier works for everything, web search included: without Google Search grounding quota, Jarvis searches and reads the pages himself.
 
 ```bash
 npm install
@@ -74,8 +74,8 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 
 ### Web, news, and information
 
-- **Web search dossiers** (`web_search`): Gemini with Google Search grounding, cited sources in the Intel panel, DuckDuckGo fallback, and a clearly labelled model-knowledge answer when nothing live is available. Modes: search, news, research, price, and side-by-side **compare** of several items.
-- **Google Search grounding** inside the live conversation (needs a key with grounding quota; skipped automatically when the key lacks it).
+- **Web search dossiers** (`web_search`): Gemini with Google Search grounding when the key has quota; otherwise **search then read**: Jarvis finds pages (Brave Search's results page, Google News for news, Wikipedia, Bing's RSS feed, and a headless DuckDuckGo search when those are blocked), Gemini reads the top pages with its URL-context tool (or Jarvis fetches them itself), and the answer comes back with numbered citations and source cards in the Intel panel, typically in 6 to 10 seconds. A clearly labelled model-knowledge answer is the last resort. Modes: search, news, research, price, and side-by-side **compare** of several items. Optional search API keys (Brave Search API, Google Programmable Search, Serper) are used first when set.
+- **Google Search grounding** inside the live conversation (needs a key with grounding quota; skipped automatically when the key lacks it, and Jarvis then calls `web_search` for anything current instead of answering from memory).
 - **Weather** (Open-Meteo, with wttr.in fallback).
 - **Flights** (`find_flights`): opens Google Flights on your search and reads the live results back, so Jarvis quotes the fares actually on screen.
 - **Topic monitors:** "keep an eye on SpaceX Starship" — topics are checked about daily via Google News RSS and Jarvis speaks up when a genuinely new headline appears.
@@ -190,7 +190,7 @@ Jarvis decides when to use these during a conversation (31 tools, each one modul
 | :-- | :-- |
 | `get_system_telemetry` | CPU, memory, and uptime |
 | `get_weather` | Current weather anywhere |
-| `web_search` | Grounded dossiers: search, news, research, price, compare |
+| `web_search` | Live answers with cited sources: search, news, research, price, compare |
 | `recall_memory`, `store_memory` | Long-term memory vault |
 | `update_operator_profile` | Callsign, voice, persona, wake phrase, HUD accent |
 | `execute_os_action` | Apps, volume, folders, URLs, minimise, lock |
@@ -230,6 +230,10 @@ Everything works without configuration. Optional environment variables (for exam
 | `JARVIS_UPLOAD_DIR` | Where uploads are saved (default `~/Documents/Jarvis Uploads`) |
 | `JARVIS_DEV_PROJECTS_DIR` | Dev agent projects (default `~/Desktop/JarvisProjects`) |
 | `JARVIS_SEARCH_MODEL`, `JARVIS_FALLBACK_MODEL` | Text models for search, summaries, and processing (default `gemini-3.8-flash`, then `gemini-3.5-flash-lite`) |
+| `JARVIS_READ_MODEL` | Model that reads search-result pages (default `gemini-3.5-flash-lite`, the fastest with URL context) |
+| `BRAVE_SEARCH_API_KEY` | Optional Brave Search API key, used before the keyless sources |
+| `GOOGLE_CSE_API_KEY`, `GOOGLE_CSE_ID` | Optional Google Programmable Search key and engine ID |
+| `SERPER_API_KEY` | Optional Serper (Google results) key |
 | `YOUTUBE_API_KEY` | Optional YouTube Data API key (search works without it) |
 | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` | Optional free Spotify Web API credentials for exact-track playback |
 | `JARVIS_TERMINAL_TIMEOUT_MS` | Foreground terminal command timeout |
@@ -318,7 +322,7 @@ docs/                      PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 Verified live on Ubuntu with a real Gemini key, including a fake-microphone speech test, spoken barge-in, document drops, an 18-minute session, and live runs of every Phase 8 feature. Still needing a person or setup this machine could not provide:
 
 - A real microphone in a room with speakers (echo and barge-in tuning, wake phrases spoken aloud).
-- Google Search grounding with function calling (needs a key with grounding quota).
+- Google Search grounding with function calling (needs a key with grounding quota; search-then-read covers keys without it).
 - Spotify, Steam, WhatsApp, and Telegram desktop apps.
 - Wayland keyboard / mouse setup (ydotool with uinput access, Window Calls extension), and typing through the real RemoteDesktop portal dialog (tested against a mock portal).
 - Real WiFi-off, brightness, wallpaper, and power effects (tested with mocks and dry runs).

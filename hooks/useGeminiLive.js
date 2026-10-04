@@ -4,7 +4,7 @@ import { useRef, useCallback, useEffect, useState } from 'react';
 import { useJarvisStore } from '@/lib/store';
 import { PCMStreamPlayer } from '@/lib/pcmPlayer';
 import { useAudioStream } from '@/hooks/useAudioStream';
-import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
+import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL, NO_BUILT_IN_SEARCH_NOTE } from '@/lib/jarvisPersona';
 import { modelFileUrl, openModelViewer, playYouTubeQuery } from '@/lib/mediaClient';
 import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
 import { runCommandWithApproval, requestOperatorApproval } from '@/lib/terminalClient';
@@ -634,7 +634,11 @@ export function useGeminiLive() {
           }
 
           if ((withoutSearch || isGroundingKnownUnavailable()) && sessionData.tools) {
-            sessionData = { ...sessionData, tools: sessionData.tools.filter((tool) => !tool.googleSearch) };
+            sessionData = {
+              ...sessionData,
+              tools: sessionData.tools.filter((tool) => !tool.googleSearch),
+              systemInstruction: `${sessionData.systemInstruction || JARVIS_SYSTEM_INSTRUCTION}\n\n${NO_BUILT_IN_SEARCH_NOTE}`,
+            };
           }
 
           // Cache config so a dropped link can be resumed without re-negotiating
