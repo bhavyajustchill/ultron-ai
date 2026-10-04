@@ -47,8 +47,8 @@ export function BulkBar({ count, onPin, onCategory, onImportance, onDelete, onSe
         {confirming ? `DELETE ${count}?` : "DELETE"}
       </button>
       <span className="ml-auto flex items-center gap-1">
-        <button type="button" className="text-[#7E859E] hover:text-[var(--jarvis-accent)] cursor-pointer px-1" onClick={onSelectAll}>ALL SHOWN</button>
-        <button type="button" className="text-[#7E859E] hover:text-white cursor-pointer p-0.5" onClick={onClear} title="Clear selection">
+        <button type="button" className="text-[#9E8B65] hover:text-[var(--jarvis-accent)] cursor-pointer px-1" onClick={onSelectAll}>ALL SHOWN</button>
+        <button type="button" className="text-[#9E8B65] hover:text-white cursor-pointer p-0.5" onClick={onClear} title="Clear selection">
           <X className="w-3.5 h-3.5" />
         </button>
       </span>
@@ -78,7 +78,7 @@ export function MemoryRow({ memory, active, checked, onOpen, onToggleCheck }) {
       className={`group flex gap-2.5 p-2.5 chamfer-md border transition-all cursor-pointer outline-none ${
         active
           ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_16px_rgba(var(--jarvis-accent-rgb),0.18)]"
-          : "border-[rgba(var(--jarvis-accent-rgb),0.16)] bg-[rgba(4,16,25,0.7)] hover:border-[rgba(var(--jarvis-accent-rgb),0.5)] focus-visible:border-[var(--jarvis-accent)]"
+          : "border-[rgba(var(--jarvis-accent-rgb),0.16)] bg-[rgba(24,18,5,0.7)] hover:border-[rgba(var(--jarvis-accent-rgb),0.5)] focus-visible:border-[var(--jarvis-accent)]"
       }`}>
       <button
         type="button"
@@ -87,7 +87,7 @@ export function MemoryRow({ memory, active, checked, onOpen, onToggleCheck }) {
           e.stopPropagation();
           onToggleCheck(memory.id);
         }}
-        className={`self-start mt-0.5 cursor-pointer ${checked ? "text-[var(--jarvis-accent)]" : "text-[#4A5068] group-hover:text-[#7E859E]"}`}>
+        className={`self-start mt-0.5 cursor-pointer ${checked ? "text-[var(--jarvis-accent)]" : "text-[#665E4B] group-hover:text-[#9E8B65]"}`}>
         {checked ? <SquareCheck className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
       </button>
       <div className="flex-1 min-w-0 flex flex-col gap-1.5">
@@ -95,8 +95,8 @@ export function MemoryRow({ memory, active, checked, onOpen, onToggleCheck }) {
           {memory.pinned && <Pin className="w-3 h-3 text-[var(--jarvis-accent)] fill-[var(--jarvis-accent)]" aria-label="Pinned" />}
           <span className={`px-1.5 chamfer-xs uppercase border font-semibold ${CATEGORY_STYLE[category] || CATEGORY_STYLE.tactical}`}>{category}</span>
           {importance === "critical" && <span className="px-1 chamfer-xs font-bold text-[#FF003C] border border-[#FF003C]/40 bg-[#FF003C]/10">CRITICAL</span>}
-          {importance === "high" && <span className="px-1 chamfer-xs font-bold text-[#FFE600] border border-[#FFE600]/40 bg-[#FFE600]/10">HIGH</span>}
-          {importance === "low" && <span className="px-1 chamfer-xs text-[#7E859E] border border-[#7E859E]/30">LOW</span>}
+          {importance === "high" && <span className="px-1 chamfer-xs font-bold text-[#FFAA00] border border-[#FFAA00]/40 bg-[#FFAA00]/10">HIGH</span>}
+          {importance === "low" && <span className="px-1 chamfer-xs text-[#9E8B65] border border-[#9E8B65]/30">LOW</span>}
           <span className={`px-1 chamfer-xs border font-semibold ${CONTEXT_STYLE[context]}`} title={context === "prompt" ? `Context slot ${memory.slot}` : undefined}>
             {CONTEXT_LABEL[context]}
             {context === "prompt" && memory.slot ? ` #${memory.slot}` : ""}
@@ -104,10 +104,10 @@ export function MemoryRow({ memory, active, checked, onOpen, onToggleCheck }) {
           {memory.relevance !== undefined && (
             <span className="px-1 chamfer-xs border border-[rgba(var(--jarvis-accent-rgb),0.3)] text-[var(--jarvis-accent-soft)]">{Math.round(memory.relevance * 100)}% MATCH</span>
           )}
-          <span className="ml-auto text-[#7E859E]">{formatDate(memory.timestamp)}</span>
+          <span className="ml-auto text-[#9E8B65]">{formatDate(memory.timestamp)}</span>
         </div>
         <p className="text-xs text-[#F0F2F8] leading-relaxed line-clamp-2 break-words">{memory.content}</p>
-        <span className="text-[9px] text-[#4A5068] font-mono">{recordTag(memory.id)}</span>
+        <span className="text-[9px] text-[#665E4B] font-mono">{recordTag(memory.id)}</span>
       </div>
     </div>
   );

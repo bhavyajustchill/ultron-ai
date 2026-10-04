@@ -21,7 +21,7 @@ export async function POST(req) {
   }
   try {
     if (body.action === 'remove') return NextResponse.json({ success: true, ...removeWakewordModels(), message: 'Offline wake word models removed.' });
-    if (body.action === 'install') return NextResponse.json({ success: true, ...(await installWakewordModels()), message: 'Offline "Hey Jarvis" is installed.' });
+    if (body.action === 'install') return NextResponse.json({ success: true, ...(await installWakewordModels()), message: 'The offline wake-word detector is installed.' });
     return NextResponse.json({ success: false, message: 'Use action install or remove.' }, { status: 400 });
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message });

@@ -98,7 +98,7 @@ const ACTIONS = {
       request: prepareConfirm({
         title: 'Turn WiFi off',
         detail: 'Disconnects this computer from wireless networks.',
-        warnings: ['Jarvis\'s voice link uses the internet: without another connection he cannot hear you until WiFi is turned back on from the desktop.'],
+        warnings: ['Ultron\'s voice link uses the internet: without another connection he cannot hear you until WiFi is turned back on from the desktop.'],
         payload: { action: 'wifi_off' },
       }),
     };
@@ -145,7 +145,7 @@ const ACTIONS = {
     const query = body.query || body.value;
     if (!query) throw new RequestError('Give the program name or process ID to end.');
     const matches = await findProcesses(query);
-    if (!matches.length) return { message: `No running program of yours matches "${query}" (session-critical processes and Jarvis itself are excluded).` };
+    if (!matches.length) return { message: `No running program of yours matches "${query}" (session-critical processes and Ultron itself are excluded).` };
     if (matches.length > MAX_PROCESSES_ENDED) {
       return {
         message: `${matches.length} processes match "${query}". Ask the operator to be more specific, or give a process ID.`,
@@ -190,7 +190,7 @@ const ACTIONS = {
     }
     const result = enableAutostart({ port: new URL(req.url).port || (req.headers.get('host') || '').split(':')[1] });
     return {
-      message: `Start on login turned on: at login the Jarvis server starts (if it is not running) and the HUD opens at http://localhost:${result.port}/.`,
+      message: `Start on login turned on: at login the Ultron server starts (if it is not running) and the HUD opens at http://localhost:${result.port}/.`,
       start_on_login: true,
     };
   },

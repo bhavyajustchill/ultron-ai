@@ -5,7 +5,7 @@ import { openWithDefaultApp } from '@/lib/desktopLauncher';
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 import { ReminderError, resolveWhen, describeWhen, scheduleOneShotCommand, listOneShotCommands, cancelOneShotCommand } from '@/lib/reminders';
 
-const SCHEDULE_PREFIX = 'jarvis-steam-';
+const SCHEDULE_PREFIX = 'ultron-steam-';
 
 // The program that hands steam:// links to the Steam client
 function steamOpener() {
@@ -109,7 +109,7 @@ export async function POST(req) {
             name: `${SCHEDULE_PREFIX}${game.appid}-${Date.now().toString(36)}`,
             when,
             argv: [...steamOpener(), `steam://install/${game.appid}`],
-            description: `J.A.R.V.I.S scheduled Steam update: ${game.name}`,
+            description: `Ultron scheduled Steam update: ${game.name}`,
           });
         }
       } catch (error) {

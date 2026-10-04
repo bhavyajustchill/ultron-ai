@@ -8,7 +8,7 @@ import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 const MAX_TEXT_CHARS = 60000; // ~15k tokens, leaves room in the 131k live context window
-const DEFAULT_UPLOAD_DIR = '~/Documents/Jarvis Uploads';
+const DEFAULT_UPLOAD_DIR = '~/Documents/Ultron Uploads';
 
 const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp']);
 const MODEL_EXTENSIONS = new Set(['glb', 'gltf']);

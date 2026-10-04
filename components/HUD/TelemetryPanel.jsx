@@ -10,7 +10,7 @@ import { useJarvisStore } from "@/lib/store";
 const CpuMetricCard = React.memo(function CpuMetricCard() {
   const cpu = useJarvisStore((state) => state.systemTelemetry?.cpu ?? 0);
   return (
-    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(20,16,8,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center text-xs">
         <div className="flex items-center gap-1.5">
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
@@ -24,12 +24,11 @@ const CpuMetricCard = React.memo(function CpuMetricCard() {
           <span className="text-white font-bold text-xs drop-shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.4)]">
             {cpu}%
           </span>
-
         </div>
       </div>
       <div className="h-1.5 w-full bg-[rgba(var(--jarvis-accent-rgb),0.08)] border border-[rgba(var(--jarvis-accent-rgb),0.18)] chamfer-xs overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#0090FF] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
+          className="h-full bg-gradient-to-r from-[rgba(var(--jarvis-accent-rgb),0.8)] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
           style={{ width: `${Math.min(100, Math.max(4, cpu))}%` }}
         />
       </div>
@@ -50,7 +49,7 @@ const MemMetricCard = React.memo(function MemMetricCard() {
   );
 
   return (
-    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(20,16,8,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center text-xs">
         <div className="flex items-center gap-1.5">
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
@@ -64,14 +63,14 @@ const MemMetricCard = React.memo(function MemMetricCard() {
           <span className="text-white font-bold text-xs drop-shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.4)]">
             {mem}%
           </span>
-          <span className="text-[10px] text-[#7E859E]">
+          <span className="text-[10px] text-[#9E8B65]">
             ({memUsed} / {memTotal})
           </span>
         </div>
       </div>
       <div className="h-1.5 w-full bg-[rgba(var(--jarvis-accent-rgb),0.08)] border border-[rgba(var(--jarvis-accent-rgb),0.18)] chamfer-xs overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#0090FF] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
+          className="h-full bg-gradient-to-r from-[rgba(var(--jarvis-accent-rgb),0.8)] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
           style={{ width: `${Math.min(100, Math.max(4, mem))}%` }}
         />
       </div>
@@ -87,7 +86,7 @@ const RenderProfilerBadge = React.memo(function RenderProfilerBadge() {
   const frameDeltaMs = useJarvisStore((state) => state.renderFrameDeltaMs ?? 16.6);
 
   return (
-    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] p-2.5 flex flex-col gap-1.5 shadow-sm">
+    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] p-2.5 flex flex-col gap-1.5 shadow-sm">
       <div className="flex justify-between items-center text-xs">
         <div className="flex items-center gap-1.5">
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
@@ -101,12 +100,12 @@ const RenderProfilerBadge = React.memo(function RenderProfilerBadge() {
           <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.4)]">
             {fps} FPS
           </span>
-          <span className="text-[10px] text-[#7E859E]">({frameDeltaMs}ms)</span>
+          <span className="text-[10px] text-[#9E8B65]">({frameDeltaMs}ms)</span>
         </div>
       </div>
       <div className="h-1.5 w-full bg-[rgba(var(--jarvis-accent-rgb),0.08)] border border-[rgba(var(--jarvis-accent-rgb),0.18)] chamfer-xs overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#0090FF] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
+          className="h-full bg-gradient-to-r from-[rgba(var(--jarvis-accent-rgb),0.8)] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
           style={{ width: `${Math.min(100, Math.max(8, (fps / 60) * 100))}%` }}
         />
       </div>
@@ -122,7 +121,7 @@ const NetworkThroughputBadge = React.memo(function NetworkThroughputBadge() {
   const netPercent = useJarvisStore((state) => state.systemTelemetry?.netPercent ?? 6);
 
   return (
-    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(20,16,8,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center text-xs">
         <div className="flex items-center gap-1.5">
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
@@ -136,12 +135,11 @@ const NetworkThroughputBadge = React.memo(function NetworkThroughputBadge() {
           <span className="text-white font-bold text-xs drop-shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.4)]">
             {net}
           </span>
-
         </div>
       </div>
       <div className="h-1.5 w-full bg-[rgba(var(--jarvis-accent-rgb),0.08)] border border-[rgba(var(--jarvis-accent-rgb),0.18)] chamfer-xs overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#0090FF] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
+          className="h-full bg-gradient-to-r from-[rgba(var(--jarvis-accent-rgb),0.8)] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
           style={{ width: `${Math.min(100, Math.max(4, netPercent))}%` }}
         />
       </div>
@@ -155,7 +153,7 @@ const NetworkThroughputBadge = React.memo(function NetworkThroughputBadge() {
 const GpuMetricCard = React.memo(function GpuMetricCard() {
   const gpu = useJarvisStore((state) => state.systemTelemetry?.gpu ?? 15);
   return (
-    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,16,26,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(10,22,34,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.55)] hover:border-[rgba(var(--jarvis-accent-rgb),0.4)] hover:bg-[rgba(20,16,8,0.65)] p-2.5 flex flex-col gap-1.5 transition-all duration-200 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center text-xs">
         <div className="flex items-center gap-1.5">
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
@@ -169,12 +167,11 @@ const GpuMetricCard = React.memo(function GpuMetricCard() {
           <span className="text-white font-bold text-xs drop-shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.4)]">
             {gpu}%
           </span>
-
         </div>
       </div>
       <div className="h-1.5 w-full bg-[rgba(var(--jarvis-accent-rgb),0.08)] border border-[rgba(var(--jarvis-accent-rgb),0.18)] chamfer-xs overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#0090FF] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
+          className="h-full bg-gradient-to-r from-[rgba(var(--jarvis-accent-rgb),0.8)] via-[var(--jarvis-accent)] to-[var(--jarvis-accent-soft)] chamfer-xs transition-all duration-300 shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.6)]"
           style={{ width: `${Math.min(100, Math.max(4, gpu))}%` }}
         />
       </div>
@@ -191,7 +188,7 @@ const HostStatsCard = React.memo(function HostStatsCard() {
   const osTag = useJarvisStore((state) => state.systemTelemetry?.os || "WIN");
 
   return (
-    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,16,26,0.55)] p-2.5 flex flex-col gap-2 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="chamfer-sm border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.55)] p-2.5 flex flex-col gap-2 shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.04),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-rgb),0.12)] pb-1.5">
         <span className="text-[10px] font-['Orbitron',sans-serif] font-bold text-[var(--jarvis-accent)] tracking-wider flex items-center gap-1.5">
           <Terminal className="w-3 h-3 text-[var(--jarvis-accent)]" />
@@ -204,7 +201,7 @@ const HostStatsCard = React.memo(function HostStatsCard() {
 
       <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
         <div className="flex flex-col gap-0.5 p-1.5 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.04)] border border-[rgba(var(--jarvis-accent-rgb),0.12)]">
-          <div className="flex items-center gap-1 text-[#7E859E] text-[10px]">
+          <div className="flex items-center gap-1 text-[#9E8B65] text-[10px]">
             <Clock className="w-2.5 h-2.5 text-[var(--jarvis-accent)]" />
             <span>UPTIME</span>
           </div>
@@ -214,7 +211,7 @@ const HostStatsCard = React.memo(function HostStatsCard() {
         </div>
 
         <div className="flex flex-col gap-0.5 p-1.5 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.04)] border border-[rgba(var(--jarvis-accent-rgb),0.12)]">
-          <div className="flex items-center gap-1 text-[#7E859E] text-[10px]">
+          <div className="flex items-center gap-1 text-[#9E8B65] text-[10px]">
             <Server className="w-2.5 h-2.5 text-[var(--jarvis-accent)]" />
             <span>PROCESSES</span>
           </div>
@@ -228,50 +225,7 @@ const HostStatsCard = React.memo(function HostStatsCard() {
 });
 
 function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
-  const { setSystemTelemetry, setIsSettingsModalOpen, isTelemetryOpen, setIsTelemetryOpen } =
-    useJarvisStore();
-
-  const [isClosing, setIsClosing] = useState(false);
-  const closeTimeoutRef = useRef(null);
-
-  // Smooth Shutter Close
-  const triggerClose = useCallback(() => {
-    if (isClosing) return;
-    setIsClosing(true);
-    closeTimeoutRef.current = setTimeout(() => {
-      setIsTelemetryOpen(false);
-      setIsClosing(false);
-    }, 220);
-  }, [isClosing, setIsTelemetryOpen]);
-
-  // Listen for external close toggle event (e.g. from top header button)
-  useEffect(() => {
-    const handleExternalClose = () => {
-      if (isTelemetryOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("jarvis-close-telemetry", handleExternalClose);
-    return () => window.removeEventListener("jarvis-close-telemetry", handleExternalClose);
-  }, [isTelemetryOpen, triggerClose]);
-
-  // Keyboard shortcut: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isTelemetryOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isTelemetryOpen, triggerClose]);
-
-  // Clean up close timer on unmount
-  useEffect(() => {
-    return () => {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    };
-  }, []);
+  const { setSystemTelemetry } = useJarvisStore();
 
   // Poll host operating system telemetry every 2.5 seconds
   useEffect(() => {
@@ -298,44 +252,31 @@ function TelemetryPanelComponent({ isConnected, onToggleConnection }) {
     };
   }, [setSystemTelemetry]);
 
-  if (!isTelemetryOpen && !isClosing) return null;
-
   return (
     <aside
-      className={`fixed top-18 left-6 h-[44vh] max-h-[440px] w-88 sm:w-96 max-w-[calc(100vw-3rem)] z-30 flex flex-col bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 gap-2.5 ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
-        }`}>
+      className="w-full flex-1 min-h-0 flex flex-col bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3 gap-2">
       {/* TOP ACCENT LINE */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
+      <div className="mx-4 mt-0.5 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[rgba(var(--jarvis-accent-rgb),0.8)] via-[var(--jarvis-accent)] to-[rgba(var(--jarvis-accent-rgb),0.8)] animate-pulse shrink-0" />
 
-      {/* TOP HEADER: BRANDING & CONTROLS */}
-      <div className="flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] pb-2 shrink-0">
+      {/* TOP HEADER: BRANDING */}
+      <div className="flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] pb-1.5 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 bg-[var(--jarvis-accent)] rounded-full animate-pulse shadow-[0_0_8px_var(--jarvis-accent)]" />
           <div className="flex flex-col">
-            <span className="text-sm font-['Orbitron',sans-serif] font-black tracking-widest text-[var(--jarvis-accent)]">
+            <span className="text-xs sm:text-sm font-['Orbitron',sans-serif] font-black tracking-widest text-[var(--jarvis-accent)]">
               SYSTEMS PANEL
             </span>
-            <span className="text-[9px] font-mono tracking-wider text-[#7E859E] uppercase">
+            <span className="text-[9px] font-mono tracking-wider text-[#9E8B65] uppercase">
               Host OS &amp; Core Telemetry
             </span>
           </div>
         </div>
-
-        <div className="flex items-center gap-1">
-          {/* Close Panel Button */}
-          <button
-            onClick={triggerClose}
-            className="p-1.5 chamfer-btn border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[#7E859E] hover:text-[var(--jarvis-accent)] transition-all cursor-pointer"
-            title="Close Systems Panel (Esc)">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
       </div>
 
       {/* SCROLLABLE SYS CONTENT */}
-      <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-1 min-h-0">
+      <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-1 min-h-0">
         {/* System Metric Cards */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           <CpuMetricCard />
           <MemMetricCard />
           <NetworkThroughputBadge />

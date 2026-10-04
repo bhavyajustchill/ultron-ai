@@ -13,7 +13,7 @@ function Highlighted({ text, query }) {
   const parts = [];
   let from = 0;
   for (let at = lower.indexOf(q); at >= 0; at = lower.indexOf(q, at + q.length)) {
-    parts.push(text.slice(from, at), <mark key={at} className="bg-[rgba(255,230,0,0.35)] text-white px-0.5">{text.slice(at, at + q.length)}</mark>);
+    parts.push(text.slice(from, at), <mark key={at} className="bg-[rgba(255,170,0,0.35)] text-white px-0.5">{text.slice(at, at + q.length)}</mark>);
     from = at + q.length;
   }
   parts.push(text.slice(from));
@@ -54,7 +54,7 @@ export function SessionDetail({ session, detail, isNext, hasKey, busy, live, onU
   };
 
   const copyTranscript = () => {
-    const text = turns.map((t) => `${t.role === "operator" ? "You" : "Jarvis"}: ${t.text}`).join("\n\n");
+    const text = turns.map((t) => `${t.role === "operator" ? "You" : "Ultron"}: ${t.text}`).join("\n\n");
     navigator.clipboard
       ?.writeText(`${session.title}\n\n${session.summary ? `Recap: ${session.summary}\n\n` : ""}${text}`)
       .then(() => {
@@ -66,7 +66,7 @@ export function SessionDetail({ session, detail, isNext, hasKey, busy, live, onU
 
   return (
     <div className="flex flex-col gap-3 h-full min-h-0" data-testid="session-detail">
-      <div className="flex items-center justify-between gap-2 text-[10px] font-mono text-[#7E859E]">
+      <div className="flex items-center justify-between gap-2 text-[10px] font-mono text-[#9E8B65]">
         <span>
           {sessionDateLabel(session.started_at)} · {durationLabel(session.duration_ms)} · {session.turn_count} turn{session.turn_count === 1 ? "" : "s"}
           {session.language ? ` · ${session.language}` : ""}
@@ -121,8 +121,8 @@ export function SessionDetail({ session, detail, isNext, hasKey, busy, live, onU
         </div>
       </div>
 
-      <div className="flex items-center gap-2 p-2 chamfer-sm border border-white/5 bg-[rgba(2,8,14,0.6)] text-[10px] font-mono flex-wrap">
-        <span className="text-[#7E859E] flex-1 min-w-[180px]">{greetingLabel(session, isNext)}</span>
+      <div className="flex items-center gap-2 p-2 chamfer-sm border border-white/5 bg-[rgba(15,12,5,0.6)] text-[10px] font-mono flex-wrap">
+        <span className="text-[#9E8B65] flex-1 min-w-[180px]">{greetingLabel(session, isNext)}</span>
         {isNext ? (
           <button type="button" className={ghostButton} disabled={busy} onClick={() => onUpdate({ greeting: "skip" })}>
             <BellOff className="w-3 h-3" /> DON&apos;T MENTION
@@ -135,7 +135,7 @@ export function SessionDetail({ session, detail, isNext, hasKey, busy, live, onU
       </div>
 
       <div className="flex items-center gap-1.5 flex-wrap">
-        <button type="button" className={solidButton} disabled={!canContinue || busy} onClick={onContinue} data-testid="session-continue" title={live ? "This is the conversation happening now" : "Re-link Jarvis with this conversation's last turns and recap"}>
+        <button type="button" className={solidButton} disabled={!canContinue || busy} onClick={onContinue} data-testid="session-continue" title={live ? "This is the conversation happening now" : "Re-link Ultron with this conversation's last turns and recap"}>
           <Play className="w-3 h-3" /> CONTINUE
         </button>
         <button type="button" className={ghostButton} disabled={!session.summary || busy} onClick={onToMemory} title="Save the recap as a long-term memory">
@@ -168,29 +168,29 @@ export function SessionDetail({ session, detail, isNext, hasKey, busy, live, onU
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold text-[var(--jarvis-accent)] font-mono">TRANSCRIPT</span>
           <div className="relative flex-1">
-            <Search className="w-3 h-3 absolute left-2 top-1.5 text-[#7E859E]" />
+            <Search className="w-3 h-3 absolute left-2 top-1.5 text-[#9E8B65]" />
             <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Find in transcript..." aria-label="Find in transcript" className={`${inputClass} w-full pl-6 pr-2 py-0.5 text-[10px]`} />
           </div>
-          {find.trim() && <span className="text-[9px] text-[#7E859E] font-mono shrink-0" data-testid="transcript-matches">{matches} TURN{matches === 1 ? "" : "S"}</span>}
+          {find.trim() && <span className="text-[9px] text-[#9E8B65] font-mono shrink-0" data-testid="transcript-matches">{matches} TURN{matches === 1 ? "" : "S"}</span>}
         </div>
         <div className="flex flex-col gap-1.5 overflow-y-auto min-h-0 pr-1" data-testid="session-transcript">
           {!detail ? (
-            <p className="text-[10px] text-[#7E859E] font-mono">Loading...</p>
+            <p className="text-[10px] text-[#9E8B65] font-mono">Loading...</p>
           ) : turns.length === 0 ? (
-            <p className="text-[10px] text-[#7E859E] font-mono italic">
+            <p className="text-[10px] text-[#9E8B65] font-mono italic">
               {session.turn_count ? "Transcript not kept (recap-only mode was on). The recap above is what remains." : "Nothing said yet."}
             </p>
           ) : (
             turns.map((t, i) => (
               <div key={i} className={`max-w-[88%] px-2.5 py-1.5 chamfer-sm text-[11px] leading-relaxed break-words ${t.role === "operator" ? "self-end bg-[rgba(var(--jarvis-accent-rgb),0.12)] border border-[rgba(var(--jarvis-accent-rgb),0.3)]" : "self-start bg-[rgba(255,255,255,0.04)] border border-white/10"}`}>
-                <span className="block text-[8px] font-mono text-[#7E859E] mb-0.5">
-                  {t.role === "operator" ? "YOU" : "JARVIS"} · {new Date(t.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                <span className="block text-[8px] font-mono text-[#9E8B65] mb-0.5">
+                  {t.role === "operator" ? "YOU" : "ULTRON"} · {new Date(t.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </span>
                 <Highlighted text={t.text} query={find.trim()} />
               </div>
             ))
           )}
-          {live && <p className="text-[9px] text-[#7E859E] font-mono italic">Recording: new turns reach the archive every few exchanges and when the link closes.</p>}
+          {live && <p className="text-[9px] text-[#9E8B65] font-mono italic">Recording: new turns reach the archive every few exchanges and when the link closes.</p>}
         </div>
       </div>
     </div>

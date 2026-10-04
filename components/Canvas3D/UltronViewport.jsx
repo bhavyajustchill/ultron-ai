@@ -247,14 +247,14 @@ function UltronViewportComponent({
           isGesturesActive ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 pointer-events-none translate-y-4"
         }`}
       >
-        <div className="relative w-48 h-36 chamfer-md bg-[rgba(15,12,6,0.92)] border border-[rgba(255,184,0,0.4)] shadow-[0_0_20px_rgba(255,184,0,0.25)] overflow-hidden backdrop-blur-md">
+        <div className="relative w-48 h-36 chamfer-md bg-[rgba(15,12,6,0.92)] border border-[rgba(var(--jarvis-accent-rgb),0.4)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.25)] overflow-hidden backdrop-blur-md">
           {/* Top Status Banner */}
-          <div className="absolute top-0 inset-x-0 h-6 px-2.5 flex items-center justify-between bg-[rgba(255,184,0,0.12)] border-b border-[rgba(255,184,0,0.25)] text-[9px] font-mono font-bold text-[#FFB800]">
+          <div className="absolute top-0 inset-x-0 h-6 px-2.5 flex items-center justify-between bg-[rgba(var(--jarvis-accent-rgb),0.12)] border-b border-[rgba(var(--jarvis-accent-rgb),0.25)] text-[9px] font-mono font-bold text-[var(--jarvis-accent)]">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FFB800] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--jarvis-accent)] animate-pulse" />
               GESTURE TRACKER
             </span>
-            <span className="text-[#FFE082]">
+            <span className="text-[var(--jarvis-accent-soft)]">
               {gestureStatus.hands > 0
                 ? `${gestureStatus.hands} HAND${gestureStatus.hands > 1 ? "S" : ""} · ${gestureStatus.mode.toUpperCase()}`
                 : "SHOW HANDS"}

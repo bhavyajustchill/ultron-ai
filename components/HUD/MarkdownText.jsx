@@ -48,7 +48,7 @@ export function renderInlineMarkdown(text, isJarvis = false) {
       tokens.push(
         <strong
           key={`bi-${key++}`}
-          className={`font-bold italic ${isJarvis ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
+          className={`font-bold italic ${isJarvis ? 'text-[#FF8095]' : 'text-[var(--jarvis-accent-soft)]'}`}
         >
           {matchedStr.slice(3, -3)}
         </strong>
@@ -60,7 +60,7 @@ export function renderInlineMarkdown(text, isJarvis = false) {
       tokens.push(
         <strong
           key={`b-${key++}`}
-          className={`font-bold ${isJarvis ? 'text-[#FF8095]' : 'text-[#80F7FF]'}`}
+          className={`font-bold ${isJarvis ? 'text-[#FF8095]' : 'text-[var(--jarvis-accent-soft)]'}`}
         >
           {matchedStr.slice(2, -2)}
         </strong>
@@ -70,13 +70,13 @@ export function renderInlineMarkdown(text, isJarvis = false) {
       (matchedStr.startsWith('_') && matchedStr.endsWith('_'))
     ) {
       tokens.push(
-        <em key={`i-${key++}`} className="italic text-[#E0E2EC]">
+        <em key={`i-${key++}`} className="italic text-[#EBE8E1]">
           {matchedStr.slice(1, -1)}
         </em>
       );
     } else if (matchedStr.startsWith('~~') && matchedStr.endsWith('~~')) {
       tokens.push(
-        <del key={`del-${key++}`} className="line-through text-[#7E859E]">
+        <del key={`del-${key++}`} className="line-through text-[#9E8B65]">
           {matchedStr.slice(2, -2)}
         </del>
       );
@@ -155,7 +155,7 @@ export function MarkdownText({ content, isJarvis = false }) {
                   <span>{part.lang.toUpperCase()}</span>
                 </div>
               )}
-              <pre className="p-2 text-[10px] text-[#80F7FF] overflow-x-auto leading-normal">
+              <pre className="p-2 text-[10px] text-[var(--jarvis-accent-soft)] overflow-x-auto leading-normal">
                 <code>{part.code.trim()}</code>
               </pre>
             </div>
@@ -231,7 +231,7 @@ export function MarkdownText({ content, isJarvis = false }) {
           if (trimmed.startsWith('> ')) {
             flushList();
             elements.push(
-              <blockquote key={`bq-${lIdx}`} className="border-l-2 border-[#FF003C] pl-2 my-1 text-[#7E859E] italic">
+              <blockquote key={`bq-${lIdx}`} className="border-l-2 border-[#FF003C] pl-2 my-1 text-[#9E8B65] italic">
                 {renderInlineMarkdown(trimmed.substring(2), isJarvis)}
               </blockquote>
             );

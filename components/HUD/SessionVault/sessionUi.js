@@ -27,8 +27,8 @@ export function bytesLabel(bytes) {
 }
 
 export function greetingLabel(session, isNext) {
-  if (isNext) return "Jarvis will bring this up in his next greeting.";
-  if (session.greeting === "skip") return "Jarvis will not bring this up.";
+  if (isNext) return "Ultron will bring this up in his next greeting.";
+  if (session.greeting === "skip") return "Ultron will not bring this up.";
   if (session.greeting === "mentioned") return `Mentioned in a greeting${session.mentioned_at ? ` on ${new Date(session.mentioned_at).toLocaleDateString()}` : ""}.`;
   if (!session.summary) return "No recap to mention yet.";
   return "Not next: only the newest recap (or one you queue) is mentioned.";

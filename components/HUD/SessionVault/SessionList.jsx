@@ -34,8 +34,8 @@ export function SessionBulkBar({ ids, onPin, onDelete, onSelectAll, onClear, bus
         {confirming ? `DELETE ${count}?` : "DELETE"}
       </button>
       <span className="ml-auto flex items-center gap-1">
-        <button type="button" className="text-[#7E859E] hover:text-[var(--jarvis-accent)] cursor-pointer px-1" onClick={onSelectAll}>ALL SHOWN</button>
-        <button type="button" className="text-[#7E859E] hover:text-white cursor-pointer p-0.5" onClick={onClear} title="Clear selection">
+        <button type="button" className="text-[#9E8B65] hover:text-[var(--jarvis-accent)] cursor-pointer px-1" onClick={onSelectAll}>ALL SHOWN</button>
+        <button type="button" className="text-[#9E8B65] hover:text-white cursor-pointer p-0.5" onClick={onClear} title="Clear selection">
           <X className="w-3.5 h-3.5" />
         </button>
       </span>
@@ -61,7 +61,7 @@ export function SessionRow({ session, active, checked, isNextGreeting, onOpen, o
       className={`group flex gap-2.5 p-2.5 chamfer-md border transition-all cursor-pointer outline-none ${
         active
           ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_16px_rgba(var(--jarvis-accent-rgb),0.18)]"
-          : "border-[rgba(var(--jarvis-accent-rgb),0.16)] bg-[rgba(4,16,25,0.7)] hover:border-[rgba(var(--jarvis-accent-rgb),0.5)] focus-visible:border-[var(--jarvis-accent)]"
+          : "border-[rgba(var(--jarvis-accent-rgb),0.16)] bg-[rgba(24,18,5,0.7)] hover:border-[rgba(var(--jarvis-accent-rgb),0.5)] focus-visible:border-[var(--jarvis-accent)]"
       }`}>
       <button
         type="button"
@@ -70,7 +70,7 @@ export function SessionRow({ session, active, checked, isNextGreeting, onOpen, o
           e.stopPropagation();
           onToggleCheck(session.id);
         }}
-        className={`self-start mt-0.5 cursor-pointer ${checked ? "text-[var(--jarvis-accent)]" : "text-[#4A5068] group-hover:text-[#7E859E]"}`}>
+        className={`self-start mt-0.5 cursor-pointer ${checked ? "text-[var(--jarvis-accent)]" : "text-[#665E4B] group-hover:text-[#9E8B65]"}`}>
         {checked ? <SquareCheck className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
       </button>
       <div className="flex-1 min-w-0 flex flex-col gap-1">
@@ -78,17 +78,17 @@ export function SessionRow({ session, active, checked, isNextGreeting, onOpen, o
           {session.live && <span className={`${badge} text-[#2BFFA3] border-[#2BFFA3]/50 bg-[#2BFFA3]/10 animate-pulse`}>LIVE</span>}
           {isNextGreeting && <span className={`${badge} text-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.45)] bg-[rgba(var(--jarvis-accent-rgb),0.1)]`}>NEXT GREETING</span>}
           {session.pinned && <Pin className="w-3 h-3 text-[var(--jarvis-accent)] fill-[var(--jarvis-accent)]" aria-label="Pinned" />}
-          {!session.summary && <span className={`${badge} text-[#7E859E] border-[#7E859E]/30`}>NO RECAP</span>}
+          {!session.summary && <span className={`${badge} text-[#9E8B65] border-[#9E8B65]/30`}>NO RECAP</span>}
           {session.relevance !== undefined && (
             <span className={`${badge} border-[rgba(var(--jarvis-accent-rgb),0.3)] text-[var(--jarvis-accent-soft)]`}>{Math.round(session.relevance * 100)}% MATCH</span>
           )}
-          <span className="ml-auto text-[#7E859E]">{sessionDateLabel(session.started_at)}</span>
+          <span className="ml-auto text-[#9E8B65]">{sessionDateLabel(session.started_at)}</span>
         </div>
         <p className="text-xs font-bold text-[#F0F2F8] truncate">{session.title}</p>
-        <p className="text-[11px] text-[#B8BFD6] leading-relaxed line-clamp-2 break-words">
+        <p className="text-[11px] text-[#D4CCBA] leading-relaxed line-clamp-2 break-words">
           {session.match?.snippet || session.summary || session.preview || "No recap yet."}
         </p>
-        <span className="text-[9px] text-[#7E859E] font-mono">
+        <span className="text-[9px] text-[#9E8B65] font-mono">
           {durationLabel(session.duration_ms)} · {session.turn_count} turn{session.turn_count === 1 ? "" : "s"}
           {session.language ? ` · ${session.language}` : ""}
           {session.match?.where === "transcript" ? ` · ${session.match.count} match${session.match.count === 1 ? "" : "es"} in transcript` : ""}

@@ -218,7 +218,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         captureAndTransmitFrame();
       }, visionInterval);
       setIsStreaming(true);
-      addCommsMessage("system", `Webcam optical telemetry streaming to J.A.R.V.I.S`);
+      addCommsMessage("system", `Webcam optical telemetry streaming to Ultron`);
     }
   };
 
@@ -226,7 +226,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
   const handleSnapshot = () => {
     const sent = captureAndTransmitFrame();
     if (sent) {
-      addCommsMessage("system", "Operator optical snapshot transmitted to J.A.R.V.I.S");
+      addCommsMessage("system", "Operator optical snapshot transmitted to Ultron");
     }
   };
 
@@ -295,10 +295,10 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
       }
       className={`fixed z-35 ${!position ? "top-[52vh] left-6" : ""
         } ${isMinimized ? "w-64" : "w-72 sm:w-80"
-        } chamfer-lg border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""
+        } chamfer-lg border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(15,12,5,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""
         } ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>
       {/* Top Accent Gradient Line */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
+      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
 
       {/* Header Bar */}
       <div
@@ -307,7 +307,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         <div className="flex items-center gap-2 pointer-events-none">
           <GripHorizontal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]/60" />
           <span
-            className={`w-2 h-2 rounded-full ${isWebcamActive ? "bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_6px_var(--jarvis-accent)]" : "bg-[#7E859E]"}`}
+            className={`w-2 h-2 rounded-full ${isWebcamActive ? "bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_6px_var(--jarvis-accent)]" : "bg-[#9E8B65]"}`}
           />
           <span className="text-[10px] font-mono font-semibold tracking-wider text-[var(--jarvis-accent)] flex items-center gap-1.5">
             OPTIC PiP // LIVE FEED
@@ -322,19 +322,19 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
           <button
             onClick={() => setIsMirrored((prev) => !prev)}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Mirror Video">
             <RefreshCw className="w-3 h-3" />
           </button>
           <button
             onClick={() => setIsMinimized((prev) => !prev)}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
             title={isMinimized ? "Expand PiP" : "Minimize PiP"}>
             {isMinimized ? <Maximize2 className="w-3 h-3" /> : <Minimize2 className="w-3 h-3" />}
           </button>
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Close Webcam Feed (Esc)">
             <X className="w-3 h-3" />
           </button>
@@ -388,13 +388,13 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
       </div>
 
       {/* Control Bar */}
-      <div className="flex items-center justify-between p-2 bg-[rgba(14,16,23,0.95)] border-t border-[rgba(255,255,255,0.06)]">
+      <div className="flex items-center justify-between p-2 bg-[rgba(23,20,14,0.95)] border-t border-[rgba(255,255,255,0.06)]">
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleSnapshot}
             disabled={!isWebcamActive}
             className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(var(--jarvis-accent-2-rgb),0.1)] border border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] hover:bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[10px] font-mono transition-all cursor-pointer disabled:opacity-40"
-            title="Send optical snapshot to J.A.R.V.I.S">
+            title="Send optical snapshot to Ultron">
             <Camera className="w-2.5 h-2.5" />
             <span>SNAPSHOT</span>
           </button>
@@ -406,13 +406,13 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
                 ? "border-[var(--jarvis-accent-2)] bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[var(--jarvis-accent-2)]"
                 : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[#F0F2F8] hover:border-[var(--jarvis-accent-2)]"
               }`}
-            title="Continuous frame stream to J.A.R.V.I.S">
+            title="Continuous frame stream to Ultron">
             {isStreaming ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
             <span>{isStreaming ? "STOP" : "STREAM"}</span>
           </button>
         </div>
 
-        <div className="text-[9px] font-mono text-[#7E859E]">
+        <div className="text-[9px] font-mono text-[#9E8B65]">
           {isWebcamActive
             ? framesCount > 0 && isMinimized
               ? `${framesCount}F`

@@ -52,7 +52,7 @@ export async function GET(req) {
       return new NextResponse(exportSessions(ids, md ? 'md' : 'json'), {
         headers: {
           'Content-Type': md ? 'text/markdown; charset=utf-8' : 'application/json; charset=utf-8',
-          'Content-Disposition': `attachment; filename="jarvis-conversations-${stamp}.${md ? 'md' : 'json'}"`,
+          'Content-Disposition': `attachment; filename="ultron-conversations-${stamp}.${md ? 'md' : 'json'}"`,
         },
       });
     }

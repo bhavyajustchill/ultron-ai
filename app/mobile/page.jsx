@@ -148,7 +148,7 @@ export default function MobileRemotePage() {
       }
     } else {
       // Fallback: prompt for vocal directive
-      const promptText = prompt("Enter vocal directive for J.A.R.V.I.S:");
+      const promptText = prompt("Enter vocal directive for Ultron:");
       if (promptText) {
         sendDirective("text_directive", promptText);
       }
@@ -165,19 +165,19 @@ export default function MobileRemotePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0B10] text-[#F0F2F8] flex flex-col justify-between p-4 font-mono select-none">
+    <main className="min-h-screen bg-[#080602] text-[#F0F2F8] flex flex-col justify-between p-4 font-mono select-none">
       {/* Top Header */}
       <header className="flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-2-rgb),0.25)] pb-3">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span className="text-base font-['Orbitron',sans-serif] font-black tracking-widest text-[var(--jarvis-accent-2)]">
-              J.A.R.V.I.S
+              ULTRON
             </span>
             <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[var(--jarvis-accent-2)]/15 text-[var(--jarvis-accent-2)] font-bold">
               MOBILE RELAY
             </span>
           </div>
-          <span className="text-[9px] text-[#7E859E]">Mark II Companion Link</span>
+          <span className="text-[9px] text-[#9E8B65]">Autonomous Companion Link</span>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
@@ -190,7 +190,7 @@ export default function MobileRemotePage() {
                     : "bg-[#FF003C]"
                 }`}
             />
-            <span className="text-[10px] text-[#7E859E]">{syncStatus}</span>
+            <span className="text-[10px] text-[#9E8B65]">{syncStatus}</span>
           </div>
         </div>
       </header>
@@ -198,19 +198,19 @@ export default function MobileRemotePage() {
       {/* Host Telemetry Bar */}
       <section className="my-3 p-2.5 chamfer-md border border-[rgba(var(--jarvis-accent-2-rgb),0.2)] bg-[rgba(10,11,16,0.9)] flex items-center justify-between text-xs">
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">STATUS</span>
+          <span className="text-[9px] text-[#9E8B65]">STATUS</span>
           <span className="text-[var(--jarvis-accent-2)] font-bold">{desktopState.status}</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">CPU</span>
+          <span className="text-[9px] text-[#9E8B65]">CPU</span>
           <span className="text-[#00FF66] font-bold">{desktopState.systemTelemetry.cpu}%</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">MEM</span>
+          <span className="text-[9px] text-[#9E8B65]">MEM</span>
           <span className="text-[#E5A910] font-bold">{desktopState.systemTelemetry.mem}%</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#7E859E]">HOST UP</span>
+          <span className="text-[9px] text-[#9E8B65]">HOST UP</span>
           <span className="text-[#F0F2F8] font-bold">{desktopState.systemTelemetry.uptime}</span>
         </div>
       </section>
@@ -246,9 +246,9 @@ export default function MobileRemotePage() {
           </button>
         </div>
 
-        <p className="text-[11px] text-[#7E859E] text-center max-w-xs">
+        <p className="text-[11px] text-[#9E8B65] text-center max-w-xs">
           {isRecording
-            ? "Relaying live speech to J.A.R.V.I.S.."
+            ? "Relaying live speech to Ultron."
             : "Press and hold to stream vocal directive"}
         </p>
 
@@ -309,11 +309,11 @@ export default function MobileRemotePage() {
                       ? "text-[var(--jarvis-accent-2)]"
                       : item.sender === "user"
                         ? "text-[#FF8095]"
-                        : "text-[#7E859E]"
+                        : "text-[#9E8B65]"
                     }`}>
-                  {item.sender ? item.sender.toUpperCase() : "COMMS"}:
+                  {item.sender ? (item.sender === "jarvis" ? "ULTRON" : item.sender.toUpperCase()) : "COMMS"}:
                 </span>
-                <span className="text-[#D0D4E4] truncate">{item.text}</span>
+                <span className="text-[#E3DED1] truncate">{item.text}</span>
               </div>
             ))}
           </div>
@@ -326,7 +326,7 @@ export default function MobileRemotePage() {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type tactical directive..."
-            className="flex-1 px-3 py-2 chamfer-xs bg-[rgba(255,255,255,0.04)] border border-[rgba(var(--jarvis-accent-2-rgb),0.3)] text-xs text-[#F0F2F8] placeholder-[#7E859E] focus:outline-none focus:border-[var(--jarvis-accent-2)]"
+            className="flex-1 px-3 py-2 chamfer-xs bg-[rgba(255,255,255,0.04)] border border-[rgba(var(--jarvis-accent-2-rgb),0.3)] text-xs text-[#F0F2F8] placeholder-[#9E8B65] focus:outline-none focus:border-[var(--jarvis-accent-2)]"
           />
           <button
             type="submit"

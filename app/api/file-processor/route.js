@@ -34,7 +34,7 @@ export async function POST(req) {
     else if (ext === 'pdf') result = await processPdf(action, target, body, apiKey);
     else if (SHEET_EXTENSIONS.includes(ext)) result = await processSheet(action, target, body);
     else if (MEDIA_EXTENSIONS.includes(ext)) result = await processMedia(action, target, body, apiKey);
-    else throw new ProcessError(`${displayPath(target)} is not a file type Jarvis can process (images, PDFs, CSV / Excel, audio, video).`);
+    else throw new ProcessError(`${displayPath(target)} is not a file type Ultron can process (images, PDFs, CSV / Excel, audio, video).`);
     return NextResponse.json({ success: true, action, path: displayPath(target), ...result, ...(result.output ? { output: displayPath(result.output) } : {}) });
   } catch (error) {
     if (error instanceof SandboxError || error instanceof ProcessError) return NextResponse.json({ success: false, message: error.message });

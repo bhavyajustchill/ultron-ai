@@ -35,7 +35,7 @@ export async function POST(req) {
         return NextResponse.json({
           success: true,
           reminder: { id: reminder.id, message: reminder.message, when: reminder.when, repeat: reminder.repeat },
-          message: `Reminder set for ${reminder.when}: "${reminder.message}". It appears as a desktop notification even if Jarvis is closed.`,
+          message: `Reminder set for ${reminder.when}: "${reminder.message}". It appears as a desktop notification even if Ultron is closed.`,
         });
       }
       case 'list': {

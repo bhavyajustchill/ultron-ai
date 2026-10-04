@@ -1,33 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  /* Accent family (Phase 8.7): the HUD derives every cyan tone from these; a chosen accent
-     theme overrides them at runtime (lib/accentTheme.js). First-paint values are the default
-     Arc Reactor Blue (#00C3FF) = accentCssVars(DEFAULT_ACCENT). */
-  --jarvis-accent: #00c3ff;
-  --jarvis-accent-rgb: 0, 195, 255;
-  --jarvis-accent-2: #00ceff;
-  --jarvis-accent-2-rgb: 0, 206, 255;
-  --jarvis-accent-soft: #70ddff;
-  --jarvis-accent-dim: #002c4d;
-  --jarvis-glow-1-rgb: 0, 181, 255;
+  /* Accent family: the HUD derives every accent tone from these. A chosen theme overrides them at
+     runtime (lib/accentTheme.js); first-paint values are Ultron's Stark Gold (#FFB800) palette. */
+  --jarvis-accent: #ffb800;
+  --jarvis-accent-rgb: 255, 184, 0;
+  --jarvis-accent-2: #ffb800;
+  --jarvis-accent-2-rgb: 255, 184, 0;
+  --jarvis-accent-soft: #ffd54f;
+  --jarvis-accent-dim: #3d2600;
+  --jarvis-glow-1-rgb: 255, 184, 0;
 
-  /* Core Brand & Neon Highlights (JARVIS Electric Aqua-Cyan Theme) */
+  /* Legacy names, aliases of the accent family */
+  --ultron-gold: var(--jarvis-accent);
+  --ultron-gold-dim: var(--jarvis-accent-dim);
   --jarvis-cyan: var(--jarvis-accent);
   --jarvis-cyan-dim: var(--jarvis-accent-dim);
   --cyber-cyan: var(--jarvis-accent);
   --amber-alert: #ffe600;
 
-  /* Tactical Surfaces & Depth (Deep Space Carbon Cyan) */
-  --void-black: #010e16;
-  --carbon-900: #031520;
-  --carbon-800: #071f30;
+  /* Tactical Surfaces & Depth (Deep Space Carbon Gold) */
+  --void-black: #000000;
+  --carbon-900: #0f0c05;
+  --carbon-800: #1a1408;
   --carbon-border: rgba(var(--jarvis-accent-rgb), 0.32);
   --cyan-border: rgba(var(--jarvis-accent-rgb), 0.32);
 
   /* Text & Readability */
   --text-primary: #f0f2f8;
-  --text-muted: #7e859e;
+  --text-muted: #9e957e;
   --text-cyan: var(--jarvis-accent-soft);
 
   --background: var(--void-black);
@@ -80,57 +81,31 @@ body {
   pointer-events: none;
 }
 
-/* Cyberpunk Tactical Chamfer Corners (Native 45-Degree Bevel with Continuous Borders) */
-.chamfer-xs {
-  border-radius: 3px;
-  corner-shape: bevel;
-}
-
-.chamfer-sm {
-  border-radius: 4px;
-  corner-shape: bevel;
-}
-
-.chamfer-btn {
-  border-radius: 6px;
-  corner-shape: bevel;
-}
-
-.chamfer-md {
-  border-radius: 8px;
-  corner-shape: bevel;
-}
-
-.chamfer-lg {
-  border-radius: 14px;
-  corner-shape: bevel;
-}
-
-.chamfer-xl {
-  border-radius: 18px;
-  corner-shape: bevel;
-}
-
-.chamfer-diagonal {
-  border-radius: 10px 0 10px 0;
-  corner-shape: bevel;
-}
-
+/* Sharp Squared 90-Degree Tactical Geometry (Zero Bevel / Sharp Corners) */
+.chamfer-xs,
+.chamfer-sm,
+.chamfer-btn,
+.chamfer-md,
+.chamfer-lg,
+.chamfer-xl,
+.chamfer-diagonal,
 .chamfer-tab {
-  border-radius: 8px 8px 0 0;
-  corner-shape: bevel;
+  border-radius: 0px !important;
+  corner-shape: initial !important;
+  clip-path: none !important;
 }
 
-/* Cyberpunk Tactical HUD Panels with Chamfered Edges */
+/* Tactical HUD Panels with Sharp 90-Degree Squared Edges */
 .hud-panel {
   background: rgba(5, 11, 18, 0.88);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(var(--jarvis-accent-2-rgb),  0.28);
   box-shadow:
-    0 0 15px rgba(0, 0, 0, 0.75),
+    0 0 15px rgba(0, 0, 0, 0.85),
     inset 0 0 10px rgba(var(--jarvis-accent-2-rgb),  0.05);
-  border-radius: 14px;
-  corner-shape: bevel;
+  border-radius: 0px !important;
+  corner-shape: initial !important;
+  clip-path: none !important;
 }
 
 .hud-panel-cyan {
@@ -138,118 +113,11 @@ body {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(var(--jarvis-accent-2-rgb),  0.3);
   box-shadow:
-    0 0 15px rgba(0, 0, 0, 0.7),
-    inset 0 0 10px rgba(var(--jarvis-accent-2-rgb),  0.04);
-  border-radius: 14px;
-  corner-shape: bevel;
-}
-
-/* Fallback for non-supporting browser engines (e.g. Gecko/Firefox) */
-@supports not (corner-shape: bevel) {
-  .chamfer-xs {
-    clip-path: polygon(
-      3px 0%,
-      calc(100% - 3px) 0%,
-      100% 3px,
-      100% calc(100% - 3px),
-      calc(100% - 3px) 100%,
-      3px 100%,
-      0% calc(100% - 3px),
-      0% 3px
-    );
-  }
-  .chamfer-sm {
-    clip-path: polygon(
-      4px 0%,
-      calc(100% - 4px) 0%,
-      100% 4px,
-      100% calc(100% - 4px),
-      calc(100% - 4px) 100%,
-      4px 100%,
-      0% calc(100% - 4px),
-      0% 4px
-    );
-  }
-  .chamfer-btn {
-    clip-path: polygon(
-      6px 0%,
-      calc(100% - 6px) 0%,
-      100% 6px,
-      100% calc(100% - 6px),
-      calc(100% - 6px) 100%,
-      6px 100%,
-      0% calc(100% - 6px),
-      0% 6px
-    );
-  }
-  .chamfer-md {
-    clip-path: polygon(
-      8px 0%,
-      calc(100% - 8px) 0%,
-      100% 8px,
-      100% calc(100% - 8px),
-      calc(100% - 8px) 100%,
-      8px 100%,
-      0% calc(100% - 8px),
-      0% 8px
-    );
-  }
-  .chamfer-lg {
-    clip-path: polygon(
-      14px 0%,
-      calc(100% - 14px) 0%,
-      100% 14px,
-      100% calc(100% - 14px),
-      calc(100% - 14px) 100%,
-      14px 100%,
-      0% calc(100% - 14px),
-      0% 14px
-    );
-  }
-  .chamfer-xl {
-    clip-path: polygon(
-      18px 0%,
-      calc(100% - 18px) 0%,
-      100% 18px,
-      100% calc(100% - 18px),
-      calc(100% - 18px) 100%,
-      18px 100%,
-      0% calc(100% - 18px),
-      0% 18px
-    );
-  }
-  .chamfer-diagonal {
-    clip-path: polygon(
-      10px 0%,
-      100% 0%,
-      100% calc(100% - 10px),
-      calc(100% - 10px) 100%,
-      0% 100%,
-      0% 10px
-    );
-  }
-  .chamfer-tab {
-    clip-path: polygon(
-      0% 0%,
-      calc(100% - 8px) 0%,
-      100% 8px,
-      100% 100%,
-      0% 100%
-    );
-  }
-  .hud-panel,
-  .hud-panel-cyan {
-    clip-path: polygon(
-      14px 0%,
-      calc(100% - 14px) 0%,
-      100% 14px,
-      100% calc(100% - 14px),
-      calc(100% - 14px) 100%,
-      14px 100%,
-      0% calc(100% - 14px),
-      0% 14px
-    );
-  }
+    0 0 15px rgba(0, 0, 0, 0.8),
+    inset 0 0 10px rgba(var(--jarvis-accent-2-rgb),  0.05);
+  border-radius: 0px !important;
+  corner-shape: initial !important;
+  clip-path: none !important;
 }
 
 /* Neon Glows */
@@ -285,7 +153,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--jarvis-accent);
-  border-radius: 2px;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

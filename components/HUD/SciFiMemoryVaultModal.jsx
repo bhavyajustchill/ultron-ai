@@ -260,7 +260,7 @@ export function SciFiMemoryVaultModal() {
     if (!relinkSession) return;
     relinkSession();
     setContextChanged(false);
-    showToast("Re-linking: Jarvis picks up the vault changes in a moment.");
+    showToast("Re-linking: Ultron picks up the vault changes in a moment.");
   };
 
   const toggleCheck = (id) =>
@@ -289,7 +289,7 @@ export function SciFiMemoryVaultModal() {
         role="dialog"
         aria-label="Neural memory vault"
         data-testid="memory-vault"
-        className={`relative w-full max-w-6xl h-[90vh] bg-[rgba(8,12,18,0.62)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col text-[#F0F2F8] font-mono ${
+        className={`relative w-full max-w-6xl h-[90vh] bg-[rgba(15,12,5,0.62)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col text-[#F0F2F8] font-mono ${
           isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
         }`}>
         <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent)] animate-pulse" />
@@ -307,7 +307,7 @@ export function SciFiMemoryVaultModal() {
                   {memories.length} RECORDS
                 </span>
               </span>
-              <span className="text-[10px] text-[#7E859E] truncate">Everything Jarvis remembers between conversations, and what he keeps in mind</span>
+              <span className="text-[10px] text-[#9E8B65] truncate">Everything Ultron remembers between conversations, and what he keeps in mind</span>
             </div>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -331,7 +331,7 @@ export function SciFiMemoryVaultModal() {
             <button
               type="button"
               onClick={triggerClose}
-              className="px-2.5 py-1 chamfer-xs text-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-2.5 py-1 chamfer-xs text-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] transition-all cursor-pointer flex items-center gap-1.5"
               title="Close Vault (Escape)">
               <X className="w-4 h-4" />
               <span className="text-[10px] hidden sm:inline">ESC</span>
@@ -340,15 +340,15 @@ export function SciFiMemoryVaultModal() {
         </div>
 
         {/* Stats strip */}
-        <div className="px-4 sm:px-6 py-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] border-b border-white/5 bg-[rgba(2,8,14,0.4)]" data-testid="vault-stats">
-          <button type="button" onClick={() => setFilterContext(filterContext === "prompt" ? "all" : "prompt")} className="flex items-center gap-2 cursor-pointer group" title="Memories Jarvis gets in full at the start of every conversation">
-            <span className="text-[#7E859E] group-hover:text-[var(--jarvis-accent)]">IN CONTEXT</span>
+        <div className="px-4 sm:px-6 py-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] border-b border-white/5 bg-[rgba(15,12,5,0.4)]" data-testid="vault-stats">
+          <button type="button" onClick={() => setFilterContext(filterContext === "prompt" ? "all" : "prompt")} className="flex items-center gap-2 cursor-pointer group" title="Memories Ultron gets in full at the start of every conversation">
+            <span className="text-[#9E8B65] group-hover:text-[var(--jarvis-accent)]">IN CONTEXT</span>
             <span className="w-24 h-1.5 bg-[rgba(var(--jarvis-accent-rgb),0.12)] chamfer-xs overflow-hidden">
               <span className="block h-full bg-[var(--jarvis-accent)] shadow-[0_0_6px_var(--jarvis-accent)]" style={{ width: `${Math.min(100, ((stats?.in_prompt || 0) / limit) * 100)}%` }} />
             </span>
             <span className="text-[var(--jarvis-accent)] font-bold">{stats?.in_prompt ?? 0}/{limit}</span>
           </button>
-          <button type="button" onClick={() => setFilterContext(filterContext === "pinned" ? "all" : "pinned")} className="flex items-center gap-1 cursor-pointer text-[#7E859E] hover:text-[var(--jarvis-accent)]">
+          <button type="button" onClick={() => setFilterContext(filterContext === "pinned" ? "all" : "pinned")} className="flex items-center gap-1 cursor-pointer text-[#9E8B65] hover:text-[var(--jarvis-accent)]">
             <Pin className="w-3 h-3" /> PINNED <strong className={stats?.pinned > limit ? "text-[#FFB020]" : "text-[var(--jarvis-accent)]"}>{stats?.pinned ?? 0}</strong>
           </button>
           {stats?.muted ? (
@@ -365,7 +365,7 @@ export function SciFiMemoryVaultModal() {
                 className={`px-2 py-0.5 chamfer-xs uppercase transition-all cursor-pointer border ${
                   filterCategory === c
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] border-[var(--jarvis-accent)] font-semibold"
-                    : "text-[#7E859E] hover:text-white border-transparent hover:border-white/10"
+                    : "text-[#9E8B65] hover:text-white border-transparent hover:border-white/10"
                 }`}>
                 {c} {c === "all" ? memories.length : stats?.by_category?.[c] ?? 0}
               </button>
@@ -377,7 +377,7 @@ export function SciFiMemoryVaultModal() {
         {/* Toolbar */}
         <div className="px-4 sm:px-6 py-2.5 flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-[#7E859E]" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-[#9E8B65]" />
             <input
               type="text"
               value={searchQuery}
@@ -394,7 +394,7 @@ export function SciFiMemoryVaultModal() {
                   onClick={() => setSearchMode(mode)}
                   disabled={mode === "meaning" && !apiKey()}
                   title={mode === "meaning" && !apiKey() ? "Needs a Gemini API key" : mode === "meaning" ? "Rank by meaning" : "Match words"}
-                  className={`px-1.5 py-0.5 uppercase cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${searchMode === mode ? "bg-[var(--jarvis-accent)] text-[#010e16] font-bold" : "text-[#7E859E] hover:text-white"}`}>
+                  className={`px-1.5 py-0.5 uppercase cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${searchMode === mode ? "bg-[var(--jarvis-accent)] text-[#080602] font-bold" : "text-[#9E8B65] hover:text-white"}`}>
                   {mode === "meaning" ? <span className="flex items-center gap-0.5"><Sparkles className="w-2.5 h-2.5" />MEANING</span> : "WORDS"}
                 </button>
               ))}
@@ -406,7 +406,7 @@ export function SciFiMemoryVaultModal() {
           </select>
           <select aria-label="Source" value={filterSource} onChange={(e) => setFilterSource(e.target.value)} className={selectClass}>
             <option value="all">ANY SOURCE</option>
-            <option value="jarvis">JARVIS (CONVERSATION)</option>
+            <option value="jarvis">ULTRON (CONVERSATION)</option>
             <option value="you">YOU (VAULT)</option>
             <option value="system">SYSTEM</option>
             <option value="import">IMPORTED</option>
@@ -418,7 +418,7 @@ export function SciFiMemoryVaultModal() {
             <option value="pinned">PINNED</option>
             <option value="muted">MUTED</option>
           </select>
-          <label className="flex items-center gap-1 text-[#7E859E]">
+          <label className="flex items-center gap-1 text-[#9E8B65]">
             <ArrowUpDown className="w-3 h-3" />
             <select aria-label="Sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectClass}>
               {semantic.results && <option value="relevance">BEST MATCH</option>}
@@ -452,7 +452,7 @@ export function SciFiMemoryVaultModal() {
                 onClear={() => setCheckedIds(new Set())}
               />
             )}
-            <div className="flex items-center justify-between text-[9px] text-[#7E859E]">
+            <div className="flex items-center justify-between text-[9px] text-[#9E8B65]">
               <span>
                 SHOWING <strong className="text-[var(--jarvis-accent)]" data-testid="vault-showing">{visible.length}</strong> OF {memories.length}
                 {semantic.loading ? " · RANKING BY MEANING..." : ""}
@@ -488,7 +488,7 @@ export function SciFiMemoryVaultModal() {
                 />
               ))}
               {visible.length === 0 && (
-                <div className="text-center py-10 flex flex-col items-center gap-2 text-[#7E859E]">
+                <div className="text-center py-10 flex flex-col items-center gap-2 text-[#9E8B65]">
                   <Database className="w-6 h-6 opacity-40 text-[var(--jarvis-accent)]" />
                   <span className="text-xs italic">{memories.length ? "No memories match these filters." : "The vault is empty."}</span>
                   {!memories.length && (
@@ -501,7 +501,7 @@ export function SciFiMemoryVaultModal() {
             </div>
           </div>
 
-          <div className="min-h-[320px] md:min-h-0 p-3.5 chamfer-md border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(3,14,22,0.75)] flex flex-col overflow-y-auto">
+          <div className="min-h-[320px] md:min-h-0 p-3.5 chamfer-md border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(21,16,4,0.75)] flex flex-col overflow-y-auto">
             {paneMode === "duplicates" ? (
               <DuplicateReview
                 state={{ ...duplicates, groups: duplicateGroups }}
@@ -515,7 +515,7 @@ export function SciFiMemoryVaultModal() {
             ) : selected ? (
               <MemoryEditor key={selected.id} memory={selected} limit={limit} busy={busy} onUpdate={handleUpdate} onDelete={(id) => handleDelete([id])} />
             ) : (
-              <div className="m-auto text-center text-[11px] text-[#7E859E] flex flex-col items-center gap-2">
+              <div className="m-auto text-center text-[11px] text-[#9E8B65] flex flex-col items-center gap-2">
                 <Brain className="w-6 h-6 opacity-40 text-[var(--jarvis-accent)]" />
                 Select a memory to edit it, or write a new one.
               </div>
@@ -524,15 +524,15 @@ export function SciFiMemoryVaultModal() {
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-2.5 border-t border-[rgba(var(--jarvis-accent-rgb),0.18)] flex items-center justify-between gap-3 text-[10px] text-[#7E859E] bg-[rgba(2,8,14,0.6)]">
+        <div className="px-4 sm:px-6 py-2.5 border-t border-[rgba(var(--jarvis-accent-rgb),0.18)] flex items-center justify-between gap-3 text-[10px] text-[#9E8B65] bg-[rgba(15,12,5,0.6)]">
           <span className="flex items-center gap-2 min-w-0">
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${contextChanged ? "bg-[#FFB020]" : "bg-[var(--jarvis-accent)]"} animate-pulse`} />
             <span className="truncate">
               {contextChanged
                 ? connected
-                  ? "Changes saved. Jarvis's context updates when he re-links."
-                  : "Changes saved. Jarvis picks them up when he next connects."
-                : "Pinned memories, then the most important and newest, fill Jarvis's context. The rest he recalls on demand."}
+                  ? "Changes saved. Ultron's context updates when he re-links."
+                  : "Changes saved. Ultron picks them up when he next connects."
+                : "Pinned memories, then the most important and newest, fill Ultron's context. The rest he recalls on demand."}
             </span>
           </span>
           <span className="flex items-center gap-2 shrink-0">

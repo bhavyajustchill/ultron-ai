@@ -45,11 +45,11 @@ export function CommandConfirmModal() {
   const isSystem = request.kind === "system";
 
   return (
-    <div className="fixed inset-0 z-[95] flex items-center justify-center bg-[rgba(1,14,22,0.7)] backdrop-blur-sm px-4">
+    <div className="fixed inset-0 z-[95] flex items-center justify-center bg-[rgba(8,6,2,0.7)] backdrop-blur-sm px-4">
       <div
         role="alertdialog"
         aria-label={isSystem ? "System action authorization" : "Command authorization"}
-        className="w-full max-w-xl flex flex-col gap-3 p-5 chamfer-lg bg-[rgba(8,12,18,0.92)] border border-[rgba(255,176,32,0.45)] shadow-[0_0_50px_rgba(255,176,32,0.18)] font-mono text-[#F0F2F8] scifi-modal-unfold-down">
+        className="w-full max-w-xl flex flex-col gap-3 p-5 chamfer-lg bg-[rgba(15,12,5,0.92)] border border-[rgba(255,176,32,0.45)] shadow-[0_0_50px_rgba(255,176,32,0.18)] font-mono text-[#F0F2F8] scifi-modal-unfold-down">
         <div className="flex items-center justify-between gap-3 border-b border-[rgba(255,176,32,0.25)] pb-2.5">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 chamfer-xs bg-[rgba(255,176,32,0.12)] border border-[rgba(255,176,32,0.45)]">
@@ -59,17 +59,17 @@ export function CommandConfirmModal() {
               <span className="text-xs font-['Orbitron',sans-serif] font-bold tracking-wider text-[#FFB020]">
                 {isSystem ? "SYSTEM ACTION AUTHORIZATION" : "COMMAND AUTHORIZATION"}
               </span>
-              <span className="text-[9px] tracking-wider text-[#7E859E] uppercase">
-                {isSystem ? "J.A.R.V.I.S requests an irreversible system action" : "J.A.R.V.I.S requests terminal access"}
+              <span className="text-[9px] tracking-wider text-[#9E8B65] uppercase">
+                {isSystem ? "Ultron requests an irreversible system action" : "Ultron requests terminal access"}
               </span>
             </div>
           </div>
-          <span className="flex items-center gap-1 text-[10px] text-[#7E859E]" title="Denied automatically when the timer runs out">
+          <span className="flex items-center gap-1 text-[10px] text-[#9E8B65]" title="Denied automatically when the timer runs out">
             <Timer className="w-3 h-3" /> {secondsLeft}s
           </span>
         </div>
 
-        {request.reason && <p className="text-[11px] text-[#B8BDCC] leading-relaxed">{request.reason}</p>}
+        {request.reason && <p className="text-[11px] text-[#CBC6B9] leading-relaxed">{request.reason}</p>}
 
         {isSystem ? (
           <div className="flex flex-col gap-2 p-3 chamfer-sm bg-black/60 border border-[rgba(var(--jarvis-accent-rgb),0.25)]">
@@ -77,7 +77,7 @@ export function CommandConfirmModal() {
               <Power className="w-3.5 h-3.5 shrink-0 text-[var(--jarvis-accent)]/70" /> {request.title}
             </span>
             {request.detail && (
-              <pre className="text-[11px] text-[#B8BDCC] whitespace-pre-wrap break-all select-text max-h-40 overflow-y-auto">{request.detail}</pre>
+              <pre className="text-[11px] text-[#CBC6B9] whitespace-pre-wrap break-all select-text max-h-40 overflow-y-auto">{request.detail}</pre>
             )}
           </div>
         ) : (
@@ -87,7 +87,7 @@ export function CommandConfirmModal() {
               <code>{request.command}</code>
             </pre>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-[#7E859E]">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-[#9E8B65]">
               <span className="flex items-center gap-1">
                 <FolderOpen className="w-3 h-3" /> {request.cwd}
               </span>
@@ -110,7 +110,7 @@ export function CommandConfirmModal() {
           <button
             type="button"
             onClick={() => respondToCommand(request.id, false)}
-            className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-white/15 bg-white/5 text-[#B8BDCC] hover:border-[rgba(255,0,60,0.5)] hover:text-[#FF8095] transition-all cursor-pointer">
+            className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-white/15 bg-white/5 text-[#CBC6B9] hover:border-[rgba(255,0,60,0.5)] hover:text-[#FF8095] transition-all cursor-pointer">
             DENY (ESC)
           </button>
           <button

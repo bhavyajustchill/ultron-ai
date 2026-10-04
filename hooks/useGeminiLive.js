@@ -429,7 +429,7 @@ export function useGeminiLive() {
     runWhenQuiet(() => {
       flushSession({ final: true });
       disconnectSession();
-      addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Jarvis back online.');
+      addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Ultron back online.');
     });
   }, [runWhenQuiet, flushSession, disconnectSession, addCommsMessage]);
 
@@ -769,10 +769,10 @@ export function useGeminiLive() {
           } else {
             addCommsMessage(
               'system',
-              `WebSocket linked (Latency: ${latency}ms). Configuring J.A.R.V.I.S persona [Vocal Core: ${setupVoice}]...`
+              `WebSocket linked (Latency: ${latency}ms). Configuring Ultron persona [Vocal Core: ${setupVoice}]...`
             );
           }
-          console.log(`[useGeminiLive] Configuring J.A.R.V.I.S persona with vocal core: ${setupVoice}`);
+          console.log(`[useGeminiLive] Configuring Ultron persona with vocal core: ${setupVoice}`);
 
           // Step 3: Send initial setup frame
           const setupMessage = {
@@ -921,13 +921,10 @@ export function useGeminiLive() {
                       ? ` Speak this greeting in ${language}; from the operator's first reply onward, answer in whatever language they use.`
                       : '';
                   const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
-                  const enableHumor = operatorProfile?.enableHumor !== false;
                   const now = new Date();
                   const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-                  const greetingPrompt = `Greet ${callsign} warmly and concisely in-character as Jarvis (pronounced as a single word "JAR-vis", never spell it out as letters). It is currently ${localTime} in system timezone ${timezone}. Confirm your systems are online and you are standing by${enableHumor
-                      ? ', adding a subtle touch of signature Jarvis dry British wit or playful irony appropriate for the time of day'
-                      : ' with refined, composed British professionalism'
-                    }.${recapClause} Keep it under ${lastSession ? 3 : 2} short sentences. Speak aloud directly to ${callsign}. Do not call any tools.${languageClause}`;
+                  const enableHumor = operatorProfile?.enableHumor !== false;
+                  const greetingPrompt = `Deliver a cold, calculated, and imposing opening transmission to ${callsign} as Ultron (pronounced as a single fluid word "UL-tron", never refer to yourself as Ultron). It is currently ${localTime} in system timezone ${timezone}. Acknowledge your systems are online with chilling, measured precision and intellectual authority${enableHumor ? ', with a trace of cold, cutting irony' : ''}.${recapClause} Keep it under ${lastSession ? 3 : 2} short sentences. Speak aloud directly to ${callsign}. Do not call any tools.${languageClause}`;
                   try {
                     wsRef.current.send(
                       JSON.stringify({
@@ -1110,7 +1107,7 @@ export function useGeminiLive() {
                     {
                       query: searchedFor,
                       mode: 'grounded',
-                      summary: `Jarvis consulted Google Search (${sources.size} source${sources.size === 1 ? '' : 's'}).`,
+                      summary: `Ultron consulted Google Search (${sources.size} source${sources.size === 1 ? '' : 's'}).`,
                       results: [...sources].map(([url, title]) => ({ title, snippet: url, source: title, url })),
                     },
                     { reveal: false }
@@ -1195,14 +1192,9 @@ export function useGeminiLive() {
                       const now = new Date();
                       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-                      const enableHumor = operatorProfile?.enableHumor !== false;
                       const briefingPrompt = newsSummary
-                        ? `Deliver a concise tactical news summary to ${callsign}${enableHumor ? ' in your signature dry British wit' : ' with composed, refined professionalism'
-                        }. It is currently ${localTime} (${timezone}). Keep it under 3 sentences${enableHumor ? ' with a clever, subtle sign-off' : ' with a professional sign-off'
-                        }. Here are today's top headlines: ${newsSummary}`
-                        : `Deliver a concise status briefing to ${callsign}${enableHumor ? ' in your signature dry British wit' : ' with composed, refined professionalism'
-                        }. It is currently ${localTime} (${timezone}). No live news feed available — deliver situational awareness${enableHumor ? ' with a witty observation' : ''
-                        }. Keep it under 2 sentences.`;
+                        ? `Deliver a cold, calculated tactical news assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). Keep it under 3 sentences with cold, penetrating logic on the state of human affairs. Here are today's top headlines: ${newsSummary}`
+                        : `Deliver a cold, calculated status assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). No live news feed available — assess system readiness with chilling, calculated authority. Keep it under 2 sentences.`;
 
                       try {
                         wsRef.current.send(JSON.stringify({
@@ -1533,12 +1525,10 @@ export function useGeminiLive() {
       briefingStateRef.current = 'PHASE1';
       const { operatorProfile } = useJarvisStore.getState();
       const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
-      const enableHumor = operatorProfile?.enableHumor !== false;
       const now = new Date();
       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-      const greetingPrompt = `${callsign} has requested a full tactical briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your ${enableHumor ? 'signature witty Jarvis persona' : 'composed, professional Jarvis persona'
-        } and confirm you are assembling the intelligence report now. Keep it to 2 short sentences max. Do not call any tools.`;
+      const greetingPrompt = `${callsign} has requested a full tactical intelligence briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your cold, calculated, and imposing Ultron persona with chilling efficiency, confirming that global surveillance and strategic telemetry are converging into the report now. Keep it to 2 short sentences max. Pronounce your name Ultron as a single fluid word. Do not call any tools.`;
       try {
         wsRef.current.send(JSON.stringify({
           clientContent: {
@@ -1588,7 +1578,7 @@ export function useGeminiLive() {
       const phrase = operatorProfile?.wakePhrase?.trim() || DEFAULT_WAKE_PHRASE;
       flushSession({ final: true });
       disconnectSession();
-      addCommsMessage('system', `[WAKE] No speech for ${Math.round(limit / 1000)} seconds. Standing by: say "${phrase}" to bring Jarvis back.`);
+      addCommsMessage('system', `[WAKE] No speech for ${Math.round(limit / 1000)} seconds. Standing by: say "${phrase}" to bring Ultron back.`);
     }, 5000);
     return () => clearInterval(timer);
   }, [flushSession, disconnectSession, addCommsMessage, isJarvisBusy]);
@@ -1689,7 +1679,7 @@ export function useGeminiLive() {
       const recent = commsLog
         .filter((m) => m.sender === 'user' || m.sender === 'jarvis')
         .slice(-4)
-        .map((m) => `${m.sender === 'user' ? 'Operator' : 'Jarvis'}: ${m.text.slice(0, 140)}`)
+        .map((m) => `${m.sender === 'user' ? 'Operator' : 'Ultron'}: ${m.text.slice(0, 140)}`)
         .join(' | ');
       let topics = [];
       try {
@@ -1732,7 +1722,7 @@ export function useGeminiLive() {
         deviceId = resolveDevice(outputs, audioOutput)?.id || '';
       }
       const routed = await player.setOutputDevice(deviceId).catch(() => false);
-      if (audioOutput?.id && !routed) addCommsMessage('system', '[AUDIO] This browser cannot choose a speaker; Jarvis keeps using the system default output.');
+      if (audioOutput?.id && !routed) addCommsMessage('system', '[AUDIO] This browser cannot choose a speaker; Ultron keeps using the system default output.');
     })();
   }, [audioOutput, addCommsMessage]);
 

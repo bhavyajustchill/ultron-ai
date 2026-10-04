@@ -66,8 +66,8 @@ export function FloatingPanel({ title, subtitle, icon: Icon, onClose, initialPos
       ref={panelRef}
       aria-label={title}
       style={position ? { left: `${position.x}px`, top: `${position.y}px`, transition: isDragging ? "none" : "box-shadow 0.2s ease" } : { visibility: "hidden" }}
-      className={`fixed z-40 ${widthClass} max-w-[calc(100vw-2rem)] flex flex-col bg-[rgba(8,12,18,0.62)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 gap-2.5 ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""} ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
+      className={`fixed z-40 ${widthClass} max-w-[calc(100vw-2rem)] flex flex-col bg-[rgba(15,12,5,0.62)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden text-[#F0F2F8] font-mono select-none pointer-events-auto p-3.5 gap-2.5 ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""} ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>
+      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
 
       <div
         onPointerDown={handlePointerDown}
@@ -79,14 +79,14 @@ export function FloatingPanel({ title, subtitle, icon: Icon, onClose, initialPos
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-xs font-['Orbitron',sans-serif] font-bold tracking-wider text-[var(--jarvis-accent)] truncate">{title}</span>
-            <span className="text-[9px] font-mono tracking-wider text-[#7E859E] uppercase truncate">{subtitle}</span>
+            <span className="text-[9px] font-mono tracking-wider text-[#9E8B65] uppercase truncate">{subtitle}</span>
           </div>
         </div>
         <div className="flex items-center gap-1 shrink-0" onPointerDown={(e) => e.stopPropagation()}>
           {headerActions}
           <button
             onClick={triggerClose}
-            className="p-1.5 chamfer-btn border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[#7E859E] hover:text-[var(--jarvis-accent)] transition-all cursor-pointer"
+            className="p-1.5 chamfer-btn border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] transition-all cursor-pointer"
             title="Close (Esc)">
             <X className="w-3.5 h-3.5" />
           </button>

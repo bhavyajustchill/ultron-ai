@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Activity,
   Mic,
   MicOff,
   Square,
@@ -62,9 +61,6 @@ export default function Home() {
     setIsKeyModalOpen,
     isMemoryVaultOpen,
     setIsMemoryVaultOpen,
-    isCommsLogOpen,
-    setIsCommsLogOpen,
-    commsLog,
     setIsSettingsModalOpen,
     loadStoredApiKey,
     loadStoredMicMuted,
@@ -77,8 +73,6 @@ export default function Home() {
     addCommsMessage,
     isMobileModalOpen,
     setIsMobileModalOpen,
-    isTelemetryOpen,
-    setIsTelemetryOpen,
     isIntelOpen,
     setIsIntelOpen,
     intelSearchResults,
@@ -154,17 +148,17 @@ export default function Home() {
     active: isStandby,
     phrase: wakePhrase,
     onWake: () => {
-      addCommsMessage("system", `[WAKE] "${wakePhrase}" detected. Linking J.A.R.V.I.S...`);
+      addCommsMessage("system", `[WAKE] "${wakePhrase}" detected. Linking Ultron..`);
       connectSession(userApiKey || loadStoredApiKey());
     },
   });
   const wakeChip = {
     listening: { text: `WAKE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] animate-pulse", Icon: Ear },
     "listening-offline": { text: `WAKE // OFFLINE // SAY "${wakePhrase.toUpperCase()}"`, color: "text-[var(--jarvis-accent)] border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] animate-pulse", Icon: Ear },
-    unsupported: { text: "WAKE // NEEDS CHROME OR EDGE", color: "text-[#7E859E] border-[rgba(255,255,255,0.15)]", Icon: EarOff },
+    unsupported: { text: "WAKE // NEEDS CHROME OR EDGE", color: "text-[#9E8B65] border-[rgba(255,255,255,0.15)]", Icon: EarOff },
     blocked: { text: "WAKE // MIC BLOCKED", color: "text-[#FF8095] border-[rgba(255,0,60,0.4)]", Icon: EarOff },
     error: { text: "WAKE // RETRYING", color: "text-[#FFB020] border-[rgba(255,176,32,0.4)]", Icon: Ear },
-    off: { text: "WAKE // ARMED FOR STANDBY", color: "text-[#7E859E] border-[rgba(var(--jarvis-accent-rgb),0.2)]", Icon: Ear },
+    off: { text: "WAKE // ARMED FOR STANDBY", color: "text-[#9E8B65] border-[rgba(var(--jarvis-accent-rgb),0.2)]", Icon: Ear },
   }[wakeState];
 
   // Auto-initiate voice link upon client mount
@@ -293,7 +287,7 @@ export default function Home() {
     switch (status) {
       case "SPEAKING":
         return {
-          text: "JARVIS // TRANSMITTING",
+          text: "ULTRON // TRANSMITTING",
           color:
             "text-[var(--jarvis-accent)] border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.15)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]",
           dot: "bg-[var(--jarvis-accent)] animate-ping",
@@ -323,14 +317,14 @@ export default function Home() {
         return {
           text: "NEURAL // PROCESSING",
           color:
-            "text-[#FFE600] border-[#FFE600] bg-[rgba(255,230,0,0.1)] shadow-[0_0_15px_rgba(255,230,0,0.3)]",
-          dot: "bg-[#FFE600] animate-bounce",
+            "text-[#FFAA00] border-[#FFAA00] bg-[rgba(255,170,0,0.1)] shadow-[0_0_15px_rgba(255,170,0,0.3)]",
+          dot: "bg-[#FFAA00] animate-bounce",
         };
       case "CONNECTING":
         return {
           text: "LINK // ESTABLISHING...",
-          color: "text-[#FFE600] border-[#FFE600] bg-[rgba(255,230,0,0.06)]",
-          dot: "bg-[#FFE600] animate-pulse",
+          color: "text-[#FFAA00] border-[#FFAA00] bg-[rgba(255,170,0,0.06)]",
+          dot: "bg-[#FFAA00] animate-pulse",
         };
       case "RECONNECTING":
         return {
@@ -341,8 +335,8 @@ export default function Home() {
       default:
         return {
           text: "STANDBY // OFFLINE",
-          color: "text-[#7E859E] border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.03)]",
-          dot: "bg-[#7E859E]",
+          color: "text-[#9E8B65] border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.03)]",
+          dot: "bg-[#9E8B65]",
         };
     }
   };
@@ -350,41 +344,26 @@ export default function Home() {
   const statusBadge = getStatusBadge();
 
   return (
-    <main className="relative w-screen h-screen bg-[#010e16] text-[#F0F2F8] overflow-hidden select-none">
-      {/* TOP MIDDLE BRANDING: J.A.R.V.I.S // JUST A RATHER VERY INTELLIGENT SYSTEM */}
+    <main className="relative w-screen h-screen bg-black text-[#F0F2F8] overflow-hidden select-none">
+      {/* Pure Black Void Backdrop */}
+      <div className="absolute inset-0 bg-black pointer-events-none" />
+
+      {/* TOP MIDDLE BRANDING: ULTRON // AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
-        <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_12px_var(--jarvis-accent)]" />
-          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[0.35em] text-[#F0F2F8] drop-shadow-[0_0_16px_rgba(var(--jarvis-accent-rgb),0.45)]">
-            J.A.R.V.I.S
+        <div className="flex items-center gap-2.5">
+          <span className="w-1.5 h-1.5 bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_8px_var(--jarvis-accent)]" />
+          <h1 className="font-['Orbitron',sans-serif] text-lg sm:text-xl md:text-2xl font-black tracking-[0.28em] text-[#F0F2F8] drop-shadow-[0_0_14px_rgba(var(--jarvis-accent-rgb),0.45)]">
+            ULTRON
           </h1>
-          <span className="w-2.5 h-2.5 rounded-full bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_12px_var(--jarvis-accent)]" />
+          <span className="w-1.5 h-1.5 bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_8px_var(--jarvis-accent)]" />
         </div>
-        <span className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.16em] sm:tracking-[0.22em] text-[var(--jarvis-accent)] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_10px_rgba(var(--jarvis-accent-rgb),0.35)] whitespace-nowrap">
-          JUST A RATHER VERY INTELLIGENT SYSTEM
+        <span className="font-mono text-[8px] sm:text-[10px] md:text-[11px] tracking-[0.18em] sm:tracking-[0.24em] text-[var(--jarvis-accent)] uppercase font-bold mt-1 opacity-90 drop-shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.35)] whitespace-nowrap">
+          AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM
         </span>
       </div>
 
-      {/* TOP LEFT BUTTON CLUSTER: SYSTEMS & INTEL */}
-      <div className="absolute top-6 left-6 z-20 flex items-center gap-2">
-        {/* Systems Panel Toggle */}
-        <button
-          onClick={() => {
-            if (isTelemetryOpen) {
-              window.dispatchEvent(new CustomEvent("jarvis-close-telemetry"));
-            } else {
-              setIsTelemetryOpen(true);
-            }
-          }}
-          className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isTelemetryOpen
-            ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
-            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
-            }`}
-          title="Toggle Systems & Telemetry Panel">
-          <Activity className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
-          <span className="hidden sm:inline tracking-wider">SYSTEMS</span>
-        </button>
-
+      {/* TOP RIGHT CLUSTER: INTEL + ZOOM CONTROLS + FULLSCREEN */}
+      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         {/* Intel Modal Toggle */}
         <button
           onClick={() => {
@@ -396,38 +375,35 @@ export default function Home() {
           }}
           className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isIntelOpen
             ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
-            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title="Toggle Neural Intel & Dossiers Window">
           <Globe className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           <span className="hidden sm:inline tracking-wider">INTEL</span>
           {intelSearchResults && intelSearchResults.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] font-bold border border-[rgba(var(--jarvis-accent-rgb),0.4)]">
+            <span className="text-[10px] px-1.5 py-0.2 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] font-bold border border-[rgba(var(--jarvis-accent-rgb),0.4)]">
               {intelSearchResults.length}
             </span>
           )}
         </button>
-      </div>
 
-      {/* TOP RIGHT CLUSTER: ZOOM CONTROLS + COMMS LOG */}
-      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         {/* Camera Zoom & Reset Controls */}
-        <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
+        <div className="flex items-center gap-0.5 p-1 chamfer-btn border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[10px] font-mono shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]">
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "in" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Zoom In (or scroll up)">
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "out" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Zoom Out (or scroll down)">
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("jarvis-camera-action", { detail: "reset" }))}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Reset Camera View">
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -438,36 +414,13 @@ export default function Home() {
           onClick={toggleFullscreen}
           className={`flex items-center justify-center px-2.5 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isFullscreen
             ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
-            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
           title={isFullscreen ? "Exit Fullscreen (Esc)" : "Enter Fullscreen"}>
           {isFullscreen ? (
             <Minimize2 className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
           ) : (
             <Maximize2 className="w-3.5 h-3.5" />
-          )}
-        </button>
-
-        {/* Comms Log Toggle Button */}
-        <button
-          onClick={() => {
-            if (isCommsLogOpen) {
-              window.dispatchEvent(new CustomEvent("jarvis-close-comms"));
-            } else {
-              setIsCommsLogOpen(true);
-            }
-          }}
-          className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isCommsLogOpen
-            ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
-            : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
-            }`}
-          title="Toggle Comms Log Feed">
-          <Terminal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
-          <span className="hidden sm:inline tracking-wider">COMMS LOG</span>
-          {commsLog && commsLog.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] font-bold border border-[rgba(var(--jarvis-accent-rgb),0.4)]">
-              {commsLog.length}
-            </span>
           )}
         </button>
       </div>
@@ -507,7 +460,7 @@ export default function Home() {
             </div>
             {wakeEnabled && wakeChip && (
               <div
-                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 chamfer-xs border bg-[rgba(8,12,18,0.45)] tracking-wider ${wakeChip.color}`}
+                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 chamfer-xs border bg-[rgba(15,12,5,0.45)] tracking-wider ${wakeChip.color}`}
                 title="Standby wake phrase (configure in Settings)">
                 <wakeChip.Icon className="w-3 h-3" />
                 <span>{wakeChip.text}</span>
@@ -515,7 +468,7 @@ export default function Home() {
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 text-[#7E859E] border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(8,12,18,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
+          <div className="flex items-center gap-1.5 text-[#9E8B65] border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.45)] backdrop-blur-lg px-2 py-0.5 chamfer-xs">
             <Wifi className="w-3 h-3 text-[var(--jarvis-accent)]" />
             <span>{latencyMs > 0 ? `${latencyMs}ms` : "STANDBY"}</span>
           </div>
@@ -531,12 +484,12 @@ export default function Home() {
             onChange={(e) => setTextInput(e.target.value)}
             placeholder={
               isMuted
-                ? "MIC MUTED // Type directive to J.A.R.V.I.S.. [Enter]"
+                ? "MIC MUTED // Type directive to Ultron. [Enter]"
                 : isConnected
-                  ? "Transmit directive or query to J.A.R.V.I.S.. [Enter]"
+                  ? "Transmit directive or query to Ultron. [Enter]"
                   : "Type directive or click Connect... [Enter]"
             }
-            className="flex-1 bg-transparent text-sm sm:text-base font-mono text-[#F0F2F8] placeholder-[rgba(126,133,158,0.6)] px-1 py-1 outline-none min-w-0 tracking-wide"
+            className="flex-1 bg-transparent text-sm sm:text-base font-mono text-[#F0F2F8] placeholder-[rgba(158,139,101,0.6)] px-1 py-1 outline-none min-w-0 tracking-wide"
           />
 
           <button
@@ -557,7 +510,7 @@ export default function Home() {
               onClick={handleToggleConnection}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 chamfer-btn text-xs font-mono font-semibold transition-all cursor-pointer ${isConnected
                 ? "border border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.15)] text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.3)]"
-                : "bg-[var(--jarvis-accent)] hover:bg-[#33ebff] text-[#010e16] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.5)] font-bold"
+                : "bg-[var(--jarvis-accent)] hover:bg-[var(--jarvis-accent-soft)] text-[#080602] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.5)] font-bold"
                 }`}
               title={isConnected ? "Disconnect WebSocket link" : `Establish live ${GEMINI_LIVE_LABEL} link`}>
               <Power className="w-3.5 h-3.5" />
@@ -569,9 +522,9 @@ export default function Home() {
               onClick={toggleMute}
               disabled={!isConnected}
               className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
-                ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
+                ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#9E8B65]"
                 : isMuted
-                  ? "border-[#FFE600] bg-[rgba(255,230,0,0.15)] text-[#FFE600] shadow-[0_0_10px_rgba(255,230,0,0.2)]"
+                  ? "border-[#FFAA00] bg-[rgba(255,170,0,0.15)] text-[#FFAA00] shadow-[0_0_10px_rgba(255,170,0,0.2)]"
                   : "border-[rgba(var(--jarvis-accent-rgb),0.4)] bg-[rgba(var(--jarvis-accent-rgb),0.08)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.18)]"
                 }`}
               title={isMuted ? "Unmute microphone" : "Mute microphone"}>
@@ -584,10 +537,10 @@ export default function Home() {
               onClick={handleBargeIn}
               disabled={!isConnected}
               className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
-                ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#7E859E]"
+                ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#9E8B65]"
                 : "border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.25)] hover:border-[var(--jarvis-accent)] shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.2)]"
                 }`}
-              title="Instantly stop J.A.R.V.I.S's playback within 50ms (Barge-in)">
+              title="Instantly stop Ultron's playback within 50ms (Barge-in)">
               <Square className="w-3.5 h-3.5 fill-current" />
               <span className="hidden sm:inline">INTERRUPT</span>
             </button>
@@ -625,7 +578,7 @@ export default function Home() {
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("jarvis-open-upload"))}
               className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
-              title="Upload files to J.A.R.V.I.S (or drag and drop anywhere)">
+              title="Upload files to Ultron (or drag and drop anywhere)">
               <Paperclip className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">UPLOAD</span>
             </button>
@@ -650,7 +603,7 @@ export default function Home() {
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isScreenSharing || isScreenModalOpen
                 ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)]"
-                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
               title={isScreenModalOpen ? "Close Screen Vision" : "Open Screen Vision"}>
               <Monitor className="w-3.5 h-3.5" />
@@ -666,7 +619,7 @@ export default function Home() {
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isWebcamOpen
                 ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)]"
-                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
               title={isWebcamOpen ? "Close Webcam PiP" : "Open Webcam PiP"}>
               <Camera className="w-3.5 h-3.5" />
@@ -674,7 +627,7 @@ export default function Home() {
 
             <button
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-1.5 chamfer-btn text-xs border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] transition-all cursor-pointer"
+              className="p-1.5 chamfer-btn text-xs border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] transition-all cursor-pointer"
               title="Open Operative Settings">
               <Settings className="w-3.5 h-3.5" />
             </button>
@@ -689,7 +642,7 @@ export default function Home() {
               }}
               className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isMobileModalOpen
                 ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
-                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
+                : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
               title={isMobileModalOpen ? "Close Smartphone Pairing" : "Pair Smartphone via QR Code"}>
               <Smartphone className="w-3.5 h-3.5" />
@@ -718,17 +671,21 @@ export default function Home() {
       {/* Session Archive Modal (Phase 11) */}
       <SciFiSessionVaultModal />
 
-      {/* Floating Right-Side Comms Log Panel (No Backdrop Blur) */}
-      <CommsLog sendTextMessage={sendTextMessage} />
+      {/* PERMANENT LEFT HUD STACK (SYSTEMS ABOVE, COMMS LOG ON BOTTOM) */}
+      <aside className="fixed top-6 left-4 sm:left-6 bottom-40 w-88 sm:w-96 max-w-[calc(100vw-2rem)] z-30 flex flex-col gap-2.5 pointer-events-none">
+        <div className="flex-[1.15] min-h-0 flex flex-col pointer-events-auto">
+          <TelemetryPanel
+            isConnected={isConnected}
+            onToggleConnection={handleToggleConnection}
+          />
+        </div>
+        <div className="flex-1 min-h-0 flex flex-col pointer-events-auto">
+          <CommsLog sendTextMessage={sendTextMessage} />
+        </div>
+      </aside>
 
       {/* Sci-Fi Operative Settings & Customization Modal */}
       <SciFiSettingsModal onReconnectSession={connectSession} />
-
-      {/* Floating Left-Side Systems & Telemetry Panel */}
-      <TelemetryPanel
-        isConnected={isConnected}
-        onToggleConnection={handleToggleConnection}
-      />
 
       {/* Floating Freely-Movable Neural Intel & Reconnaissance Modal */}
       <IntelModal />

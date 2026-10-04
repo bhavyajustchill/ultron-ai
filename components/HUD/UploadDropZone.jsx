@@ -171,11 +171,11 @@ export function UploadDropZone({ onSendParts }) {
         }}
       />
       {isDragging && (
-        <div className="fixed inset-0 z-[90] pointer-events-none flex items-center justify-center bg-[rgba(1,14,22,0.72)] backdrop-blur-sm">
+        <div className="fixed inset-0 z-[90] pointer-events-none flex items-center justify-center bg-[rgba(8,6,2,0.72)] backdrop-blur-sm">
           <div className="flex flex-col items-center gap-3 px-12 py-10 chamfer-lg border-2 border-dashed border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.25)]">
             <UploadCloud className="w-12 h-12 text-[var(--jarvis-accent)] animate-pulse" />
             <div className="font-orbitron text-sm tracking-[0.3em] text-[var(--jarvis-accent)]">DROP FILES TO UPLINK</div>
-            <div className="font-mono text-[11px] text-[#7E859E]">
+            <div className="font-mono text-[11px] text-[#9E8B65]">
               Images, PDFs, Word documents, text and code files, 3D models — up to 25 MB each
             </div>
           </div>

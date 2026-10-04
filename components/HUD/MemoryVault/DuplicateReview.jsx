@@ -17,10 +17,10 @@ function DuplicateGroup({ group, busy, onMerge, onDismiss }) {
   }, [keepId, group.memories]);
 
   return (
-    <div className="p-2.5 chamfer-md border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(4,16,25,0.7)] flex flex-col gap-2" data-testid="vault-duplicate-group">
+    <div className="p-2.5 chamfer-md border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(24,18,5,0.7)] flex flex-col gap-2" data-testid="vault-duplicate-group">
       <div className="flex items-center justify-between text-[10px] font-mono">
         <span className="text-[var(--jarvis-accent)] font-bold">{group.memories.length} RECORDS · {Math.round(group.similarity * 100)}% ALIKE</span>
-        <button type="button" onClick={onDismiss} className="text-[#7E859E] hover:text-white cursor-pointer flex items-center gap-1" title="Not duplicates">
+        <button type="button" onClick={onDismiss} className="text-[#9E8B65] hover:text-white cursor-pointer flex items-center gap-1" title="Not duplicates">
           <X className="w-3 h-3" /> NOT DUPLICATES
         </button>
       </div>
@@ -29,7 +29,7 @@ function DuplicateGroup({ group, busy, onMerge, onDismiss }) {
           <input type="radio" name={`keep-${group.memories[0].id}`} checked={keepId === m.id} onChange={() => setKeepId(m.id)} className="mt-0.5 accent-[var(--jarvis-accent)]" />
           <span className="flex-1 min-w-0">
             <span className="block text-[#F0F2F8] leading-relaxed break-words">{m.content}</span>
-            <span className="block text-[9px] text-[#7E859E] font-mono mt-0.5">
+            <span className="block text-[9px] text-[#9E8B65] font-mono mt-0.5">
               {recordTag(m.id)} · {m.category} · {m.importance} · {formatDate(m.timestamp)}
             </span>
           </span>
@@ -44,7 +44,7 @@ function DuplicateGroup({ group, busy, onMerge, onDismiss }) {
           onClick={() => onMerge({ keep_id: keepId, remove_ids: group.memories.map((m) => m.id).filter((id) => id !== keepId), content: text.trim() })}>
           <Merge className="w-3.5 h-3.5" /> MERGE INTO ONE
         </button>
-        <span className="text-[9px] text-[#7E859E] font-mono">Keeps the strongest importance and any pin · undoable</span>
+        <span className="text-[9px] text-[#9E8B65] font-mono">Keeps the strongest importance and any pin · undoable</span>
       </div>
     </div>
   );
@@ -62,7 +62,7 @@ export function DuplicateReview({ state, busy, onMerge, onDismiss, onClose }) {
         </span>
         <button type="button" className={ghostButton} onClick={onClose}>DONE</button>
       </div>
-      <p className="text-[10px] text-[#7E859E] font-mono -mt-1">
+      <p className="text-[10px] text-[#9E8B65] font-mono -mt-1">
         {state.loading
           ? "Comparing every memory..."
           : state.error
@@ -71,7 +71,7 @@ export function DuplicateReview({ state, busy, onMerge, onDismiss, onClose }) {
       </p>
       <div className="flex flex-col gap-2.5 overflow-y-auto min-h-0 pr-1">
         {!state.loading && !state.error && state.groups.length === 0 && (
-          <p className="text-xs text-[#7E859E] italic font-mono py-6 text-center">No duplicates found. The vault is tidy.</p>
+          <p className="text-xs text-[#9E8B65] italic font-mono py-6 text-center">No duplicates found. The vault is tidy.</p>
         )}
         {state.groups.map((group) => (
           <DuplicateGroup key={group.memories.map((m) => m.id).join("|")} group={group} busy={busy} onMerge={onMerge} onDismiss={() => onDismiss(group)} />

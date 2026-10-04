@@ -116,16 +116,16 @@ export function ClipboardPanel() {
       aria-label="Clipboard actions"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[80] w-[min(560px,calc(100vw-32px))] flex flex-col gap-2 p-3 chamfer-md bg-[rgba(8,12,18,0.92)] border border-[rgba(var(--jarvis-accent-rgb),0.35)] shadow-[0_0_30px_rgba(var(--jarvis-accent-rgb),0.15)] font-mono text-[#F0F2F8] backdrop-blur-md">
+      className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[80] w-[min(560px,calc(100vw-32px))] flex flex-col gap-2 p-3 chamfer-md bg-[rgba(15,12,5,0.92)] border border-[rgba(var(--jarvis-accent-rgb),0.35)] shadow-[0_0_30px_rgba(var(--jarvis-accent-rgb),0.15)] font-mono text-[#F0F2F8] backdrop-blur-md">
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-1.5 text-[10px] font-['Orbitron',sans-serif] font-bold tracking-wider text-[var(--jarvis-accent)]">
           <ClipboardList className="w-3.5 h-3.5" /> CLIPBOARD · {clip.chars} CHARS
         </span>
-        <button type="button" aria-label="Dismiss" onClick={() => setClip(null)} className="p-0.5 text-[#7E859E] hover:text-white cursor-pointer">
+        <button type="button" aria-label="Dismiss" onClick={() => setClip(null)} className="p-0.5 text-[#9E8B65] hover:text-white cursor-pointer">
           <X className="w-3.5 h-3.5" />
         </button>
       </div>
-      <p className="text-[11px] text-[#B8BDCC] line-clamp-2 break-words">{clip.text}</p>
+      <p className="text-[11px] text-[#CBC6B9] line-clamp-2 break-words">{clip.text}</p>
       <div className="flex flex-wrap gap-1.5">
         {ACTIONS.map(([mode, label]) => (
           <button
@@ -142,11 +142,11 @@ export function ClipboardPanel() {
         <div className={`flex flex-col gap-1.5 p-2 chamfer-sm border ${result.error ? "border-[rgba(255,0,60,0.35)] text-[#FF8095]" : "border-white/10 text-[#F0F2F8]"} bg-black/40`}>
           <pre className="text-[11px] whitespace-pre-wrap break-words max-h-48 overflow-y-auto select-text">{result.text}</pre>
           {!result.error && (
-            <div className="flex items-center justify-end gap-2 text-[9px] text-[#7E859E]">
+            <div className="flex items-center justify-end gap-2 text-[9px] text-[#9E8B65]">
               {result.copied ? (
                 <span>Copied to the clipboard</span>
               ) : (
-                <button type="button" onClick={copyResult} className="flex items-center gap-1 px-2 py-0.5 chamfer-btn border border-white/10 hover:border-[var(--jarvis-accent)] text-[#B8BDCC] cursor-pointer">
+                <button type="button" onClick={copyResult} className="flex items-center gap-1 px-2 py-0.5 chamfer-btn border border-white/10 hover:border-[var(--jarvis-accent)] text-[#CBC6B9] cursor-pointer">
                   <Copy className="w-3 h-3" /> COPY
                 </button>
               )}

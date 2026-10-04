@@ -74,7 +74,7 @@ export function MemoryEditor({ memory, limit, busy, onCreate, onUpdate, onDelete
         )}
       </div>
 
-      {!isNew && <p className="text-[10px] text-[#7E859E] font-mono leading-relaxed -mt-1">{contextExplanation(memory, limit)}</p>}
+      {!isNew && <p className="text-[10px] text-[#9E8B65] font-mono leading-relaxed -mt-1">{contextExplanation(memory, limit)}</p>}
 
       <div className="flex flex-col gap-1">
         <textarea
@@ -87,12 +87,12 @@ export function MemoryEditor({ memory, limit, busy, onCreate, onUpdate, onDelete
             }
           }}
           aria-label="Memory text"
-          placeholder="A fact, preference, or goal Jarvis should carry between conversations..."
+          placeholder="A fact, preference, or goal Ultron should carry between conversations..."
           rows={isNew ? 5 : 6}
           autoFocus={isNew}
           className={`${inputClass} w-full p-2.5 leading-relaxed resize-y min-h-[96px] max-h-[40vh]`}
         />
-        <div className="flex items-center justify-between text-[9px] font-mono text-[#7E859E]">
+        <div className="flex items-center justify-between text-[9px] font-mono text-[#9E8B65]">
           <span>{isNew ? "Ctrl+Enter saves" : textDirty ? "Unsaved text · Ctrl+Enter saves" : "Edit the text to change it"}</span>
           <span className={content.length > MAX_CHARS ? "text-[#FF003C]" : ""}>{content.length}/{MAX_CHARS}</span>
         </div>
@@ -100,7 +100,7 @@ export function MemoryEditor({ memory, limit, busy, onCreate, onUpdate, onDelete
 
       <div className="flex flex-col gap-2 text-[10px] font-mono">
         <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[#7E859E] w-[78px]">CATEGORY</span>
+          <span className="text-[#9E8B65] w-[78px]">CATEGORY</span>
           {CATEGORIES.map((c) => (
             <button type="button" key={c} disabled={busy} onClick={() => applyField("category", c, setCategory)} className={chipClass(category === c, CATEGORY_STYLE[c].replace(/border-\S+/, ""))}>
               {c}
@@ -108,7 +108,7 @@ export function MemoryEditor({ memory, limit, busy, onCreate, onUpdate, onDelete
           ))}
         </div>
         <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[#7E859E] w-[78px]">IMPORTANCE</span>
+          <span className="text-[#9E8B65] w-[78px]">IMPORTANCE</span>
           {IMPORTANCE.map((imp) => (
             <button type="button" key={imp} disabled={busy} onClick={() => applyField("importance", imp, setImportance)} className={chipClass(importance === imp, IMPORTANCE_STYLE[imp])}>
               {imp}
@@ -116,7 +116,7 @@ export function MemoryEditor({ memory, limit, busy, onCreate, onUpdate, onDelete
           ))}
         </div>
         <div className="flex items-center gap-1">
-          <span className="text-[#7E859E] w-[78px]">CONTEXT</span>
+          <span className="text-[#9E8B65] w-[78px]">CONTEXT</span>
           <button
             type="button"
             disabled={busy}
@@ -130,15 +130,15 @@ export function MemoryEditor({ memory, limit, busy, onCreate, onUpdate, onDelete
       </div>
 
       {!isNew && (
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 p-2.5 chamfer-sm border border-white/5 bg-[rgba(2,8,14,0.6)] text-[10px] font-mono">
-          <dt className="text-[#7E859E]">SOURCE</dt>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 p-2.5 chamfer-sm border border-white/5 bg-[rgba(15,12,5,0.6)] text-[10px] font-mono">
+          <dt className="text-[#9E8B65]">SOURCE</dt>
           <dd className="text-[#F0F2F8] truncate">{sourceLabel(memory.source)}</dd>
-          <dt className="text-[#7E859E]">REMEMBERED</dt>
+          <dt className="text-[#9E8B65]">REMEMBERED</dt>
           <dd className="text-[#F0F2F8]">{formatDate(memory.timestamp, true)}</dd>
-          <dt className="text-[#7E859E]">LAST EDITED</dt>
+          <dt className="text-[#9E8B65]">LAST EDITED</dt>
           <dd className="text-[#F0F2F8]">{memory.updatedAt ? formatDate(memory.updatedAt, true) : "never"}</dd>
-          <dt className="text-[#7E859E]">ID</dt>
-          <dd className="text-[#7E859E] truncate select-all">{memory.id}</dd>
+          <dt className="text-[#9E8B65]">ID</dt>
+          <dd className="text-[#9E8B65] truncate select-all">{memory.id}</dd>
         </dl>
       )}
 

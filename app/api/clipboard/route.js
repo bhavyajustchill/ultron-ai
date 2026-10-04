@@ -47,7 +47,7 @@ export async function POST(req) {
       const clip = await readClipboard();
       text = clip.text.trim();
       if (!text) throw new ClipboardError('The clipboard has no text in it.');
-      if (clip.secretHint || looksSecret(text)) throw new ClipboardError('The clipboard holds what looks like a password, key, or code, so Jarvis will not read it.');
+      if (clip.secretHint || looksSecret(text)) throw new ClipboardError('The clipboard holds what looks like a password, key, or code, so Ultron will not read it.');
     }
 
     if (body.action === 'read') {

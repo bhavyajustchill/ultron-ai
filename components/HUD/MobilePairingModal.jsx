@@ -117,11 +117,11 @@ export function MobilePairingModal({ isOpen, onClose }) {
       }`}>
       {/* Sci-Fi Shutter Unfold / Collapse Modal Container */}
       <div
-        className={`relative w-full max-w-md p-6 chamfer-xl border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col gap-4 text-[#F0F2F8] select-none font-mono overflow-hidden ${
+        className={`relative w-full max-w-md p-6 chamfer-xl border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(15,12,5,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col gap-4 text-[#F0F2F8] select-none font-mono overflow-hidden ${
           isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
         }`}>
         {/* Holographic Top Accent Gradient Line */}
-        <div className="mx-2 -mt-2 h-0.5 w-[calc(100%-16px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse" />
+        <div className="mx-2 -mt-2 h-0.5 w-[calc(100%-16px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent)] animate-pulse" />
 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-2-rgb),0.2)] pb-3">
@@ -133,12 +133,12 @@ export function MobilePairingModal({ isOpen, onClose }) {
               <h2 className="text-sm font-['Orbitron',sans-serif] font-bold tracking-wider text-[var(--jarvis-accent-2)]">
                 MOBILE REMOTE RELAY (PWA)
               </h2>
-              <p className="text-[10px] text-[#7E859E]">Local WiFi Peer-to-Peer Pairing Protocol</p>
+              <p className="text-[10px] text-[#9E8B65]">Local WiFi Peer-to-Peer Pairing Protocol</p>
             </div>
           </div>
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
             title="Close Window (Esc)">
             <X className="w-5 h-5" />
           </button>
@@ -175,7 +175,7 @@ export function MobilePairingModal({ isOpen, onClose }) {
 
         {/* Network Endpoint Info */}
         <div className="flex flex-col gap-1.5 text-xs">
-          <div className="flex justify-between items-center text-[10px] text-[#7E859E]">
+          <div className="flex justify-between items-center text-[10px] text-[#9E8B65]">
             <span className="flex items-center gap-1">
               <Wifi className="w-3 h-3 text-[var(--jarvis-accent-2)]" />
               <span>DIRECT LAN ADDRESS</span>
@@ -213,7 +213,7 @@ export function MobilePairingModal({ isOpen, onClose }) {
 
           <button
             onClick={loadMobilePairing}
-            className="p-2 chamfer-btn border border-[rgba(255,255,255,0.15)] hover:border-[var(--jarvis-accent-2)] text-[#7E859E] hover:text-[var(--jarvis-accent-2)] transition-colors cursor-pointer"
+            className="p-2 chamfer-btn border border-[rgba(255,255,255,0.15)] hover:border-[var(--jarvis-accent-2)] text-[#9E8B65] hover:text-[var(--jarvis-accent-2)] transition-colors cursor-pointer"
             title="Refresh network interfaces">
             <RefreshCw className="w-4 h-4" />
           </button>

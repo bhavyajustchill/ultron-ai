@@ -98,7 +98,7 @@ function parseDuckDuckGoHtml(html) {
 async function fetchInstantAnswer(query) {
   try {
     const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 JARVIS-Mark-II/1.0' } });
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 Ultron/1.0' } });
     if (!res.ok) return [];
 
     const data = await res.json();

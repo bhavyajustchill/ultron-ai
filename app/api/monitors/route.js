@@ -35,7 +35,7 @@ export async function POST(req) {
           success: true,
           topic,
           latest,
-          message: `Now monitoring "${topic}"; Jarvis checks it daily and speaks up when a new headline appears.${latest ? ` Latest right now: "${latest.title}" (${latest.source}).` : ''}`,
+          message: `Now monitoring "${topic}"; Ultron checks it daily and speaks up when a new headline appears.${latest ? ` Latest right now: "${latest.title}" (${latest.source}).` : ''}`,
         });
       }
       case 'remove': {

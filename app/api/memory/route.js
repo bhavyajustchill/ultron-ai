@@ -65,7 +65,7 @@ export async function GET(req) {
       const stamp = new Date().toISOString().slice(0, 10);
       const body = JSON.stringify({ format: 'jarvis-memory-vault', version: 1, exported_at: new Date().toISOString(), profile: data.profile, memories: data.memories }, null, 2);
       return new NextResponse(body, {
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Content-Disposition': `attachment; filename="jarvis-memory-vault-${stamp}.json"` },
+        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Content-Disposition': `attachment; filename="ultron-memory-vault-${stamp}.json"` },
       });
     }
 

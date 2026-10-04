@@ -74,9 +74,9 @@ export function AudioWaveform({
         const x = i * (barWidth + 2);
         const y = height - barHeight;
 
-        // Gradient: crimson (#FF003C) at base to neon cyan at crest
+        // Gradient: amber (#FF8800) at base to the accent at crest
         const grad = ctx.createLinearGradient(0, height, 0, y);
-        grad.addColorStop(0, '#FF003C');
+        grad.addColorStop(0, '#FF8800');
         grad.addColorStop(1, crestColorRef.current);
 
         ctx.fillStyle = grad;

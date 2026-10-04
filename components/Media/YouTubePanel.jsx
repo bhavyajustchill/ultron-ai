@@ -127,7 +127,7 @@ export function YouTubePanel() {
 
       <div className="flex flex-col gap-0.5 min-w-0">
         <span className="text-xs text-[#F0F2F8] font-semibold truncate" title={current.title}>{current.title}</span>
-        <span className="text-[10px] text-[#7E859E] truncate">
+        <span className="text-[10px] text-[#9E8B65] truncate">
           {current.channel}
           {current.live ? " · LIVE" : current.duration ? ` · ${current.duration}` : ""}
         </span>
@@ -146,7 +146,7 @@ export function YouTubePanel() {
         <button className={controlButton} onClick={() => goTo(index + 1)} disabled={index >= queue.length - 1} title="Next">
           <SkipForward className="w-3.5 h-3.5" />
         </button>
-        <div className="flex items-center gap-1.5 ml-auto text-[#7E859E]">
+        <div className="flex items-center gap-1.5 ml-auto text-[#9E8B65]">
           <Volume2 className="w-3.5 h-3.5" />
           <input
             type="range"
@@ -169,10 +169,10 @@ export function YouTubePanel() {
                 onClick={() => goTo(i)}
                 className={`w-full text-left flex items-center gap-2 px-2 py-1 chamfer-xs text-[10px] transition-all cursor-pointer ${i === index
                   ? "bg-[rgba(var(--jarvis-accent-rgb),0.15)] border border-[rgba(var(--jarvis-accent-rgb),0.4)] text-[var(--jarvis-accent)]"
-                  : "border border-transparent text-[#B8BDCC] hover:bg-[rgba(var(--jarvis-accent-rgb),0.06)]"}`}>
-                <span className="w-4 shrink-0 text-[#7E859E]">{i + 1}</span>
+                  : "border border-transparent text-[#CBC6B9] hover:bg-[rgba(var(--jarvis-accent-rgb),0.06)]"}`}>
+                <span className="w-4 shrink-0 text-[#9E8B65]">{i + 1}</span>
                 <span className="truncate flex-1">{video.title}</span>
-                <span className="shrink-0 text-[#7E859E]">{video.live ? "LIVE" : video.duration || ""}</span>
+                <span className="shrink-0 text-[#9E8B65]">{video.live ? "LIVE" : video.duration || ""}</span>
               </button>
             </li>
           ))}

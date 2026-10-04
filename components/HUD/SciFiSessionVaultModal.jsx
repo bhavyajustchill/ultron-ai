@@ -171,9 +171,9 @@ export function SciFiSessionVaultModal() {
           : fields.summary !== undefined
             ? "Recap saved."
             : fields.greeting === "queued"
-              ? "Jarvis will mention this in his next greeting."
+              ? "Ultron will mention this in his next greeting."
               : fields.greeting === "skip"
-                ? "Jarvis will not bring this up."
+                ? "Ultron will not bring this up."
                 : fields.pinned !== undefined
                   ? fields.pinned
                     ? "Pinned: retention will never remove it."
@@ -270,7 +270,7 @@ export function SciFiSessionVaultModal() {
         role="dialog"
         aria-label="Session archive"
         data-testid="session-vault"
-        className={`relative w-full max-w-6xl h-[90vh] bg-[rgba(8,12,18,0.62)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col text-[#F0F2F8] font-mono ${
+        className={`relative w-full max-w-6xl h-[90vh] bg-[rgba(15,12,5,0.62)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col text-[#F0F2F8] font-mono ${
           isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
         }`}>
         <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent)] animate-pulse" />
@@ -288,7 +288,7 @@ export function SciFiSessionVaultModal() {
                   {sessions.length} CONVERSATIONS
                 </span>
               </span>
-              <span className="text-[10px] text-[#7E859E] truncate">Past conversations, their recaps, and what Jarvis brings up next time</span>
+              <span className="text-[10px] text-[#9E8B65] truncate">Past conversations, their recaps, and what Ultron brings up next time</span>
             </div>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -309,7 +309,7 @@ export function SciFiSessionVaultModal() {
                 e.target.value = "";
               }}
             />
-            <button type="button" onClick={triggerClose} className="px-2.5 py-1 chamfer-xs text-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] transition-all cursor-pointer flex items-center gap-1.5" title="Close (Escape)">
+            <button type="button" onClick={triggerClose} className="px-2.5 py-1 chamfer-xs text-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-transparent hover:border-[rgba(var(--jarvis-accent-rgb),0.3)] transition-all cursor-pointer flex items-center gap-1.5" title="Close (Escape)">
               <X className="w-4 h-4" />
               <span className="text-[10px] hidden sm:inline">ESC</span>
             </button>
@@ -317,7 +317,7 @@ export function SciFiSessionVaultModal() {
         </div>
 
         {/* Stats strip */}
-        <div className="px-4 sm:px-6 py-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[10px] border-b border-white/5 bg-[rgba(2,8,14,0.4)] text-[#7E859E]" data-testid="sessions-stats">
+        <div className="px-4 sm:px-6 py-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[10px] border-b border-white/5 bg-[rgba(15,12,5,0.4)] text-[#9E8B65]" data-testid="sessions-stats">
           <span>TURNS <strong className="text-[var(--jarvis-accent)]">{stats?.turns ?? 0}</strong></span>
           <span>RECAPPED <strong className="text-[var(--jarvis-accent)]">{stats?.with_recap ?? 0}</strong></span>
           <span>PINNED <strong className="text-[var(--jarvis-accent)]">{stats?.pinned ?? 0}</strong></span>
@@ -341,7 +341,7 @@ export function SciFiSessionVaultModal() {
         {/* Toolbar */}
         <div className="px-4 sm:px-6 py-2.5 flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-[#7E859E]" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-[#9E8B65]" />
             <input
               type="text"
               value={query}
@@ -358,7 +358,7 @@ export function SciFiSessionVaultModal() {
                   onClick={() => setSearchMode(mode)}
                   disabled={mode === "meaning" && !userApiKey}
                   title={mode === "meaning" && !userApiKey ? "Needs a Gemini API key" : mode === "meaning" ? "Rank recaps by meaning" : "Match words in titles, recaps, and transcripts"}
-                  className={`px-1.5 py-0.5 uppercase cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${searchMode === mode ? "bg-[var(--jarvis-accent)] text-[#010e16] font-bold" : "text-[#7E859E] hover:text-white"}`}>
+                  className={`px-1.5 py-0.5 uppercase cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${searchMode === mode ? "bg-[var(--jarvis-accent)] text-[#080602] font-bold" : "text-[#9E8B65] hover:text-white"}`}>
                   {mode === "meaning" ? <span className="flex items-center gap-0.5"><Sparkles className="w-2.5 h-2.5" />MEANING</span> : "WORDS"}
                 </button>
               ))}
@@ -388,7 +388,7 @@ export function SciFiSessionVaultModal() {
           <button type="button" aria-pressed={pinnedOnly} className={pinnedOnly ? `${ghostButton} bg-[rgba(var(--jarvis-accent-rgb),0.25)]` : ghostButton} onClick={() => setPinnedOnly((p) => !p)}>
             PINNED
           </button>
-          <label className="flex items-center gap-1 text-[#7E859E]">
+          <label className="flex items-center gap-1 text-[#9E8B65]">
             <ArrowUpDown className="w-3 h-3" />
             <select aria-label="Sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectClass}>
               {search.mode === "meaning" && <option value="relevance">BEST MATCH</option>}
@@ -413,7 +413,7 @@ export function SciFiSessionVaultModal() {
                 onClear={() => setCheckedIds(new Set())}
               />
             )}
-            <div className="flex items-center justify-between text-[9px] text-[#7E859E]">
+            <div className="flex items-center justify-between text-[9px] text-[#9E8B65]">
               <span>
                 SHOWING <strong className="text-[var(--jarvis-accent)]" data-testid="sessions-showing">{visible.length}</strong> OF {sessions.length}
                 {search.loading ? " · SEARCHING..." : ""}
@@ -439,17 +439,17 @@ export function SciFiSessionVaultModal() {
                 <SessionRow key={s.id} session={{ ...s, live: s.id === currentSessionId }} active={s.id === selectedId} checked={checkedIds.has(s.id)} isNextGreeting={s.id === nextGreetingId} onOpen={(row) => setSelectedId(row.id)} onToggleCheck={toggleCheck} />
               ))}
               {visible.length === 0 && (
-                <div className="text-center py-10 flex flex-col items-center gap-2 text-[#7E859E]">
+                <div className="text-center py-10 flex flex-col items-center gap-2 text-[#9E8B65]">
                   <MessagesSquare className="w-6 h-6 opacity-40 text-[var(--jarvis-accent)]" />
                   <span className="text-xs italic">
-                    {sessions.length ? "No conversations match these filters." : "No conversations yet. Talk to Jarvis and they will appear here."}
+                    {sessions.length ? "No conversations match these filters." : "No conversations yet. Talk to Ultron and they will appear here."}
                   </span>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="min-h-[360px] md:min-h-0 p-3.5 chamfer-md border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(3,14,22,0.75)] flex flex-col overflow-y-auto">
+          <div className="min-h-[360px] md:min-h-0 p-3.5 chamfer-md border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(21,16,4,0.75)] flex flex-col overflow-y-auto">
             {selected ? (
               <SessionDetail
                 key={selected.id}
@@ -466,7 +466,7 @@ export function SciFiSessionVaultModal() {
                 onDelete={() => handleDelete([selected.id])}
               />
             ) : (
-              <div className="m-auto text-center text-[11px] text-[#7E859E] flex flex-col items-center gap-2">
+              <div className="m-auto text-center text-[11px] text-[#9E8B65] flex flex-col items-center gap-2">
                 <History className="w-6 h-6 opacity-40 text-[var(--jarvis-accent)]" />
                 Select a conversation to read it.
               </div>
@@ -475,7 +475,7 @@ export function SciFiSessionVaultModal() {
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-2.5 border-t border-[rgba(var(--jarvis-accent-rgb),0.18)] flex items-center justify-between gap-3 text-[10px] text-[#7E859E] bg-[rgba(2,8,14,0.6)]">
+        <div className="px-4 sm:px-6 py-2.5 border-t border-[rgba(var(--jarvis-accent-rgb),0.18)] flex items-center justify-between gap-3 text-[10px] text-[#9E8B65] bg-[rgba(15,12,5,0.6)]">
           <span className="flex items-center gap-2 min-w-0">
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 animate-pulse ${currentSessionId ? "bg-[#2BFFA3]" : "bg-[var(--jarvis-accent)]"}`} />
             <span className="truncate">

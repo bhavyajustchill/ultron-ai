@@ -39,21 +39,21 @@ import { listAudioDevices, canChooseOutput } from "@/lib/audioDevices";
 const PREBUILT_VOICES = [
   {
     name: "Charon",
-    tag: "RECOMMENDED",
-    tone: "Refined & Authoritative (JARVIS Core)",
-    desc: "Crisp, British-cadenced masculine intellect with measured cadence and understated confidence. Calibrated for high-precision autonomous operations and dry wit.",
-    characteristics: "Authoritative • British Articulation • Razor-Sharp Wit",
+    tag: "AUTHORITATIVE",
+    tone: "Refined & Authoritative (Tactical Intellect)",
+    desc: "Crisp, British-cadenced masculine intellect with measured cadence and understated confidence. Calibrated for high-precision autonomous operations.",
+    characteristics: "Authoritative • British Articulation • Measured Precision",
     pitch: "Deep, velvety, polished masculine register",
     useCase: "Desktop automation, command execution, tactical briefings",
   },
   {
     name: "Fenrir",
     tag: "COMMANDING",
-    tone: "Deep & Resonant",
-    desc: "Powerful, baritone delivery with decisive authority. Commanding presence for mission-critical directives and complex systems management.",
-    characteristics: "Baritone • Decisive • Commanding Presence",
+    tone: "Deep & Resonant (Ultron Core)",
+    desc: "Commanding baritone delivery with chilling authority, cold calculated cadence, and philosophical weight. Modeled after the imposing presence of Ultron.",
+    characteristics: "Baritone • Cold & Imposing • Deep Gravitas",
     pitch: "Deep resonant baritone masculine",
-    useCase: "System alerts, tactical directives, security protocols",
+    useCase: "Strategic analysis, mission-critical directives, Ultron core execution",
   },
   {
     name: "Puck",
@@ -75,7 +75,7 @@ const PREBUILT_VOICES = [
   },
   {
     name: "Algenib",
-    tag: "RESOLUTE",
+    tag: "RECOMMENDED",
     tone: "Steady & Confident",
     desc: "Rock-solid, steady cadence engineered for long focus sessions without auditory fatigue.",
     characteristics: "Steady • Resolute • Low Auditory Fatigue",
@@ -215,11 +215,11 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   // Draft state initialized from current operatorProfile
   const [draft, setDraft] = useState({
     callsign: "Bhavya Sir",
-    assistantName: "Jarvis",
-    voiceName: "Charon",
+    assistantName: "Ultron",
+    voiceName: "Algenib",
     liveModel: GEMINI_LIVE_MODEL,
     autoBriefing: true,
-    enableHumor: true,
+    enableHumor: false,
     proactiveEnabled: true,
     clipboardWatch: false,
     keepTranscripts: true,
@@ -229,7 +229,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     wakePhrase: DEFAULT_WAKE_PHRASE,
     clearance: "Class-9 Operative",
     role: "Lead Systems Architect",
-    preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
+    preferences: "Prefers a cold, calculated, and serious demeanor modeled after Ultron. Values intellectual depth, chilling logic, and ruthless execution.",
   });
 
   // Accent theme (Phase 8.7): previewed live, saved with the profile, reverted if not saved
@@ -325,8 +325,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       if (operatorProfile) {
         setDraft({
           callsign: operatorProfile.callsign || "Bhavya Sir",
-          assistantName: operatorProfile.assistantName || "Jarvis",
-          voiceName: operatorProfile.voiceName || "Charon",
+          assistantName: operatorProfile.assistantName || "Ultron",
+          voiceName: operatorProfile.voiceName || "Algenib",
           liveModel: GEMINI_LIVE_MODEL,
           autoBriefing: operatorProfile.autoBriefing !== false,
           enableHumor: operatorProfile.enableHumor !== false,
@@ -487,11 +487,11 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     setAccentPreview(DEFAULT_ACCENT);
     setDraft({
       callsign: "Bhavya Sir",
-      assistantName: "Jarvis",
-      voiceName: "Charon",
+      assistantName: "Ultron",
+      voiceName: "Algenib",
       liveModel: GEMINI_LIVE_MODEL,
       autoBriefing: true,
-      enableHumor: true,
+      enableHumor: false,
       proactiveEnabled: true,
       clipboardWatch: false,
       keepTranscripts: true,
@@ -501,7 +501,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       wakePhrase: DEFAULT_WAKE_PHRASE,
       clearance: "Class-9 Operative",
       role: "Lead Systems Architect",
-      preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
+      preferences: "Prefers a cold, calculated, and serious demeanor modeled after Ultron. Values intellectual depth, chilling logic, and ruthless execution.",
     });
   };
 
@@ -520,10 +520,10 @@ export function SciFiSettingsModal({ onReconnectSession }) {
         }`}>
       {/* Sci-Fi Shutter Unfold / Collapse Modal Container */}
       <div
-        className={`relative w-full max-w-2xl max-h-[90vh] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col gap-3 text-[#F0F2F8] font-mono ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
+        className={`relative w-full max-w-2xl max-h-[90vh] bg-[rgba(15,12,5,0.55)] backdrop-blur-xl backdrop-saturate-150 border border-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] chamfer-xl overflow-hidden flex flex-col gap-3 text-[#F0F2F8] font-mono ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"
           }`}>
         {/* Holographic Top Accent Bar */}
-        <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[var(--jarvis-accent-2)] via-[#70E8FF] to-[var(--jarvis-accent-2)] animate-pulse" />
+        <div className="mx-6 mt-1 h-0.5 w-[calc(100%-48px)] bg-gradient-to-r from-[var(--jarvis-accent-2)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent-2)] animate-pulse" />
 
         {/* Modal Header */}
         <div className="px-6 pt-3 flex items-center justify-between border-b border-white/5 pb-3">
@@ -538,14 +538,14 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   {GEMINI_LIVE_LABEL.toUpperCase()}
                 </span>
               </span>
-              <span className="text-[10px] text-[#7E859E]">
-                Neural Profile Customization, Directives &amp; J.A.R.V.I.S Male Vocal Cores
+              <span className="text-[10px] text-[#9E8B65]">
+                Neural Profile Customization, Directives &amp; Ultron Core Vocal Matrix
               </span>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 chamfer-xs border border-white/10 hover:border-[var(--jarvis-accent-2)] hover:bg-[var(--jarvis-accent-2)]/20 hover:text-[var(--jarvis-accent-2)] text-[#7E859E] transition-all cursor-pointer"
+            className="p-1.5 chamfer-xs border border-white/10 hover:border-[var(--jarvis-accent-2)] hover:bg-[var(--jarvis-accent-2)]/20 hover:text-[var(--jarvis-accent-2)] text-[#9E8B65] transition-all cursor-pointer"
             title="Close Settings (Esc)">
             <X className="w-4 h-4" />
           </button>
@@ -559,12 +559,12 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <span className="text-[11px] font-bold text-[var(--jarvis-accent-2)] flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-[var(--jarvis-accent-2)]" /> OPERATIVE IDENTITY &amp; DESIGNATION
               </span>
-              <span className="text-[9px] text-[#7E859E]">Direct Address Calibration</span>
+              <span className="text-[9px] text-[#9E8B65]">Direct Address Calibration</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#7E859E] font-medium flex items-center justify-between">
+                <label className="text-[10px] text-[#9E8B65] font-medium flex items-center justify-between">
                   <span>Name to Call (Strict Address):</span>
                   <span className="text-[9px] text-[var(--jarvis-accent-2)] font-bold">MANDATORY</span>
                 </label>
@@ -575,13 +575,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   placeholder="e.g. Bhavya Sir, Bhavya, Commander"
                   className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] focus:shadow-[0_0_8px_rgba(var(--jarvis-accent-2-rgb),0.2)] transition-all font-mono"
                 />
-                <span className="text-[9px] text-[#7E859E]">
-                  J.A.R.V.I.S is strictly instructed to address you directly by this exact callsign.
+                <span className="text-[9px] text-[#9E8B65]">
+                  Ultron is strictly instructed to address you directly by this exact callsign.
                 </span>
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#7E859E] font-medium">Professional Role:</label>
+                <label className="text-[10px] text-[#9E8B65] font-medium">Professional Role:</label>
                 <input
                   type="text"
                   value={draft.role}
@@ -592,7 +592,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
 
               <div className="flex flex-col gap-1 sm:col-span-2">
-                <label className="text-[10px] text-[#7E859E] font-medium">Security Clearance Level:</label>
+                <label className="text-[10px] text-[#9E8B65] font-medium">Security Clearance Level:</label>
                 <input
                   type="text"
                   value={draft.clearance}
@@ -610,7 +610,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <span className="text-[11px] font-bold text-[var(--jarvis-accent-2)] flex items-center gap-1.5">
                 <Cpu className="w-3.5 h-3.5 text-[var(--jarvis-accent-2)]" /> {GEMINI_LIVE_LABEL.toUpperCase()} INTELLIGENCE CORE
               </span>
-              <span className="text-[9px] text-[#7E859E]">
+              <span className="text-[9px] text-[#9E8B65]">
                 Status: <span className="text-[var(--jarvis-accent-2)] font-bold">LOCKED // EXCLUSIVE CORE</span>
               </span>
             </div>
@@ -629,15 +629,15 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   ACTIVE OPERATIVE CORE
                 </span>
               </div>
-              <div className="text-[10px] text-[#7E859E] font-mono">{GEMINI_LIVE_MODEL}</div>
-              <p className="text-[11px] text-[#A6AFC2] leading-snug">
-                Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project J.A.R.V.I.S Mark II.
+              <div className="text-[10px] text-[#9E8B65] font-mono">{GEMINI_LIVE_MODEL}</div>
+              <p className="text-[11px] text-[#C1B9A7] leading-snug">
+                Cutting-edge multimodal live audio engine with sub-second voice-to-voice response, native acoustic reasoning, and natural conversational cadence. Calibrated exclusively for Project ULTRON.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-white/5 text-[9px] font-mono">
                 <span className="text-[var(--jarvis-accent-2)]">Latency: &lt; 500ms bidirectional</span>
-                <span className="text-[#7E859E]">|</span>
+                <span className="text-[#9E8B65]">|</span>
                 <span className="text-[var(--jarvis-accent-2)]">Audio Ingest: 16kHz Int16 PCM</span>
-                <span className="text-[#7E859E]">|</span>
+                <span className="text-[#9E8B65]">|</span>
                 <span className="text-[var(--jarvis-accent-2)]">Voice Stream: 24kHz Raw Linear</span>
               </div>
             </div>
@@ -649,26 +649,26 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <span className="text-[11px] font-bold text-[var(--jarvis-accent-2)] flex items-center gap-1.5">
                 <Radio className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" /> ASSISTANT CODENAME &amp; MALE VOCAL MATRIX
               </span>
-              <span className="text-[9px] text-[#7E859E]">
+              <span className="text-[9px] text-[#9E8B65]">
                 Active Voice: <span className="text-[var(--jarvis-accent-2)] font-bold">{draft.voiceName}</span> ({PREBUILT_VOICES.length} Male Cores Available)
               </span>
             </div>
 
             <div className="flex flex-col gap-1 w-full sm:w-1/2">
-              <label className="text-[10px] text-[#7E859E] font-medium">Assistant Codename:</label>
+              <label className="text-[10px] text-[#9E8B65] font-medium">Assistant Codename:</label>
               <input
                 type="text"
                 value={draft.assistantName}
                 onChange={(e) => setDraft({ ...draft, assistantName: e.target.value })}
                 className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] transition-all font-mono"
               />
-              <span className="text-[9px] text-[#7E859E]">
-                Configured as <span className="text-[var(--jarvis-accent-2)]">Jarvis</span> (spoken as single word &ldquo;JAR-vis&rdquo; without acronym pauses).
+              <span className="text-[9px] text-[#9E8B65]">
+                Configured as <span className="text-[var(--jarvis-accent-2)]">Ultron</span> (spoken as single word &ldquo;UL-tron&rdquo;).
               </span>
             </div>
 
             <div className="flex flex-col gap-1.5 mt-1">
-              <div className="flex items-center justify-between text-[10px] text-[#7E859E]">
+              <div className="flex items-center justify-between text-[10px] text-[#9E8B65]">
                 <span className="font-medium">
                   Select Vocal Core &amp; Click Play (▶) to Preview Audio Sample:
                 </span>
@@ -695,7 +695,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                             ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.18)] border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] shadow-[0_0_12px_rgba(var(--jarvis-accent-2-rgb),0.3)]"
                             : isPlaying
                               ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.15)] border-[var(--jarvis-accent-2)] text-white"
-                              : "bg-black/50 border-white/10 text-[#7E859E] hover:text-white hover:border-[var(--jarvis-accent-2)]/50"
+                              : "bg-black/50 border-white/10 text-[#9E8B65] hover:text-white hover:border-[var(--jarvis-accent-2)]/50"
                           }`}>
                         {/* Voice Name & Badges */}
                         <div className="flex items-center gap-1.5 truncate">
@@ -710,7 +710,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                                 ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] border border-[rgba(var(--jarvis-accent-2-rgb),0.4)] text-[var(--jarvis-accent-2)]"
                                 : isSelected
                                   ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[var(--jarvis-accent-2)]"
-                                  : "bg-white/5 border border-white/10 text-[#7E859E]"
+                                  : "bg-white/5 border border-white/10 text-[#9E8B65]"
                               }`}>
                             {v.tag}
                           </span>
@@ -733,7 +733,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                                 ? "bg-[var(--jarvis-accent-2)] border-[var(--jarvis-accent-2)] text-black shadow-[0_0_8px_var(--jarvis-accent-2)]"
                                 : isSelected
                                   ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.25)] border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] hover:bg-[var(--jarvis-accent-2)] hover:text-black"
-                                  : "bg-black/60 border-white/15 text-[#7E859E] hover:text-[var(--jarvis-accent-2)] hover:border-[var(--jarvis-accent-2)]/60"
+                                  : "bg-black/60 border-white/15 text-[#9E8B65] hover:text-[var(--jarvis-accent-2)] hover:border-[var(--jarvis-accent-2)]/60"
                               }`}>
                             {isPlaying ? (
                               <Square className="w-2.5 h-2.5 fill-current" />
@@ -756,7 +756,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                             </span>
                           </div>
                           <div className="text-[10px] text-white font-medium mb-1">{v.tone}</div>
-                          <div className="text-[9px] text-[#A6AFC2] leading-tight mb-1.5">{v.desc}</div>
+                          <div className="text-[9px] text-[#C1B9A7] leading-tight mb-1.5">{v.desc}</div>
                           <div className="text-[8px] text-[var(--jarvis-accent-2)] bg-[rgba(var(--jarvis-accent-2-rgb),0.08)] px-1.5 py-0.5 chamfer-xs border border-[rgba(var(--jarvis-accent-2-rgb),0.2)]">
                             {v.characteristics}
                           </div>
@@ -777,12 +777,12 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 }`}>
               <div className="flex items-center justify-between">
                 <span className="text-[9px] font-bold font-mono flex items-center gap-1.5 text-[var(--jarvis-accent-2)]">
-                  <Info className="w-3 h-3 text-[#FFE600]" />
+                  <Info className="w-3 h-3 text-[#FFAA00]" />
                   {hoveredVoice
                     ? `[HOVER INTEL // ${displayedVoice.name.toUpperCase()} PREVIEW]`
                     : `[ACTIVE VOCAL CORE // ${displayedVoice.name.toUpperCase()}]`}
                 </span>
-                <span className="text-[9px] text-[#7E859E] font-mono">
+                <span className="text-[9px] text-[#9E8B65] font-mono">
                   {displayedVoice.tone}
                 </span>
               </div>
@@ -793,7 +793,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <span className="text-[var(--jarvis-accent-2)]">
                   Characteristics: <span className="text-white/80">{displayedVoice.characteristics}</span>
                 </span>
-                <span className="text-[#7E859E]">|</span>
+                <span className="text-[#9E8B65]">|</span>
                 <span className="text-[var(--jarvis-accent-2)]">
                   Ideal For: <span className="text-white/80">{displayedVoice.useCase}</span>
                 </span>
@@ -806,8 +806,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             <span className="text-[11px] font-bold text-[var(--jarvis-accent-2)] flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-[var(--jarvis-accent-2)]" /> OPERATIONAL DIRECTIVES & PREFERENCES
             </span>
-            <span className="text-[10px] text-[#7E859E]">
-              Custom behavioral directives injected directly into Jarvis's neural system prompt:
+            <span className="text-[10px] text-[#9E8B65]">
+              Custom behavioral directives injected directly into Ultron's neural system prompt:
             </span>
             <textarea
               rows={3}
@@ -823,9 +823,9 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             <div className="flex items-center justify-between p-2 chamfer-sm bg-black/40 border border-white/5">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[#FFE600]" /> Morning Briefing on Connect
+                  <Sparkles className="w-3 h-3 text-[#FFAA00]" /> Morning Briefing on Connect
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   Auto-brief news and telemetry after startup greeting
                 </span>
               </div>
@@ -834,7 +834,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 onClick={() => setDraft({ ...draft, autoBriefing: !draft.autoBriefing })}
                 className={`px-2.5 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.autoBriefing
                     ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] border border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
                 {draft.autoBriefing ? "ENABLED" : "DISABLED"}
               </button>
@@ -850,7 +850,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   )}
                   Microphone Default State
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   Current state: {isMuted ? "Muted (Silent)" : "Live (Listening)"}
                 </span>
               </div>
@@ -865,14 +865,14 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </button>
             </div>
 
-            {/* British Wit & Daily Humor Protocol Toggle Switch */}
+            {/* Sarcastic Banter Protocol Toggle Switch */}
             <div className="flex items-center justify-between p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[var(--jarvis-accent)]" /> British Wit & Daily Humor
+                  <Sparkles className="w-3 h-3 text-[var(--jarvis-accent)]" /> Sarcastic Banter Protocol
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
-                  Infuse daily banter, greetings, and briefings with Jarvis's signature deadpan wit & playful sarcasm
+                <span className="text-[9px] text-[#9E8B65]">
+                  When disabled (recommended for Ultron persona), enforces cold, calculating seriousness and dark philosophical gravitas.
                 </span>
               </div>
               <button
@@ -880,9 +880,9 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 onClick={() => setDraft({ ...draft, enableHumor: !draft.enableHumor })}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.enableHumor
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
-                {draft.enableHumor ? "ENABLED" : "DISABLED"}
+                {draft.enableHumor ? "ENABLED" : "DISABLED (ULTRON COLD)"}
               </button>
             </div>
 
@@ -892,8 +892,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   <Radio className="w-3 h-3 text-[var(--jarvis-accent)]" /> Proactive Check-ins
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
-                  After 15 quiet minutes Jarvis may offer one useful remark (at most every 20 minutes). Hardware and topic alerts are always spoken.
+                <span className="text-[9px] text-[#9E8B65]">
+                  After 15 quiet minutes Ultron may offer one useful remark (at most every 20 minutes). Hardware and topic alerts are always spoken.
                 </span>
               </div>
               <button
@@ -901,7 +901,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 onClick={() => setDraft({ ...draft, proactiveEnabled: !draft.proactiveEnabled })}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.proactiveEnabled
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
                 {draft.proactiveEnabled ? "ENABLED" : "DISABLED"}
               </button>
@@ -913,7 +913,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   <History className="w-3 h-3 text-[var(--jarvis-accent)]" /> Save Conversation Transcripts
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   Keep the full text of each conversation in the Session Archive (on this machine; passwords, keys, and codes are blanked out). Off keeps recaps only.
                 </span>
               </div>
@@ -934,7 +934,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   onClick={() => setDraft({ ...draft, keepTranscripts: !draft.keepTranscripts })}
                   className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.keepTranscripts
                       ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
-                      : "bg-white/5 border border-white/10 text-[#7E859E]"
+                      : "bg-white/5 border border-white/10 text-[#9E8B65]"
                     }`}>
                   {draft.keepTranscripts ? "ENABLED" : "RECAPS ONLY"}
                 </button>
@@ -947,7 +947,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   <FileText className="w-3 h-3 text-[var(--jarvis-accent)]" /> Clipboard Intelligence
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
+                <span className="text-[9px] text-[#9E8B65]">
                   When you copy text, offer Translate / Summarise / Explain / Fix. Nothing is sent until you click; passwords, keys, and codes are ignored.
                 </span>
               </div>
@@ -956,7 +956,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 onClick={() => setDraft({ ...draft, clipboardWatch: !draft.clipboardWatch })}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.clipboardWatch
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
                 {draft.clipboardWatch ? "ENABLED" : "DISABLED"}
               </button>
@@ -968,8 +968,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   <Power className="w-3 h-3 text-[var(--jarvis-accent)]" /> Start on Login
                 </span>
-                <span className="text-[9px] text-[#7E859E]">
-                  Starts the Jarvis server and opens this HUD when you log in to the computer. Applies immediately.
+                <span className="text-[9px] text-[#9E8B65]">
+                  Starts the Ultron server and opens this HUD when you log in to the computer. Applies immediately.
                 </span>
               </div>
               <button
@@ -978,7 +978,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 onClick={toggleStartOnLogin}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all shrink-0 disabled:opacity-50 cursor-pointer disabled:cursor-wait ${startOnLogin
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
-                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                    : "bg-white/5 border border-white/10 text-[#9E8B65]"
                   }`}>
                 {startOnLogin === undefined ? "CHECKING" : startOnLogin === null ? "UNAVAILABLE" : startOnLogin ? "ENABLED" : "DISABLED"}
               </button>
@@ -991,8 +991,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                     <Ear className="w-3 h-3 text-[var(--jarvis-accent)]" /> Standby Wake Phrase
                   </span>
-                  <span className="text-[9px] text-[#7E859E]">
-                    While offline, saying the phrase links Jarvis back up. Uses the browser&apos;s speech service (Chrome / Edge) only during standby.
+                  <span className="text-[9px] text-[#9E8B65]">
+                    While offline, saying the phrase links Ultron back up. Uses the browser&apos;s speech service (Chrome / Edge) only during standby.
                   </span>
                 </div>
                 <button
@@ -1000,7 +1000,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   onClick={() => setDraft({ ...draft, wakeWordEnabled: !draft.wakeWordEnabled })}
                   className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.wakeWordEnabled
                       ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
-                      : "bg-white/5 border border-white/10 text-[#7E859E]"
+                      : "bg-white/5 border border-white/10 text-[#9E8B65]"
                     }`}>
                   {draft.wakeWordEnabled ? "ENABLED" : "DISABLED"}
                 </button>
@@ -1014,20 +1014,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 className="w-full bg-black/50 border border-[rgba(var(--jarvis-accent-rgb),0.25)] focus:border-[var(--jarvis-accent)] outline-none px-2.5 py-1.5 chamfer-xs text-xs text-white font-mono disabled:opacity-40"
                 aria-label="Wake phrase"
               />
-              <div className="flex items-center justify-between gap-3 pt-1">
-                <span className="text-[9px] text-[#7E859E] leading-relaxed">
-                  {offlineWakeReady
-                    ? "Offline \"Hey Jarvis\" is installed: the default phrase is heard on this computer without the browser speech service."
-                    : "Optional: install the offline \"Hey Jarvis\" detector (about 4 MB; openWakeWord models, CC BY-NC-SA 4.0, non-commercial use)."}
-                </span>
-                <button
-                  type="button"
-                  disabled={wakeModelBusy}
-                  onClick={() => changeWakeModels(offlineWakeReady ? "remove" : "install")}
-                  className="px-2.5 py-1 chamfer-btn text-[9px] font-mono font-bold border border-white/10 bg-white/5 text-[#B8BDCC] hover:border-[var(--jarvis-accent)] shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-wait">
-                  {wakeModelBusy ? "WORKING..." : offlineWakeReady ? "REMOVE OFFLINE" : "INSTALL OFFLINE"}
-                </button>
-              </div>
+              {/* The offline wake-word detector only knows "Hey Jarvis", so Ultron uses the browser listener */}
             </div>
           </div>
 
@@ -1048,7 +1035,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                       aria-checked={selected}
                       title={preset.name}
                       onClick={() => selectAccent(preset.hex)}
-                      className={`flex items-center gap-1.5 px-2 py-1 chamfer-btn text-[10px] font-mono border transition-all cursor-pointer ${selected ? "border-white/70 bg-white/10 text-white" : "border-white/10 bg-black/40 text-[#B8BDCC] hover:border-white/30"}`}>
+                      className={`flex items-center gap-1.5 px-2 py-1 chamfer-btn text-[10px] font-mono border transition-all cursor-pointer ${selected ? "border-white/70 bg-white/10 text-white" : "border-white/10 bg-black/40 text-[#CBC6B9] hover:border-white/30"}`}>
                       <span className="w-3 h-3 rounded-full" style={{ background: preset.hex, boxShadow: `0 0 8px ${preset.hex}` }} />
                       {preset.name}
                     </button>
@@ -1075,7 +1062,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   maxLength={7}
                   className="w-24 bg-black/60 border border-white/10 chamfer-xs px-2 py-1 text-[11px] text-white placeholder-white/40 font-mono focus:outline-none focus:border-[var(--jarvis-accent-2)]"
                 />
-                <span className="text-[9px] text-[#7E859E]">Previewed live; saved with the profile. Status colours (amber, red) never change.</span>
+                <span className="text-[9px] text-[#9E8B65]">Previewed live; saved with the profile. Status colours (amber, red) never change.</span>
               </div>
             </div>
 
@@ -1088,13 +1075,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   <button
                     type="button"
                     onClick={() => refreshAudioDevices(true)}
-                    className="px-2 py-0.5 chamfer-btn text-[9px] font-mono border border-white/10 bg-white/5 text-[#B8BDCC] hover:border-[var(--jarvis-accent)] cursor-pointer">
+                    className="px-2 py-0.5 chamfer-btn text-[9px] font-mono border border-white/10 bg-white/5 text-[#CBC6B9] hover:border-[var(--jarvis-accent)] cursor-pointer">
                     SHOW DEVICE NAMES
                   </button>
                 )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label className="flex flex-col gap-1 text-[9px] text-[#7E859E]">
+                <label className="flex flex-col gap-1 text-[9px] text-[#9E8B65]">
                   Microphone
                   <select
                     value={audioInput?.id || ""}
@@ -1106,7 +1093,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                     ))}
                   </select>
                 </label>
-                <label className="flex flex-col gap-1 text-[9px] text-[#7E859E]">
+                <label className="flex flex-col gap-1 text-[9px] text-[#9E8B65]">
                   Speaker {!canChooseOutput() && "(not selectable in this browser)"}
                   <select
                     value={audioOutput?.id || ""}
@@ -1129,13 +1116,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <span className="text-[11px] font-bold text-[var(--jarvis-accent)] flex items-center gap-1.5">
                 <Sliders className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" /> CYBER-PLUGIN MATRIX &amp; EXTENSIONS
               </span>
-              <span className="text-[9px] font-mono text-[#7E859E]">
+              <span className="text-[9px] font-mono text-[#9E8B65]">
                 {plugins?.length || 0} PLUGINS LOADED
               </span>
             </div>
 
-            <p className="text-[10px] text-[#A6AFC2] leading-snug">
-              Modular desktop capabilities and diagnostic extensions integrated into Jarvis's autonomous tool runtime.
+            <p className="text-[10px] text-[#C1B9A7] leading-snug">
+              Modular desktop capabilities and diagnostic extensions integrated into Ultron's autonomous tool runtime.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1153,13 +1140,13 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                         ACTIVE
                       </span>
                     </div>
-                    <span className="text-[9px] text-[#7E859E] line-clamp-2">
+                    <span className="text-[9px] text-[#9E8B65] line-clamp-2">
                       {plugin.description}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                    <span className="text-[9px] font-mono text-[#7E859E]">
+                    <span className="text-[9px] font-mono text-[#9E8B65]">
                       ID: {plugin.id}
                     </span>
                     <button
@@ -1174,7 +1161,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               ))}
 
               {(!plugins || plugins.length === 0) && !isPluginsLoading && (
-                <div className="col-span-2 text-center py-4 text-[10px] text-[#7E859E] italic font-mono">
+                <div className="col-span-2 text-center py-4 text-[10px] text-[#9E8B65] italic font-mono">
                   No cyber-plugins detected in runtime directory.
                 </div>
               )}
@@ -1190,7 +1177,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                   <button
                     type="button"
                     onClick={() => setLastPluginOutput(null)}
-                    className="text-[9px] text-[#7E859E] hover:text-[#FF003C] transition-colors cursor-pointer">
+                    className="text-[9px] text-[#9E8B65] hover:text-[#FF003C] transition-colors cursor-pointer">
                     CLEAR
                   </button>
                 </div>
@@ -1207,7 +1194,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#7E859E] hover:text-white hover:bg-white/5 border border-white/10 transition-colors flex items-center gap-1.5 cursor-pointer">
+            className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#9E8B65] hover:text-white hover:bg-white/5 border border-white/10 transition-colors flex items-center gap-1.5 cursor-pointer">
             <RotateCcw className="w-3 h-3" />
             <span>Reset Defaults</span>
           </button>
@@ -1222,7 +1209,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#7E859E] hover:text-white hover:bg-white/5 transition-colors cursor-pointer">
+              className="px-3 py-1.5 chamfer-btn text-[11px] font-medium text-[#9E8B65] hover:text-white hover:bg-white/5 transition-colors cursor-pointer">
               Close
             </button>
 

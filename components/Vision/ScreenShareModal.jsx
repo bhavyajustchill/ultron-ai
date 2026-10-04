@@ -245,7 +245,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
   const handleTransmitSnapshot = () => {
     const success = captureAndTransmitFrame();
     if (success) {
-      addCommsMessage("system", `Tactical snapshot transmitted to J.A.R.V.I.S`);
+      addCommsMessage("system", `Tactical snapshot transmitted to Ultron`);
     } else {
       setErrorMsg("Failed to transmit frame. Ensure live session is connected.");
     }
@@ -322,10 +322,10 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       }
       className={`fixed z-35 ${!position ? "top-[52vh] right-6" : ""
         } ${isMinimized ? "w-72 sm:w-80" : "w-80 sm:w-96"
-        } chamfer-lg border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""
+        } chamfer-lg border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(15,12,5,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""
         } ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>
       {/* Top Accent Gradient Line */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
+      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[var(--jarvis-accent-soft)] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
 
       {/* Header */}
       <div
@@ -353,13 +353,13 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
         <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
           <button
             onClick={() => setIsMinimized((prev) => !prev)}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
             title={isMinimized ? "Expand Window" : "Minimize Window"}>
             {isMinimized ? <Maximize2 className="w-3 h-3" /> : <Minimize2 className="w-3 h-3" />}
           </button>
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Close Window (Esc)">
             <X className="w-3 h-3" />
           </button>
@@ -400,13 +400,13 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
               <h3 className="text-[11px] font-semibold text-[#F0F2F8] font-mono">
                 SCREEN INTERROGATION
               </h3>
-              <p className="text-[10px] text-[#7E859E] mt-0.5 font-mono leading-relaxed">
-                Feed active desktop or window to J.A.R.V.I.S
+              <p className="text-[10px] text-[#9E8B65] mt-0.5 font-mono leading-relaxed">
+                Feed active desktop or window to Ultron
               </p>
             </div>
             <button
               onClick={startScreenCapture}
-              className="mt-1 flex items-center gap-1.5 px-3 py-1 chamfer-btn bg-[var(--jarvis-accent-2)] hover:bg-[#38f4ff] text-black text-[10px] font-mono font-semibold shadow-[0_0_12px_rgba(var(--jarvis-accent-2-rgb),0.4)] transition-all cursor-pointer">
+              className="mt-1 flex items-center gap-1.5 px-3 py-1 chamfer-btn bg-[var(--jarvis-accent-2)] hover:bg-[var(--jarvis-accent-soft)] text-black text-[10px] font-mono font-semibold shadow-[0_0_12px_rgba(var(--jarvis-accent-2-rgb),0.4)] transition-all cursor-pointer">
               <Video className="w-3 h-3" />
               <span>ENGAGE CAPTURE</span>
             </button>
@@ -436,14 +436,14 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       )}
 
       {/* Tactical Control Rail */}
-      <div className="flex items-center justify-between p-2 bg-[rgba(14,16,23,0.95)] gap-2">
+      <div className="flex items-center justify-between p-2 bg-[rgba(23,20,14,0.95)] gap-2">
         <div className="flex items-center gap-1.5">
           {isScreenSharing ? (
             <>
               <button
                 onClick={handleTransmitSnapshot}
                 className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(var(--jarvis-accent-2-rgb),0.1)] border border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] hover:bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[10px] font-mono font-semibold transition-all cursor-pointer"
-                title="Transmit current screen frame to J.A.R.V.I.S">
+                title="Transmit current screen frame to Ultron">
                 <Camera className="w-2.5 h-2.5" />
                 <span>SNAPSHOT</span>
               </button>
@@ -460,7 +460,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
               </button>
 
               {!isMinimized && (
-                <div className="flex items-center gap-1 text-[9px] font-mono text-[#7E859E]">
+                <div className="flex items-center gap-1 text-[9px] font-mono text-[#9E8B65]">
                   <select
                     value={visionInterval}
                     onChange={(e) => setVisionInterval(Number(e.target.value))}
@@ -474,14 +474,14 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
               )}
             </>
           ) : (
-            <div className="text-[9px] font-mono text-[#7E859E] flex items-center gap-1">
+            <div className="text-[9px] font-mono text-[#9E8B65] flex items-center gap-1">
               <Shield className="w-2.5 h-2.5 text-[var(--jarvis-accent-2)]" />
               <span>STANDBY</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-1 text-[9px] font-mono text-[#7E859E]">
+        <div className="flex items-center gap-1 text-[9px] font-mono text-[#9E8B65]">
           {isScreenSharing && (
             <button
               onClick={stopStream}
