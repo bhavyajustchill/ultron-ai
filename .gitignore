@@ -56,3 +56,5 @@ next-env.d.ts
 /data/sessions.json
 /data/monitors.json
 /data/wakeword/
+
+/Mark-LIII/
