@@ -41,3 +41,23 @@ yarn-error.log*
 next-env.d.ts
 
 /scripts
+
+# Jarvis file-operation backups and organize undo manifests
+/data/fs-journal/
+
+# Semantic memory vector cache (regenerated from data/memories.json)
+/data/memory-vectors.json
+/data/memory-vectors.json.tmp
+
+# Jarvis runtime state (reminders, autostart log, session recaps, topic monitors, wake word models, keyboard portal token)
+/data/reminders.json
+/data/reminders.json.tmp
+/data/autostart.log
+/data/sessions.json
+/data/sessions.json.*.tmp
+/data/session-vectors.json
+/data/monitors.json
+/data/wakeword/
+/data/portal-token.json
+
+/Mark-LIII/

@@ -3,14 +3,95 @@
 import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
+import { ACCENT_TINT } from "@/lib/accentTheme";
+
+// Core plasma sphere: brightest where the surface faces the camera and fading to nothing at the limb (no hard
+// outline), with faint slowly rotating surface noise so it reads as a 3D ball. uHeat (thinking / speaking) widens
+// the white-hot centre from a tiny point and brightens the body into a saturated corona; uLevel (speech loudness)
+// brightens the corona further while the core's growth carries the size.
+const CORE_VERTEX_SHADER = /* glsl */ `
+  varying vec3 vNormal;
+  varying vec3 vViewDir;
+  varying vec3 vObjPos;
+
+  void main() {
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    vNormal = normalize(normalMatrix * normal);
+    vViewDir = normalize(-mvPosition.xyz);
+    vObjPos = position;
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const CORE_FRAGMENT_SHADER = /* glsl */ `
+  uniform vec3 uColor;
+  uniform float uHeat;
+  uniform float uLevel;
+  uniform float uTime;
+  varying vec3 vNormal;
+  varying vec3 vViewDir;
+  varying vec3 vObjPos;
+
+  float hash(vec3 p) {
+    p = fract(p * 0.3183099 + 0.1);
+    p *= 17.0;
+    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+  }
+
+  float noise(vec3 x) {
+    vec3 i = floor(x);
+    vec3 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(
+      mix(mix(hash(i), hash(i + vec3(1.0, 0.0, 0.0)), f.x),
+          mix(hash(i + vec3(0.0, 1.0, 0.0)), hash(i + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+      mix(mix(hash(i + vec3(0.0, 0.0, 1.0)), hash(i + vec3(1.0, 0.0, 1.0)), f.x),
+          mix(hash(i + vec3(0.0, 1.0, 1.0)), hash(i + vec3(1.0, 1.0, 1.0)), f.x), f.y),
+      f.z
+    );
+  }
+
+  void main() {
+    float facing = clamp(dot(normalize(vNormal), normalize(vViewDir)), 0.0, 1.0);
+
+    // Surface detail turns slowly around the vertical axis
+    float a = uTime * 0.25;
+    vec3 p = vec3(cos(a) * vObjPos.x - sin(a) * vObjPos.z, vObjPos.y, sin(a) * vObjPos.x + cos(a) * vObjPos.z);
+    float n = noise(p * 14.0 + vec3(0.0, uTime * 0.15, 0.0));
+
+    float body = pow(facing, mix(2.5, 2.0, uHeat)) * (0.85 + 0.3 * n) * (0.6 + 1.3 * uHeat + 1.2 * uLevel);
+    // White from facing > hi, fading to the body colour by facing < lo
+    float lo = mix(0.956, 0.45, uHeat);
+    float hi = mix(1.0, 0.9, uHeat);
+    float hot = smoothstep(lo, hi, facing);
+    vec3 col = mix(uColor * body, vec3(1.0), hot);
+    // Alpha follows brightness like the sprite textures, so the dim limb does not hide the CSS
+    // background behind the transparent canvas
+    float alpha = clamp(max(col.r, max(col.g, col.b)), 0.0, 1.0);
+    gl_FragColor = vec4(col / max(alpha, 0.0001), alpha);
+    #include <colorspace_fragment>
+  }
+`;
+
+// Speech energy (mean of the 32 lowest analyser bins, 0-1) treated as full loudness for the max-level core
+const SPEECH_LEVEL_FULL = 0.6;
+// Bloom haze opacity: idle base, plus extra while thinking / speaking
+const BLOOM_IDLE_OPACITY = 1.3;
+const BLOOM_HEAT_OPACITY = 0.32;
+// Core sphere scale when idle and while thinking / speaking (before speech growth), and extra bloom size
+// while active; the small idle sphere keeps the white point inside a soft glow rather than a visible ball
+const CORE_IDLE_SCALE = 0.66;
+const CORE_ACTIVE_SCALE = 1.3;
+const BLOOM_HEAT_GROWTH = 0.4;
 
 /**
  * ArcReactorOrb — Holographic Radar Reactor Orb with Particle-Only Rotation.
  * Features:
  * - Particle-only 3D rotation: only the 3D particle sphere rotates when dragged or procedurally.
  *   The core, radial stator dial, and sweeping light remain locked facing forward without tilting.
- * - Dominant Ada Scarlet (#FF003C) & crimson color palette with reduced electric cyan accents.
+ * - Electric aqua-cyan (#00E5FF) J.A.R.V.I.S palette. The core is a shaded 3D plasma sphere: theme colour with
+ *   a tiny white-hot point when idle, a white centre and saturated corona while thinking, growing with speech level.
  * - Synchronized speed scaling: very slow in IDLE (0.045 rad/s particles, 0.18 rad/s sweep light),
  *   accelerating in sync during listening, speaking, and thinking.
  * - Very dim, subtle, ethereal rotating radar light wedge (opacity 0.045).
@@ -22,8 +103,10 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
   const pointsRef = useRef(null);
   const coreMeshRef = useRef(null);
   const flareSpriteRef = useRef(null);
+  const flareMatRef = useRef(null);
+  const coreMatRef = useRef(null);
   const centerLightRef = useRef(null);
-  const scarletLightRef = useRef(null);
+  const accentLightRef = useRef(null);
   const cyanLightRef = useRef(null);
   const radarSweepRef = useRef(null);
   const statorGroupRef = useRef(null);
@@ -45,10 +128,24 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
 
   const shockwaveRef = useRef(0);
   const speechEnergyRef = useRef(0);
+  // 0 = idle (theme-coloured plasma core), 1 = thinking / speaking (white-hot centre)
+  const coreHeatRef = useRef(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const status = useAdaStore((state) => state.status);
-  const isMuted = useAdaStore((state) => state.isMuted);
+  const status = useJarvisStore((state) => state.status);
+  const isMuted = useJarvisStore((state) => state.isMuted);
+  // Accent theme (Phase 8.7): colours below are designed in cyan and tinted into the chosen accent;
+  // anything built from them is rebuilt only when the theme changes, never per frame
+  const tint = ACCENT_TINT;
+  // Core plasma sphere initial uniforms. R3F copies each uniform into the material, so later writes go
+  // through coreMatRef rather than this object.
+  const coreUniforms = useMemo(
+    () => ({ uColor: { value: new THREE.Color() }, uHeat: { value: 0 }, uLevel: { value: 0 }, uTime: { value: 0 } }),
+    []
+  );
+  useEffect(() => {
+    coreMatRef.current?.uniforms.uColor.value.set(tint("#00E5FF"));
+  }, [tint]);
 
   // 1. Procedural Radial Optical Bloom Texture (Seamless Cubic Falloff, Zero Ring Banding)
   const coreBloomTexture = useMemo(() => {
@@ -84,41 +181,35 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         // Hermite smooth window: (1 - normR^2)^2 ensures value and derivative reach exactly 0 at normR = 1.0
         const window = (1 - normR * normR) * (1 - normR * normR);
 
-        // Continuous multi-stop optical falloff:
-        // 1. White-hot emitter singularity
-        // 2. Radiant Electric Aqua-Cyan transition (#00E5FF / #00F0FF)
-        // 3. Deep ocean cyan-blue ambient haze
+        // Continuous multi-stop optical falloff (the white-hot centre comes from the plasma sphere, so the
+        // haze has no solid disc of its own):
+        // 1. Radiant Electric Aqua-Cyan centre and transition (#00E5FF / #00F0FF)
+        // 2. Deep ocean cyan-blue ambient haze
         let r, g, b, alpha;
 
-        if (normR < 0.2) {
-          // Blazing white emitter singularity expanding to soft ice-cyan blush
-          const t = normR / 0.2;
-          const s = t * t * (3 - 2 * t);
-          r = Math.round(255 * (1 - s * 0.15));
-          g = Math.round(255 * (1 - s * 0.05));
-          b = 255;
-          alpha = 1.0;
-        } else if (normR < 0.52) {
+        if (normR < 0.52) {
           // Radiant Electric Aqua-Cyan (#00E5FF / #00F0FF)
-          const t = (normR - 0.2) / 0.32;
+          const t = Math.max(0, normR - 0.2) / 0.32;
           const s = t * t * (3 - 2 * t);
           r = Math.round(30 * (1 - s));
           g = Math.round(235 - s * 25);
           b = 255;
           alpha = Math.exp(-1.15 * normR) * window;
         } else {
-          // Deep ocean cyan-blue ambient haze (#006699 down to #001f33)
+          // Deep ocean cyan-blue ambient haze, continuing from the aqua band's edge colour and alpha
+          // so the two bands meet without a visible ring
           const t = (normR - 0.52) / 0.48;
           const s = t * t * (3 - 2 * t);
           r = 0;
-          g = Math.round(180 - s * 135);
+          g = Math.round(210 - s * 165);
           b = Math.round(255 - s * 115);
-          alpha = Math.exp(-1.45 * normR) * window;
+          alpha = Math.exp(-1.15 * 0.52 - 1.45 * (normR - 0.52)) * window;
         }
 
-        data[idx] = r;
-        data[idx + 1] = g;
-        data[idx + 2] = b;
+        const [tr, tg, tb] = tint.rgb(r, g, b);
+        data[idx] = tr;
+        data[idx + 1] = tg;
+        data[idx + 2] = tb;
         data[idx + 3] = Math.round(Math.min(255, Math.max(0, alpha * 255)));
       }
     }
@@ -127,7 +218,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     const tex = new THREE.CanvasTexture(canvas);
     tex.needsUpdate = true;
     return tex;
-  }, []);
+  }, [tint]);
 
   // 1b. Procedural Polar-Feathered Radar Sweep Beam Texture (Soft Gaussian Leading, Exponential Tail, Hermite Radial)
   const radarSweepTexture = useMemo(() => {
@@ -146,10 +237,11 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     const arcSpan = 0.75;
     const leadFeather = 0.08;
 
-    // Radial bounds normalized to [0, 1] for 3.7x3.7 world plane (max radius 1.85)
-    // World space: inner fades from 0.11 to 0.41; outer fades from 1.30 to 1.74
-    const rInnerMin = 0.06;
-    const rInnerMax = 0.22;
+    // Radial bounds normalized to [0, 1] for the 2.8 x 2.8 plane (max radius 1.4)
+    // World space: a long inner fade from 0.21 (just outside the core glow) to 0.84 (the dial ring), so the
+    // beam never brightens toward the core; outer fade from 0.98 to 1.4
+    const rInnerMin = 0.15;
+    const rInnerMax = 0.6;
     const rOuterMin = 0.7;
     const rOuterMax = 1;
 
@@ -207,15 +299,11 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
 
         const combinedAlpha = radialFade * angFade;
 
-        // Luminous Electric Aqua-Cyan beam
-        const cyanBlend = Math.max(0, 1.0 - normR * 1.6);
-        const rVal = Math.round(cyanBlend * 40);
-        const gVal = Math.round(225 + cyanBlend * 25);
-        const bVal = 255;
-
-        data[idx] = rVal;
-        data[idx + 1] = gVal;
-        data[idx + 2] = bVal;
+        // Luminous Electric Aqua-Cyan beam, one colour along its length (no whitening toward the core)
+        const [tr, tg, tb] = tint.rgb(0, 225, 255);
+        data[idx] = tr;
+        data[idx + 1] = tg;
+        data[idx + 2] = tb;
         data[idx + 3] = Math.round(Math.min(255, combinedAlpha * 255));
       }
     }
@@ -224,7 +312,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     const tex = new THREE.CanvasTexture(canvas);
     tex.needsUpdate = true;
     return tex;
-  }, []);
+  }, [tint]);
 
   // 1c. Procedural Smooth Circular Anti-Aliased Particle Texture (Eliminates Square Quads)
   const circleParticleTexture = useMemo(() => {
@@ -281,7 +369,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     // RGBA: itemSize = 4 for native Three.js USE_COLOR_ALPHA support
     const colors = new Float32Array(tickCount * 2 * 4);
 
-    const electricAqua = new THREE.Color("#00E5FF");
+    const electricAqua = new THREE.Color(tint("#00E5FF"));
 
     for (let i = 0; i < tickCount; i++) {
       const p1X = cosA[i] * rIn;
@@ -333,7 +421,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geom.setAttribute("color", new THREE.BufferAttribute(colors, 4));
     return geom;
-  }, [tickBaseData]);
+  }, [tickBaseData, tint]);
 
   // 3. Stator Bounding Rings
   const { innerStatorGeom, outerStatorGeom } = useMemo(() => {
@@ -402,13 +490,13 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
 
     return {
       // Lower border ring: Glowing Electric Aqua-Cyan comet tail (1/3rd length, clockwise)
-      innerCometTailGeom: createCometTailGeom(0.6, 0.26, 32, "#00E5FF", false, 0.006),
+      innerCometTailGeom: createCometTailGeom(0.6, 0.26, 32, tint("#00E5FF"), false, 0.006),
       // Upper border ring: Glowing Electric Aqua-Cyan comet tail (1/3rd length, clockwise)
-      outerCometTailGeom: createCometTailGeom(0.9, 0.24, 32, "#00E5FF", false, 0.006),
+      outerCometTailGeom: createCometTailGeom(0.9, 0.24, 32, tint("#00E5FF"), false, 0.006),
       // Middle particle orbiter (r=1.18): Glowing Electric Cyan comet line tail matching borders (1/3rd length, counter-clockwise)
-      middleCometTailGeom: createCometTailGeom(1.18, 0.24, 32, "#00E5FF", true, 0.015),
+      middleCometTailGeom: createCometTailGeom(1.18, 0.24, 32, tint("#00E5FF"), true, 0.015),
     };
-  }, []);
+  }, [tint]);
 
   // =========================================================================
   // SPEECH SPIKE CALIBRATION VARIABLES (Tweak these parameters to adjust appearance)
@@ -447,7 +535,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     // RGBA: itemSize = 4 for native Three.js USE_COLOR_ALPHA support
     const colors = new Float32Array(tickCount * 2 * 4);
 
-    const electricAqua = new THREE.Color("#00E5FF");
+    const electricAqua = new THREE.Color(tint("#00E5FF"));
 
     for (let i = 0; i < tickCount; i++) {
       // At rest, outer vertex rests at rIn (length 0 until speech begins)
@@ -497,7 +585,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
     geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geom.setAttribute("color", new THREE.BufferAttribute(colors, 4));
     return geom;
-  }, [outerSpectrumBaseData]);
+  }, [outerSpectrumBaseData, tint]);
 
   // 4. 3-Level Organically Scattered Orbital Particle Belts
   // Band 1 (Inner): r=1.02 ± 0.042 (80 particles, Clockwise)
@@ -506,7 +594,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
   // Inter-Band & Boundary Motes: r in [0.96, 1.40] (40 particles)
   // Total: 300 particles, Electric Aqua-Cyan, Ice-Cyan, and Pure White
   const particleCount = 300;
-  const { positions, baseRadii, baseAngles, baseZ, layerIds, colors, scales } = useMemo(() => {
+  const { positions, baseRadii, baseAngles, baseZ, layerIds, colors, baseColors, scales } = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
     const bRadii = new Float32Array(particleCount);
     const bAngles = new Float32Array(particleCount);
@@ -610,9 +698,37 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       baseZ: bZ,
       layerIds: lIds,
       colors: col,
+      baseColors: col.slice(),
       scales: sca,
     };
   }, [particleCount]);
+
+  // Recolour particles in place on a theme change, keeping their positions and opacities
+  useEffect(() => {
+    for (let i = 0; i < particleCount; i++) {
+      const c = i * 4;
+      const [r, g, b] = tint.rgb(baseColors[c] * 255, baseColors[c + 1] * 255, baseColors[c + 2] * 255);
+      colors[c] = r / 255;
+      colors[c + 1] = g / 255;
+      colors[c + 2] = b / 255;
+    }
+    const attribute = pointsRef.current?.geometry?.attributes?.color;
+    if (attribute) attribute.needsUpdate = true;
+  }, [tint, colors, baseColors, particleCount]);
+
+  // Free GPU copies of textures / geometries replaced by a theme change
+  useEffect(() => () => coreBloomTexture?.dispose(), [coreBloomTexture]);
+  useEffect(() => () => radarSweepTexture?.dispose(), [radarSweepTexture]);
+  useEffect(() => () => statorTicksGeometry.dispose(), [statorTicksGeometry]);
+  useEffect(() => () => outerSpectrumGeometry.dispose(), [outerSpectrumGeometry]);
+  useEffect(
+    () => () => {
+      innerCometTailGeom.dispose();
+      outerCometTailGeom.dispose();
+      middleCometTailGeom.dispose();
+    },
+    [innerCometTailGeom, outerCometTailGeom, middleCometTailGeom]
+  );
 
   // Frame Loop — Synchronized speed scaling, speech growth, particle-only rotation, zero GC
   useFrame((state, delta) => {
@@ -782,8 +898,16 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       posAttr.needsUpdate = true;
     }
 
-    // 5. Dynamic Center Light Bloom: Seamless optical expansion strictly when speaking
-    const speechGrowthMultiplier = 1.0 + (isSpeaking ? speechEnergy * 0.45 : 0) + shockwave * 0.25;
+    // 5. Core Heat & Speech Level: 0 idle -> 1 thinking / speaking, eased; level = speech loudness 0-1
+    const heatTarget = isThinking || isSpeaking ? 1 : 0;
+    coreHeatRef.current += (heatTarget - coreHeatRef.current) * Math.min(1, delta * 6);
+    const heat = coreHeatRef.current;
+    const level = isSpeaking ? Math.min(1, speechEnergy / SPEECH_LEVEL_FULL) : 0;
+
+    // 6. Dynamic Center Light Bloom: the core grows from its idle size while active and expands further with speech
+    const speechGrowthMultiplier =
+      (1.0 + (isSpeaking ? speechEnergy * 0.2 : 0) + shockwave * 0.25) *
+      (CORE_IDLE_SCALE + (CORE_ACTIVE_SCALE - CORE_IDLE_SCALE) * heat);
 
     if (coreMeshRef.current) {
       coreMeshRef.current.scale.set(
@@ -799,6 +923,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       const flareScale =
         baseFlare *
         (1.0 + (isSpeaking ? speechEnergy * 0.4 : 0) + shockwave * 0.25) *
+        (1.0 + BLOOM_HEAT_GROWTH * heat) *
         (isHovered ? 1.08 : 1.0);
       flareSpriteRef.current.scale.set(flareScale, flareScale, 1);
     }
@@ -808,9 +933,21 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       centerLightRef.current.intensity =
         (isHovered ? 6.5 : 5.0) * (isSpeaking ? 1.0 + speechEnergy * 0.35 : 1.0) + shockwave * 1.5;
     }
-    if (scarletLightRef.current) {
-      scarletLightRef.current.intensity =
+    if (accentLightRef.current) {
+      accentLightRef.current.intensity =
         8.0 * (isSpeaking ? 1.0 + speechEnergy * 0.35 : 1.0) + shockwave * 2.5;
+    }
+
+    // 7. Core look: a tiny white-hot point when idle, a white centre with a saturated corona while
+    // thinking, widening and brightening with speech loudness up to the max-level look
+    if (coreMatRef.current) {
+      const uniforms = coreMatRef.current.uniforms;
+      uniforms.uHeat.value = heat;
+      uniforms.uLevel.value = level;
+      uniforms.uTime.value = time;
+    }
+    if (flareMatRef.current) {
+      flareMatRef.current.opacity = BLOOM_IDLE_OPACITY + heat * BLOOM_HEAT_OPACITY;
     }
   });
 
@@ -835,9 +972,9 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         decay={1.5}
       />
       <pointLight
-        ref={scarletLightRef}
+        ref={accentLightRef}
         position={[0, 0, 0]}
-        color="#00E5FF"
+        color={tint("#00E5FF")}
         intensity={16}
         distance={12}
         decay={1.3}
@@ -845,7 +982,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       <pointLight
         ref={cyanLightRef}
         position={[0, 0, 0.4]}
-        color="#00F0FF"
+        color={tint("#00F0FF")}
         intensity={6}
         distance={6}
         decay={1.5}
@@ -855,35 +992,29 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
       {coreBloomTexture && (
         <sprite ref={flareSpriteRef} position={[0, 0, 0.04]} scale={[2.15, 2.15, 1]}>
           <spriteMaterial
+            ref={flareMatRef}
             map={coreBloomTexture}
             transparent
             blending={THREE.AdditiveBlending}
             depthWrite={false}
-            opacity={0.92}
+            toneMapped={false}
+            opacity={BLOOM_IDLE_OPACITY}
           />
         </sprite>
       )}
 
-      {/* 3. PROMINENT WHITE-HOT CORE SINGULARITY & GLOWING AQUA CORONA */}
+      {/* 3. 3D PLASMA CORE SPHERE (tiny white-hot point when idle, white centre + saturated corona when active) */}
       <group ref={coreMeshRef} position={[0, 0, 0.05]}>
-        {/* Soft Glowing Aqua Inner Corona */}
-        <mesh position={[0, 0, -0.005]}>
-          <sphereGeometry args={[0.185, 32, 32]} />
-          <meshBasicMaterial
-            color="#00E5FF"
-            transparent
-            opacity={0.45}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-        {/* White-Hot Core Emitter */}
         <mesh>
-          <sphereGeometry args={[0.125, 32, 32]} />
-          <meshBasicMaterial
-            color="#FFFFFF"
+          <sphereGeometry args={[0.2, 64, 64]} />
+          <shaderMaterial
+            ref={coreMatRef}
+            uniforms={coreUniforms}
+            vertexShader={CORE_VERTEX_SHADER}
+            fragmentShader={CORE_FRAGMENT_SHADER}
             transparent
-            opacity={0.98}
             blending={THREE.AdditiveBlending}
+            depthWrite={false}
           />
         </mesh>
       </group>
@@ -916,7 +1047,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         {/* Inner Bounding Ring (Electric Aqua accent) */}
         <lineLoop geometry={innerStatorGeom}>
           <lineBasicMaterial
-            color="#00E5FF"
+            color={tint("#00E5FF")}
             transparent
             opacity={0.65}
             blending={THREE.AdditiveBlending}
@@ -926,7 +1057,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
         {/* Outer Bounding Ring of Stator (Electric Aqua) */}
         <lineLoop geometry={outerStatorGeom}>
           <lineBasicMaterial
-            color="#00E5FF"
+            color={tint("#00E5FF")}
             transparent
             opacity={0.85}
             blending={THREE.AdditiveBlending}
@@ -948,7 +1079,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           <mesh position={[0.6, 0, 0.01]}>
             <sphereGeometry args={[0.014, 14, 14]} />
             <meshBasicMaterial
-              color="#00E5FF"
+              color={tint("#00E5FF")}
               transparent
               opacity={0.9}
               blending={THREE.AdditiveBlending}
@@ -980,7 +1111,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           <mesh position={[0.9, 0, 0.01]}>
             <sphereGeometry args={[0.016, 14, 14]} />
             <meshBasicMaterial
-              color="#00E5FF"
+              color={tint("#00E5FF")}
               transparent
               opacity={0.9}
               blending={THREE.AdditiveBlending}
@@ -1013,7 +1144,7 @@ export function ArcReactorOrb({ getInputByteFrequencyData, pcmPlayer, onToggleLi
           <mesh position={[1.18, 0, 0.018]}>
             <sphereGeometry args={[0.016, 14, 14]} />
             <meshBasicMaterial
-              color="#00E5FF"
+              color={tint("#00E5FF")}
               transparent
               opacity={0.9}
               blending={THREE.AdditiveBlending}

@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
-import { exec, execFile, execSync, spawn } from 'child_process';
+import { exec, execSync, spawn } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
-import fs from 'fs';
 import loudness from 'loudness';
+import { findApps, launchAppByName } from '@/lib/appIndex';
+import { rejectCrossSiteRequest } from '@/lib/requestGuard';
+import { getVolumeState, getWindowsAudioVolumeInfo, runWindowsAudioBinary } from '@/lib/volumeControl';
+import { pushUndo } from '@/lib/undoJournal';
 
 const execAsync = promisify(exec);
-const execFileAsync = promisify(execFile);
+
+// Actions that change what is on the operator's screen (skipped in dry-run checks)
+const DESKTOP_VISIBLE_ACTIONS = new Set(['open_folder', 'open_url', 'minimize_all', 'lock_screen', 'lock_workstation']);
 
 // In-memory action execution audit log
 const actionHistory = [];
@@ -45,6 +50,10 @@ function findAvailableBinary(candidates) {
  * Prevents blocking the HTTP request and handles Linux/Windows environment inheritance.
  */
 function launchDetachedGui(commandOrBinary, args = []) {
+  // Automated checks never open real windows (same switch as lib/desktopLauncher.js)
+  if (process.env.JARVIS_LAUNCH_DRY_RUN === '1') {
+    return Promise.resolve({ success: true, dryRun: true, output: `Dry run: ${[commandOrBinary, ...args].join(' ')}` });
+  }
   return new Promise((resolve) => {
     try {
       const isShellCmd = typeof commandOrBinary === 'string' && commandOrBinary.includes(' ');
@@ -119,6 +128,10 @@ const WHITELISTED_APPS = {
 async function launchApplication(appKey) {
   const normalizedKey = appKey.toLowerCase().replace(/[-\s]/g, '_');
   const appConfig = WHITELISTED_APPS[normalizedKey];
+  if (!appConfig && isLinux) {
+    // Anything installed on the desktop: resolve through the .desktop application index
+    return launchAppByName(appKey);
+  }
   if (!appConfig) {
     return {
       success: false,
@@ -282,34 +295,6 @@ async function launchApplication(appKey) {
       : `Failed to launch ${appConfig.name} on Linux: ${res.error || 'Binary not found in PATH'}`,
     appName: appConfig.name,
   };
-}
-
-/**
- * Direct Windows Core Audio driver via the bundled loudness C++ helper.
- * Resolves physical disk path to avoid Turbopack virtual __dirname ENOENT.
- */
-function getWindowsAudioBinaryPath() {
-  const candidates = [
-    path.join(process.cwd(), 'bin', 'adjust_get_current_system_volume_vista_plus.exe'),
-    path.join(process.cwd(), 'node_modules', 'loudness', 'impl', 'windows', 'adjust_get_current_system_volume_vista_plus.exe'),
-  ];
-  for (const p of candidates) {
-    if (fs.existsSync(/*turbopackIgnore: true*/ p)) return p;
-  }
-  return null;
-}
-
-async function runWindowsAudioBinary(...args) {
-  const binPath = getWindowsAudioBinaryPath();
-  if (!binPath) throw new Error('Windows Core Audio helper binary not found.');
-  const { stdout } = await execFileAsync(binPath, args);
-  return (stdout || '').trim();
-}
-
-async function getWindowsAudioVolumeInfo() {
-  const data = await runWindowsAudioBinary();
-  const parts = data.split(' ');
-  return { volume: parseInt(parts[0], 10), muted: Boolean(parseInt(parts[1], 10)) };
 }
 
 /**
@@ -549,6 +534,9 @@ export async function GET() {
  *   - target: string (e.g. app name, folder path, url, or volume number)
  */
 export async function POST(req) {
+  const blocked = rejectCrossSiteRequest(req);
+  if (blocked) return blocked;
+
   try {
     const body = await req.json();
     const action = (body.action || '').trim().toLowerCase();
@@ -557,14 +545,31 @@ export async function POST(req) {
     let result = { success: false, message: '' };
     const timestamp = new Date().toLocaleTimeString();
 
-    switch (action) {
+    // Automated checks never open folders / pages or lock the operator's screen
+    if (process.env.JARVIS_LAUNCH_DRY_RUN === '1' && DESKTOP_VISIBLE_ACTIONS.has(action)) {
+      result = { success: true, message: `Dry run: ${action.replace(/_/g, ' ')}${target ? ` ${target}` : ''}.`, dryRun: true };
+    } else switch (action) {
       // 1. Application Launch
       case 'launch_app': {
-        const appRes = await launchApplication(target);
+        result = await launchApplication(target);
+        break;
+      }
+
+      // 1b. Search installed applications (Linux .desktop index)
+      case 'list_apps': {
+        if (!isLinux) {
+          result = { success: false, message: `Installed-app search is available on Linux; authorized apps: ${Object.keys(WHITELISTED_APPS).join(', ')}.` };
+          break;
+        }
+        const matches = findApps(target || '', 10).map((m) => m.app.name);
         result = {
-          success: appRes.success,
-          message: appRes.message,
-          appName: appRes.appName,
+          success: true,
+          message: target
+            ? matches.length
+              ? `Installed apps matching "${target}": ${matches.join(', ')}.`
+              : `No installed application matches "${target}".`
+            : 'Provide a name or category (e.g. "browser", "editor") to search installed applications.',
+          apps: matches,
         };
         break;
       }
@@ -576,7 +581,11 @@ export async function POST(req) {
       case 'unmute':
       case 'toggle_mute':
       case 'set_volume': {
+        const before = await getVolumeState();
         const volRes = await executeMasterVolume(action, target);
+        if (volRes.success && before) {
+          pushUndo(`volume change (${action.replace('_', ' ')})`, 'volume', before);
+        }
         result = {
           success: volRes.success,
           message: volRes.success ? volRes.message : `Volume adjustment failed: ${volRes.error}`,
@@ -701,7 +710,7 @@ export async function POST(req) {
       default:
         result = {
           success: false,
-          message: `Unrecognized OS companion action: '${action}'. Valid actions: launch_app, volume_up, volume_down, mute, open_folder, open_url, minimize_all, lock_screen.`,
+          message: `Unrecognized OS companion action: '${action}'. Valid actions: launch_app, list_apps, volume_up, volume_down, mute, open_folder, open_url, minimize_all, lock_screen.`,
         };
     }
 

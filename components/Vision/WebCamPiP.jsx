@@ -15,11 +15,11 @@ import {
   Scan,
   GripHorizontal,
 } from "lucide-react";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 
 /**
  * WebCamPiP
- * Real-time operator webcam optical surveillance & frame feed to Gemini 2.5 Live
+ * Real-time operator webcam optical surveillance & frame feed to Gemini 3.8 Live
  * Bounded inside the center 3D stage so it NEVER blocks the right-side chat UI.
  */
 export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
@@ -30,7 +30,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
     incrementVisionFrames,
     setActiveVisionSource,
     addCommsMessage,
-  } = useAdaStore();
+  } = useJarvisStore();
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -218,7 +218,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         captureAndTransmitFrame();
       }, visionInterval);
       setIsStreaming(true);
-      addCommsMessage("system", `Webcam optical telemetry streaming to Ultron`);
+      addCommsMessage("system", `Webcam optical telemetry streaming to J.A.R.V.I.S`);
     }
   };
 
@@ -226,7 +226,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
   const handleSnapshot = () => {
     const sent = captureAndTransmitFrame();
     if (sent) {
-      addCommsMessage("system", "Operator optical snapshot transmitted to Ultron");
+      addCommsMessage("system", "Operator optical snapshot transmitted to J.A.R.V.I.S");
     }
   };
 
@@ -248,8 +248,8 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         triggerClose();
       }
     };
-    window.addEventListener("ada-close-webcam", handleExternalClose);
-    return () => window.removeEventListener("ada-close-webcam", handleExternalClose);
+    window.addEventListener("jarvis-close-webcam", handleExternalClose);
+    return () => window.removeEventListener("jarvis-close-webcam", handleExternalClose);
   }, [isOpen, triggerClose]);
 
   // Keyboard shortcut: Escape to close
@@ -295,25 +295,25 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
       }
       className={`fixed z-35 ${!position ? "top-[52vh] left-6" : ""
         } ${isMinimized ? "w-64" : "w-72 sm:w-80"
-        } chamfer-lg border border-[rgba(255, 184, 0,0.25)] bg-[rgba(15,12,5,0.65)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(255, 184, 0,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(255, 184, 0,0.25)] border-[rgba(255, 184, 0,0.5)]" : ""
+        } chamfer-lg border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(8,12,18,0.55)] backdrop-blur-xl backdrop-saturate-150 shadow-[0_0_40px_rgba(var(--jarvis-accent-rgb),0.12),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden ${isDragging ? "shadow-[0_0_50px_rgba(var(--jarvis-accent-rgb),0.25)] border-[rgba(var(--jarvis-accent-rgb),0.5)]" : ""
         } ${isClosing ? "scifi-modal-collapse-up" : "scifi-modal-unfold-down"}`}>
       {/* Top Accent Gradient Line */}
-      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[#FFB800] via-[#FFD54F] to-[#FFB800] animate-pulse shrink-0" />
+      <div className="mx-4 mt-1 h-0.5 w-[calc(100%-32px)] bg-gradient-to-r from-[var(--jarvis-accent)] via-[#70E8FF] to-[var(--jarvis-accent)] animate-pulse shrink-0" />
 
       {/* Header Bar */}
       <div
         onPointerDown={handlePointerDown}
-        className="flex items-center justify-between px-3 py-2 border-b border-[rgba(255, 184, 0,0.18)] bg-[rgba(255, 184, 0,0.04)] select-none cursor-grab active:cursor-grabbing">
+        className="flex items-center justify-between px-3 py-2 border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] select-none cursor-grab active:cursor-grabbing">
         <div className="flex items-center gap-2 pointer-events-none">
-          <GripHorizontal className="w-3.5 h-3.5 text-[#FFB800]/60" />
+          <GripHorizontal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]/60" />
           <span
-            className={`w-2 h-2 rounded-full ${isWebcamActive ? "bg-[#FFB800] animate-pulse shadow-[0_0_6px_#FFB800]" : "bg-[#9E8B65]"}`}
+            className={`w-2 h-2 rounded-full ${isWebcamActive ? "bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_6px_var(--jarvis-accent)]" : "bg-[#7E859E]"}`}
           />
-          <span className="text-[10px] font-mono font-semibold tracking-wider text-[#FFB800] flex items-center gap-1.5">
+          <span className="text-[10px] font-mono font-semibold tracking-wider text-[var(--jarvis-accent)] flex items-center gap-1.5">
             OPTIC PiP // LIVE FEED
           </span>
           {isStreaming && (
-            <span className="px-1.5 py-0.2 chamfer-xs bg-[rgba(255, 184, 0,0.2)] border border-[#FFB800] text-[#FFB800] text-[9px] font-mono animate-pulse">
+            <span className="px-1.5 py-0.2 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] text-[9px] font-mono animate-pulse">
               LIVE
             </span>
           )}
@@ -322,19 +322,19 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
           <button
             onClick={() => setIsMirrored((prev) => !prev)}
-            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Mirror Video">
             <RefreshCw className="w-3 h-3" />
           </button>
           <button
             onClick={() => setIsMinimized((prev) => !prev)}
-            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[#F0F2F8] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-pointer"
             title={isMinimized ? "Expand PiP" : "Minimize PiP"}>
             {isMinimized ? <Maximize2 className="w-3 h-3" /> : <Minimize2 className="w-3 h-3" />}
           </button>
           <button
             onClick={triggerClose}
-            className="p-1 chamfer-xs text-[#9E8B65] hover:text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.1)] transition-colors cursor-pointer"
+            className="p-1 chamfer-xs text-[#7E859E] hover:text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] transition-colors cursor-pointer"
             title="Close Webcam Feed (Esc)">
             <X className="w-3 h-3" />
           </button>
@@ -346,17 +346,17 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         className={`relative w-full aspect-video bg-[#050508] flex items-center justify-center overflow-hidden ${isMinimized ? "hidden" : "block"}`}>
         {/* Cyberpunk Optical Reticle Overlay */}
         <div className="absolute inset-0 pointer-events-none z-10">
-          <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[#FFB800]" />
-          <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[#FFB800]" />
-          <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[#FFB800]" />
-          <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[#FFB800]" />
+          <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[var(--jarvis-accent-2)]" />
+          <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[var(--jarvis-accent-2)]" />
+          <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[var(--jarvis-accent-2)]" />
+          <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[var(--jarvis-accent-2)]" />
 
           {/* Center Targeting Bracket */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-[rgba(255, 184, 0,0.25)] rounded-full flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-[rgba(255, 184, 0,0.6)]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-[rgba(var(--jarvis-accent-2-rgb),0.25)] rounded-full flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-[rgba(var(--jarvis-accent-2-rgb),0.6)]" />
           </div>
 
-          <div className="absolute bottom-1 left-2 text-[8px] font-mono text-[#FFB800]/80">
+          <div className="absolute bottom-1 left-2 text-[8px] font-mono text-[var(--jarvis-accent-2)]/80">
             OPTIC // SENSOR-01
           </div>
           {framesCount > 0 && (
@@ -377,10 +377,10 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
 
         {errorMsg && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-3 bg-black/90 text-center">
-            <p className="text-[11px] font-mono text-[#FFB800] mb-2">{errorMsg}</p>
+            <p className="text-[11px] font-mono text-[var(--jarvis-accent-2)] mb-2">{errorMsg}</p>
             <button
               onClick={startCamera}
-              className="px-2.5 py-0.5 chamfer-btn bg-[#FFB800] text-black font-bold text-[10px] font-mono cursor-pointer">
+              className="px-2.5 py-0.5 chamfer-btn bg-[var(--jarvis-accent-2)] text-black font-bold text-[10px] font-mono cursor-pointer">
               RETRY
             </button>
           </div>
@@ -393,8 +393,8 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
           <button
             onClick={handleSnapshot}
             disabled={!isWebcamActive}
-            className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(255, 184, 0,0.1)] border border-[#FFB800] text-[#FFB800] hover:bg-[rgba(255, 184, 0,0.2)] text-[10px] font-mono transition-all cursor-pointer disabled:opacity-40"
-            title="Send optical snapshot to Ultron">
+            className="flex items-center gap-1 px-2 py-1 chamfer-btn bg-[rgba(var(--jarvis-accent-2-rgb),0.1)] border border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] hover:bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[10px] font-mono transition-all cursor-pointer disabled:opacity-40"
+            title="Send optical snapshot to J.A.R.V.I.S">
             <Camera className="w-2.5 h-2.5" />
             <span>SNAPSHOT</span>
           </button>
@@ -403,16 +403,16 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
             onClick={toggleContinuousStream}
             disabled={!isWebcamActive}
             className={`flex items-center gap-1 px-2 py-1 chamfer-btn text-[10px] font-mono border transition-all cursor-pointer disabled:opacity-40 ${isStreaming
-                ? "border-[#FFB800] bg-[rgba(255, 184, 0,0.2)] text-[#FFB800]"
-                : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[#F0F2F8] hover:border-[#FFB800]"
+                ? "border-[var(--jarvis-accent-2)] bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] text-[var(--jarvis-accent-2)]"
+                : "border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.05)] text-[#F0F2F8] hover:border-[var(--jarvis-accent-2)]"
               }`}
-            title="Continuous frame stream to Ultron">
+            title="Continuous frame stream to J.A.R.V.I.S">
             {isStreaming ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
             <span>{isStreaming ? "STOP" : "STREAM"}</span>
           </button>
         </div>
 
-        <div className="text-[9px] font-mono text-[#9E8B65]">
+        <div className="text-[9px] font-mono text-[#7E859E]">
           {isWebcamActive
             ? framesCount > 0 && isMinimized
               ? `${framesCount}F`

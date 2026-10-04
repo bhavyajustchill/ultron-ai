@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import { ACCENT_TINT } from '@/lib/accentTheme';
 
 /**
  * AudioWaveform — High-performance HTML5 Canvas audio spectrum visualizer.
@@ -15,6 +16,10 @@ export function AudioWaveform({
   isMuted = false,
 }) {
   const canvasRef = useRef(null);
+  // Accent theme (Phase 8.7): read by the draw loop through a ref so the loop never restarts
+  const tint = ACCENT_TINT;
+  const crestColorRef = useRef(tint('#00F0FF'));
+  crestColorRef.current = tint('#00F0FF');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -69,13 +74,13 @@ export function AudioWaveform({
         const x = i * (barWidth + 2);
         const y = height - barHeight;
 
-        // Gradient: Amber/Orange at base to Stark Gold at crest
+        // Gradient: crimson (#FF003C) at base to neon cyan at crest
         const grad = ctx.createLinearGradient(0, height, 0, y);
-        grad.addColorStop(0, '#FF8800');
-        grad.addColorStop(1, '#FFB800');
+        grad.addColorStop(0, '#FF003C');
+        grad.addColorStop(1, crestColorRef.current);
 
         ctx.fillStyle = grad;
-        ctx.shadowColor = '#FFB800';
+        ctx.shadowColor = crestColorRef.current;
         ctx.shadowBlur = hasVocalEnergy && value > 0.3 ? 8 : value > 0.1 ? 3 : 0;
 
         // Rounded bar cap

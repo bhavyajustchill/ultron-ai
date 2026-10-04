@@ -47,7 +47,7 @@ function cToF(c) {
 async function resolveCurrentLocation() {
   try {
     const res = await fetch('http://ip-api.com/json', {
-      headers: { 'User-Agent': 'Project-ADA/1.0' },
+      headers: { 'User-Agent': 'JARVIS-Mark-II/1.0' },
       signal: AbortSignal.timeout(3000),
     });
     if (res.ok) {
@@ -68,7 +68,7 @@ async function resolveCurrentLocation() {
 
   try {
     const res2 = await fetch('https://ipapi.co/json/', {
-      headers: { 'User-Agent': 'Project-ADA/1.0' },
+      headers: { 'User-Agent': 'JARVIS-Mark-II/1.0' },
       signal: AbortSignal.timeout(3000),
     });
     if (res2.ok) {
@@ -110,7 +110,7 @@ async function geocodeLocation(city) {
       city.trim()
     )}&count=1&language=en&format=json`;
     const res = await fetch(geoUrl, {
-      headers: { 'User-Agent': 'Project-ADA/1.0' },
+      headers: { 'User-Agent': 'JARVIS-Mark-II/1.0' },
       signal: AbortSignal.timeout(4000),
     });
 
@@ -147,7 +147,7 @@ export async function fetchLiveWeather(city = '', openBrowser = false) {
   try {
     const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
     const res = await fetch(forecastUrl, {
-      headers: { 'User-Agent': 'Project-ADA/1.0' },
+      headers: { 'User-Agent': 'JARVIS-Mark-II/1.0' },
       signal: AbortSignal.timeout(5000),
     });
 
@@ -220,7 +220,7 @@ export async function fetchLiveWeather(city = '', openBrowser = false) {
       const searchTarget = city || location.name || 'Delhi';
       const wttrUrl = `https://wttr.in/${encodeURIComponent(searchTarget)}?format=j1`;
       const res = await fetch(wttrUrl, {
-        headers: { 'User-Agent': 'Project-ADA/1.0' },
+        headers: { 'User-Agent': 'JARVIS-Mark-II/1.0' },
         signal: AbortSignal.timeout(5000),
       });
 
@@ -306,7 +306,7 @@ export async function fetchLiveWeather(city = '', openBrowser = false) {
     };
   }
 
-  // Compose authoritative spoken summary for Ada (zero metadata complaints)
+  // Compose authoritative spoken summary for Jarvis (zero metadata complaints)
   const locName = weatherData.location.name;
   const cur = weatherData.current;
   const fc = weatherData.forecast;

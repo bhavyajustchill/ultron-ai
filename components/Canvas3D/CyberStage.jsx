@@ -2,7 +2,8 @@
 
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
+import { ACCENT_TINT } from "@/lib/accentTheme";
 
 /**
  * CyberStage — Pure White Studio Lighting & Clean Stage.
@@ -14,7 +15,8 @@ import { useAdaStore } from "@/lib/store";
  * - Ambient Light: #FFFFFF
  */
 export function CyberStage({ showFloor = true }) {
-  const status = useAdaStore((state) => state.status);
+  const status = useJarvisStore((state) => state.status);
+  const tint = ACCENT_TINT;
   const ringRef1 = useRef(null);
   const ringRef2 = useRef(null);
   const keyLightRef = useRef(null);
@@ -30,7 +32,7 @@ export function CyberStage({ showFloor = true }) {
       }
     }
 
-    // Subtle white brightness modulation when Ada is speaking
+    // Subtle white brightness modulation when Jarvis is speaking
     if (keyLightRef.current) {
       if (status === "SPEAKING") {
         const pulse = Math.sin(state.clock.elapsedTime * 7) * 0.3 + 2.3;
@@ -43,8 +45,8 @@ export function CyberStage({ showFloor = true }) {
 
   return (
     <group>
-      {/* 1. Stark Gold Ambient Lighting */}
-      <ambientLight color="#FFB800" intensity={1.1} />
+      {/* 1. Electric Aqua-Cyan Ambient Lighting */}
+      <ambientLight color={tint("#00e5ff")} intensity={1.1} />
 
       {/* 2. Key Light (Clean White Studio Directional) */}
       <directionalLight
@@ -54,20 +56,20 @@ export function CyberStage({ showFloor = true }) {
         intensity={2.2}
       />
 
-      {/* 3. Fill Light (Gold Accent) */}
-      <directionalLight position={[1.8, 1.4, 1.8]} color="#FFB800" intensity={1.8} />
+      {/* 3. Fill Light (Electric Aqua Accent) */}
+      <directionalLight position={[1.8, 1.4, 1.8]} color={tint("#00e5ff")} intensity={1.8} />
 
-      {/* 4. Top Rim Spotlight (Amber Silhouette) */}
+      {/* 4. Top Rim Spotlight (Electric Cyan Silhouette) */}
       <spotLight
         position={[0, 2.8, -1.8]}
-        color="#FFAA00"
+        color={tint("#00b4ff")}
         intensity={1.8}
         angle={0.7}
         penumbra={0.8}
       />
 
-      {/* 5. Front Lower Fill Light (Stark Gold) */}
-      <directionalLight position={[0, 1.0, 2.5]} color="#FFB800" intensity={0.8} />
+      {/* 5. Front Lower Fill Light (Azure Cyan) */}
+      <directionalLight position={[0, 1.0, 2.5]} color={tint("#00f0ff")} intensity={0.8} />
 
       {/* 6. Cyberpunk Holographic Pedestal (if floor ever enabled) */}
       {showFloor && (
@@ -75,19 +77,19 @@ export function CyberStage({ showFloor = true }) {
           {/* Dark Carbon Pedestal Base */}
           <mesh position={[0, 0, 0]}>
             <circleGeometry args={[1.05, 48]} />
-            <meshStandardMaterial color="#080602" roughness={0.8} />
+            <meshStandardMaterial color="#010e16" roughness={0.8} />
           </mesh>
 
-          {/* Outer Stark Gold Theme Ring */}
+          {/* Outer Electric Aqua-Cyan Theme Ring */}
           <mesh ref={ringRef1} position={[0, 0, 0.002]}>
             <ringGeometry args={[0.9, 0.95, 48]} />
-            <meshBasicMaterial color="#FFB800" transparent opacity={0.65} wireframe />
+            <meshBasicMaterial color={tint("#00E5FF")} transparent opacity={0.65} wireframe />
           </mesh>
 
-          {/* Inner Stark Gold Theme Ring */}
+          {/* Inner Electric Aqua-Cyan Theme Ring */}
           <mesh ref={ringRef2} position={[0, 0, 0.003]}>
             <ringGeometry args={[0.65, 0.7, 36]} />
-            <meshBasicMaterial color="#FFB800" transparent opacity={0.7} wireframe />
+            <meshBasicMaterial color={tint("#00E5FF")} transparent opacity={0.7} wireframe />
           </mesh>
         </group>
       )}

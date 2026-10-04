@@ -9,7 +9,7 @@ export default {
   id: 'workspace_navigator',
   name: 'Workspace Codebase Navigator',
   description:
-    'Analyzes Project A.D.A directory topology, code file counts, active git branch, recent commits, and 3D asset statuses.',
+    'Analyzes the J.A.R.V.I.S Mark II project directory topology, code file counts, active git branch, recent commits, and 3D asset statuses.',
   parameters: {
     type: 'OBJECT',
     properties: {
