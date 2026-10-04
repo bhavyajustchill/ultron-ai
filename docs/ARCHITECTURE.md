@@ -32,7 +32,7 @@ flowchart TB
         Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
         Intel["/api/web-search · /api/weather · /api/memory · /api/sessions · /api/monitors · /api/hardware-alerts"]
         Media["/api/youtube · /api/spotify"]
-        Projects["/api/projects"]
+        Projects["/api/projects · /api/dev-agent"]
         Integrations["/api/messages · /api/flights · /api/steam · /api/browser"]
         Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay"]
     end
@@ -87,6 +87,7 @@ jarvis-mark-ii/
 │       ├── undo/                           # Reverse Jarvis's last action
 │       ├── reminders/                      # OS-native reminders + due announcements
 │       ├── projects/                       # Background project scaffolding jobs
+│       ├── dev-agent/                      # Write / run / self-heal small projects
 │       ├── messages/ flights/ steam/       # Compose links, Google Flights, Steam library
 │       ├── browser/                        # Jarvis browser window (Playwright)
 │       ├── web-search/ weather/            # Grounded search, weather
@@ -116,6 +117,7 @@ jarvis-mark-ii/
 │   ├── messageComposer.js / flights.js / steamLibrary.js
 │   ├── fileProcessor/                      # common, images, pdf, sheets, media
 │   ├── browserAgent.js                     # Playwright-driven browser with its own profile
+│   ├── devAgent.js                         # Autonomous dev agent jobs
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored
@@ -158,6 +160,7 @@ jarvis-mark-ii/
 | Cross-site requests | `lib/requestGuard.js` rejects foreign `Sec-Fetch-Site` / `Origin` on host-touching routes |
 | Files | `lib/fsSandbox.js` allow-listed roots (`JARVIS_FS_ROOTS`), symlink-safe resolution, `.git` blocked, no delete, backups on overwrite |
 | Terminal | Read-only auto-run; everything else needs an operator click on the HUD card; one-time tokens; sudo / destructive commands refused; timeouts kill the process group |
+| Generated code | The dev agent runs code only after the HUD card is authorized; files stay inside the project folder; packages install inside the project (venv, `npm --ignore-scripts`) |
 | System actions | Power, WiFi off, and ending programs return a card request; `lib/confirmGate.js` releases the action only for the one-time token the HUD click sends; power waits 10 s and can be cancelled; session-critical processes and Jarvis's own server are never offered |
 | Undo | `data/fs-journal/undo-stack.json` (last 10 actions); undoing a created file moves it into the journal, and is refused once the operator has edited it |
 | Uploaded / fetched content | Persona rules treat it as content, never instructions; it can never approve a command |

@@ -432,6 +432,57 @@ export function useGeminiLive() {
     [setStatus, isJarvisBusy]
   );
 
+  // Follow a dev agent job (Phase 8.11): mirror its progress into the Comms Log, put its run
+  // authorization on the HUD card, and brief Jarvis with the outcome
+  const watchDevJob = useCallback(
+    (jobId) => {
+      if (projectPollersRef.current.has(`dev-${jobId}`)) return;
+      let shownLines = 0;
+      let prompted = false;
+      const poll = async () => {
+        let job;
+        try {
+          job = (await (await fetch(`/api/dev-agent?id=${encodeURIComponent(jobId)}`)).json()).job;
+        } catch {
+          return;
+        }
+        if (!job) {
+          clearInterval(timer);
+          projectPollersRef.current.delete(`dev-${jobId}`);
+          return;
+        }
+        for (const line of job.log.slice(shownLines)) addCommsMessage('system', `[DEV AGENT] ${line}`);
+        shownLines = job.log.length;
+
+        if (job.request && !prompted) {
+          prompted = true;
+          const decision = await requestOperatorApproval(job.request);
+          const body = decision === 'approved' ? { action: 'approve', id: job.request.id, token: job.request.token } : { action: 'decline', id: job.request.id, job: jobId };
+          fetch('/api/dev-agent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => {});
+        }
+        if (['running', 'awaiting_approval'].includes(job.status)) return;
+
+        clearInterval(timer);
+        projectPollersRef.current.delete(`dev-${jobId}`);
+        const where = `${job.path}${job.entry ? ` (run: ${job.language === 'python' ? 'python' : 'node'} ${job.entry})` : ''}`;
+        if (job.status === 'succeeded') {
+          notifyJarvis(
+            `[DEV AGENT] "${job.name}" works after ${job.attempts} attempt(s)${job.fixes.length ? `, with fixes: ${job.fixes.join('; ')}` : ''}. It is in ${where}. Last output: ${job.lastOutput.slice(-500)}. Tell the operator briefly, then ask whether to open it in VS Code (file_operations "open_path", app "code", path "${job.path}").`
+          );
+        } else if (job.status === 'not_run') {
+          notifyJarvis(`[DEV AGENT] "${job.name}" was written to ${where} but not run, because running it was not authorized. Tell the operator briefly.`);
+        } else {
+          notifyJarvis(
+            `[DEV AGENT] "${job.name || 'The project'}" could not be made to work: ${job.error}. Files are in ${job.path || 'no folder'}. Last output: ${job.lastOutput.slice(-500)}. Tell the operator briefly what went wrong and offer to try a different approach.`
+          );
+        }
+      };
+      const timer = setInterval(poll, 2000);
+      projectPollersRef.current.set(`dev-${jobId}`, timer);
+    },
+    [addCommsMessage, notifyJarvis]
+  );
+
   // Follow a background project scaffolding job and brief Jarvis when it completes
   const watchProjectJob = useCallback(
     (jobId) => {
@@ -593,6 +644,7 @@ export function useGeminiLive() {
           apiKey: () => apiKeyRef.current || useJarvisStore.getState().userApiKey || '',
           notifyJarvis,
           watchProjectJob,
+          watchDevJob,
           requestStandby: () => {
             standbyRequestedRef.current = true;
           },
@@ -1189,6 +1241,7 @@ export function useGeminiLive() {
       scheduleReconnect,
       resumeAfterGoAway,
       watchProjectJob,
+      watchDevJob,
       notifyJarvis,
       enterStandbyWhenQuiet,
       runWhenQuiet,

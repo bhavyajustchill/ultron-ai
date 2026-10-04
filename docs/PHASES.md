@@ -163,10 +163,10 @@
 - [x] **6.5 Browser Automation Engine (Playwright Integration):** _(Done in Phase 8.10, `DEC-170`)_
   - [x] Create dedicated browser automation module supporting Chrome, Edge, and Brave with real user profiles. _(Chrome / Edge / Brave / Chromium detected; deliberately a dedicated persistent Jarvis profile instead of the everyday one, so web content the model reads never reaches the operator's real sessions.)_
   - [x] Implement voice-controlled actions: go to URL, smart search, CSS/semantic click, form input, element extraction, scrolling, and full-page screenshots.
-- [ ] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:** _(Uploads, scaffolding, and terminal done in Phase 7; deep file processing done in 8.9 (`DEC-169`); dev agent + self-healing loop scheduled in 8.11)_
+- [x] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:** _(Uploads, scaffolding, and terminal in Phase 7; deep file processing in 8.9 (`DEC-169`); dev agent + self-healing loop in 8.11 (`DEC-171`))_
   - [x] Drag-and-drop file upload zone on the HUD supporting images (OCR, resize, compress), PDFs (extract text, summarize), CSV/Excel (filter, stats), and audio/video (transcribe, trim). _(Uploads tell Jarvis the saved path; `process_file` does the rest.)_
-  - [ ] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/JarvisProjects`.
-  - [ ] Self-healing execution loop: execute code, capture terminal stdout/stderr, parse tracebacks, and automatically repair errors up to 5 attempts.
+  - [x] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/JarvisProjects`. _(Python or Node.js; packages installed inside the project.)_
+  - [x] Self-healing execution loop: execute code, capture terminal stdout/stderr, parse tracebacks, and automatically repair errors up to 5 attempts. _(Runs only after the operator's click on the HUD card.)_
 - [x] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Done in Phase 8.6, `DEC-166`)_
   - [x] Topic monitoring service checking user-defined topics daily via DuckDuckGo search. _(Google News RSS instead: DuckDuckGo is bot-blocked from this host.)_
   - [x] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
@@ -245,7 +245,7 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.8 Messaging, Flights & Games (`DEC-168`)** — compose WhatsApp / Telegram / email messages via app deep links; flight lookup (Google Flights + summary); Steam library and update check when Steam is installed (6.8).
 - [x] **8.9 Deep File Processor (`DEC-169`)** — images (resize, compress, convert, OCR via Gemini vision), PDF (summarize, extract), CSV / Excel (stats, filter, sort, export), audio / video (transcribe via Gemini, trim / extract audio via ffmpeg) (6.6).
 - [x] **8.10 Browser Automation (Playwright) (`DEC-170`)** — persistent Jarvis profile in installed Chrome / Edge / Brave; go to URL, search, click by text or CSS, fill forms, extract text / tables, scroll, full-page screenshots shown to Jarvis (6.5).
-- [ ] **8.11 Autonomous Dev Agent** — plan and write multi-file code in a project folder, run it, read errors, and self-heal up to 5 attempts as a background job with HUD progress (6.6).
+- [x] **8.11 Autonomous Dev Agent (`DEC-171`)** — plan and write multi-file code in a project folder, run it, read errors, and self-heal up to 5 attempts as a background job with HUD progress (6.6).
 - [ ] **8.12 Offline "Hey Jarvis" Wake Word** — openWakeWord ONNX models in the browser (onnxruntime-web) for the default phrase, fully local; Web Speech kept for custom phrases.
 - [ ] **8.13 Clipboard Intelligence** — clipboard watcher (wl-paste / xclip) feeding a floating panel with Translate / Summarise / Explain / Fix.
 - [ ] **8.14 Verification Sweep** — synthesized-speech microphone test through a fake capture device (mic path, barge-in), PDF / Word drop test, live probes of new tools, long-session GoAway test; remaining operator-only items listed.
