@@ -7,7 +7,7 @@ import { useAudioStream } from '@/hooks/useAudioStream';
 import { JARVIS_SYSTEM_INSTRUCTION, GEMINI_LIVE_CONFIG, GEMINI_LIVE_LABEL } from '@/lib/jarvisPersona';
 import { modelFileUrl, openModelViewer, playYouTubeQuery } from '@/lib/mediaClient';
 import { DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
-import { runCommandWithApproval } from '@/lib/terminalClient';
+import { runCommandWithApproval, requestOperatorApproval } from '@/lib/terminalClient';
 import { TOOLS_BY_NAME } from '@/lib/tools';
 
 // Auto-reconnect backoff for dropped live links: 0.5s, 1s, 2s, 4s, 8s
@@ -512,6 +512,7 @@ export function useGeminiLive() {
           },
           media: { playYouTubeQuery, openModelViewer, modelFileUrl },
           runCommandWithApproval,
+          requestApproval: requestOperatorApproval,
           defaultWakePhrase: DEFAULT_WAKE_PHRASE,
         };
 

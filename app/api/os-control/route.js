@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import { exec, execFile, execSync, spawn } from 'child_process';
+import { exec, execSync, spawn } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
-import fs from 'fs';
 import loudness from 'loudness';
 import { findApps, launchAppByName } from '@/lib/appIndex';
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
+import { getVolumeState, getWindowsAudioVolumeInfo, runWindowsAudioBinary } from '@/lib/volumeControl';
+import { pushUndo } from '@/lib/undoJournal';
 
 const execAsync = promisify(exec);
-const execFileAsync = promisify(execFile);
 
 // In-memory action execution audit log
 const actionHistory = [];
@@ -288,34 +288,6 @@ async function launchApplication(appKey) {
       : `Failed to launch ${appConfig.name} on Linux: ${res.error || 'Binary not found in PATH'}`,
     appName: appConfig.name,
   };
-}
-
-/**
- * Direct Windows Core Audio driver via the bundled loudness C++ helper.
- * Resolves physical disk path to avoid Turbopack virtual __dirname ENOENT.
- */
-function getWindowsAudioBinaryPath() {
-  const candidates = [
-    path.join(process.cwd(), 'bin', 'adjust_get_current_system_volume_vista_plus.exe'),
-    path.join(process.cwd(), 'node_modules', 'loudness', 'impl', 'windows', 'adjust_get_current_system_volume_vista_plus.exe'),
-  ];
-  for (const p of candidates) {
-    if (fs.existsSync(/*turbopackIgnore: true*/ p)) return p;
-  }
-  return null;
-}
-
-async function runWindowsAudioBinary(...args) {
-  const binPath = getWindowsAudioBinaryPath();
-  if (!binPath) throw new Error('Windows Core Audio helper binary not found.');
-  const { stdout } = await execFileAsync(binPath, args);
-  return (stdout || '').trim();
-}
-
-async function getWindowsAudioVolumeInfo() {
-  const data = await runWindowsAudioBinary();
-  const parts = data.split(' ');
-  return { volume: parseInt(parts[0], 10), muted: Boolean(parseInt(parts[1], 10)) };
 }
 
 /**
@@ -599,7 +571,11 @@ export async function POST(req) {
       case 'unmute':
       case 'toggle_mute':
       case 'set_volume': {
+        const before = await getVolumeState();
         const volRes = await executeMasterVolume(action, target);
+        if (volRes.success && before) {
+          pushUndo(`volume change (${action.replace('_', ' ')})`, 'volume', before);
+        }
         result = {
           success: volRes.success,
           message: volRes.success ? volRes.message : `Volume adjustment failed: ${volRes.error}`,

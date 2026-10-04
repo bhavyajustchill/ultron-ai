@@ -154,12 +154,12 @@
     - _Focus 2:_ Time of day & operator wellbeing (late-night check-in, rest reminder).
     - _Focus 3:_ Relevant tactical suggestions or technical tips.
   - [ ] Smart silence gating: abort trigger if Jarvis is speaking or if operator spoke within last 30 seconds.
-- [ ] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Keyboard / mouse / windows done in 7.7; process termination, wallpaper, and desktop organization scheduled in Phase 8.3)_
-  - [ ] Upgrade `/api/os-control` with robust local Node.js `child_process` / PowerShell execution handlers.
-  - [ ] Keyboard typing and hotkey execution (`Ctrl+C`, `Ctrl+V`, `Alt+Tab`, `Enter`).
-  - [ ] Mouse automation: coordinate click, double-click, right-click, and mouse scrolling.
-  - [ ] Window focus, maximize, minimize, and process termination.
-  - [ ] Desktop operations: set wallpaper from local path or URL, desktop icon organization by file type or date.
+- [x] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Keyboard / mouse / windows in 7.7 (`DEC-157`); processes, wallpaper, and desktop organization in 8.3 (`DEC-163`))_
+  - [x] Upgrade `/api/os-control` with robust local Node.js `child_process` / PowerShell execution handlers. _(Plus `/api/input` and `/api/system-settings`, which use `execFile` without a shell.)_
+  - [x] Keyboard typing and hotkey execution (`Ctrl+C`, `Ctrl+V`, `Alt+Tab`, `Enter`).
+  - [x] Mouse automation: coordinate click, double-click, right-click, and mouse scrolling.
+  - [x] Window focus, maximize, minimize, and process termination. _(Ending a program needs the HUD authorization click.)_
+  - [x] Desktop operations: set wallpaper from local path or URL, desktop icon organization by file type or date.
 - [ ] **6.5 Browser Automation Engine (Playwright Integration):** _(Scheduled: Phase 8.10)_
   - [ ] Create dedicated browser automation module supporting Chrome, Edge, and Brave with real user profiles.
   - [ ] Implement voice-controlled actions: go to URL, smart search, CSS/semantic click, form input, element extraction, scrolling, and full-page screenshots.
@@ -237,7 +237,7 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 
 - [x] **8.1 Self-Describing Tool Registry (`DEC-161`)** — every live tool lives in its own module under `lib/tools/` (declaration + client handler); `/api/live-session` and `useGeminiLive.js` consume the registry instead of a hand-maintained list and a long if-chain.
 - [x] **8.2 Conversational Polish (`DEC-162`)** — instant acknowledgment before slow tools; `[ALSO REMEMBERED]` index of memories that do not fit the prompt; `price` and `compare` web search modes; voice and profile changes keep the conversation (fresh session seeded with recent turns, since resumption keeps the old system instruction).
-- [ ] **8.3 Undo & System Settings** — `undo_last_action` stack (file create / write / replace / append / organize, volume, dark mode, WiFi, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
+- [x] **8.3 Undo & System Settings (`DEC-163`)** — `undo_last_action` stack (file create / write / replace / append / organize, folder create, volume, dark mode, WiFi off, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
 - [ ] **8.4 Scheduled Reminders & Auto-Start** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel; start-on-login toggle (6.8).
 - [ ] **8.5 Session Continuity & Language Memory** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
 - [ ] **8.6 Background Intelligence** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).

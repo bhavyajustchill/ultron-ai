@@ -6,9 +6,8 @@ import { planOrganize, applyOrganize, undoLastOrganize } from '@/lib/folderOrgan
 import { openWithDefaultApp, openInCodeEditor } from '@/lib/desktopLauncher';
 import { DOCUMENT_RENDERERS } from '@/lib/documentForge';
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
+import { JOURNAL_DIR, pushUndo, removeUndo, fileStamp } from '@/lib/undoJournal';
 
-// JARVIS_FS_JOURNAL relocates backups / undo manifests (used by automated checks)
-const JOURNAL_DIR = process.env.JARVIS_FS_JOURNAL || path.join(process.cwd(), 'data', 'fs-journal');
 const BACKUP_DIR = path.join(JOURNAL_DIR, 'backups');
 const MAX_READ_BYTES = 64 * 1024; // keeps file reads well inside the live session context window
 const MAX_WRITE_BYTES = 1024 * 1024;
@@ -62,6 +61,15 @@ function backupFile(target) {
   return backupPath;
 }
 
+// Undo records (Phase 8.3): what Jarvis created can be put away, what it overwrote restored
+function recordCreated(target) {
+  pushUndo(`created ${displayPath(target)}`, 'file_created', { path: target, ...fileStamp(target) });
+}
+
+function recordOverwritten(target, backupPath, verb) {
+  pushUndo(`${verb} ${displayPath(target)}`, 'file_overwritten', { path: target, backup: backupPath });
+}
+
 const ACTIONS = {
   list_directory({ target }) {
     requireFolder(target);
@@ -98,6 +106,7 @@ const ACTIONS = {
       return { message: `Folder ${displayPath(target)} already exists.` };
     }
     fs.mkdirSync(target, { recursive: true });
+    pushUndo(`created folder ${displayPath(target)}`, 'folder_created', { path: target });
     return { message: `Created folder ${displayPath(target)}.` };
   },
 
@@ -108,6 +117,7 @@ const ACTIONS = {
     }
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, content, { encoding: 'utf-8', flag: 'wx' });
+    recordCreated(target);
     return { message: `Created ${displayPath(target)}.`, next_step: OFFER_TO_OPEN };
   },
 
@@ -121,6 +131,8 @@ const ACTIONS = {
       fs.mkdirSync(path.dirname(target), { recursive: true });
     }
     fs.writeFileSync(target, content, 'utf-8');
+    if (backupPath) recordOverwritten(target, backupPath, 'rewrote');
+    else recordCreated(target);
     return {
       message: backupPath
         ? `Replaced ${displayPath(target)}; the previous version was backed up.`
@@ -132,9 +144,16 @@ const ACTIONS = {
 
   append_file({ target, body }) {
     const content = requireText(body.content, 'content');
-    if (fs.existsSync(target)) requireFile(target);
-    else fs.mkdirSync(path.dirname(target), { recursive: true });
+    let backupPath = null;
+    if (fs.existsSync(target)) {
+      requireFile(target);
+      backupPath = backupFile(target);
+    } else {
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+    }
     fs.appendFileSync(target, content, 'utf-8');
+    if (backupPath) recordOverwritten(target, backupPath, 'appended to');
+    else recordCreated(target);
     return { message: `Appended ${Buffer.byteLength(content, 'utf-8')} bytes to ${displayPath(target)}.` };
   },
 
@@ -156,6 +175,7 @@ const ACTIONS = {
     const backupPath = backupFile(target);
     const updated = body.replace_all ? original.split(find).join(replace) : original.replace(find, () => replace);
     fs.writeFileSync(target, updated, 'utf-8');
+    recordOverwritten(target, backupPath, 'edited');
     return {
       message: `Updated ${occurrences} occurrence(s) in ${displayPath(target)}; the previous version was backed up.`,
       backup: backupPath,
@@ -188,6 +208,8 @@ const ACTIONS = {
 
     const buffer = await render({ title: body.title, markdown });
     fs.writeFileSync(finalTarget, buffer);
+    if (backupPath) recordOverwritten(finalTarget, backupPath, 'replaced the document');
+    else recordCreated(finalTarget);
     return {
       path: displayPath(finalTarget),
       message: `Created ${requestedFormat.toUpperCase()} document ${displayPath(finalTarget)} (${Math.max(1, Math.round(buffer.length / 1024))} KB).`,
@@ -209,12 +231,14 @@ const ACTIONS = {
 
   organize_folder({ target, body }) {
     const mode = body.mode || 'preview';
+    const groupBy = body.group_by === 'date' ? 'date' : 'type';
 
     if (mode === 'undo') {
       const result = undoLastOrganize(JOURNAL_DIR, target);
       if (!result) {
         throw new FsOpError(`There is no organize run to undo${target ? ` for ${displayPath(target)}` : ''}.`);
       }
+      removeUndo((entry) => entry.kind === 'organize' && entry.data.manifestId === result.id);
       return {
         message: `Undid the last organize of ${displayPath(result.folder)}: ${result.restored} file(s) restored${result.missing ? `, ${result.missing} no longer found` : ''}.`,
         restored: result.restored,
@@ -223,7 +247,7 @@ const ACTIONS = {
     }
 
     requireFolder(target);
-    const plan = planOrganize(target);
+    const plan = planOrganize(target, groupBy);
     const breakdown = Object.entries(plan.summary)
       .sort((a, b) => b[1] - a[1])
       .map(([category, count]) => `${count} into ${category}`)
@@ -247,6 +271,9 @@ const ACTIONS = {
 
     if (mode !== 'apply') throw new FsOpError(`Unknown organize mode "${mode}".`);
     const manifest = applyOrganize(plan, JOURNAL_DIR);
+    if (manifest.moves.length) {
+      pushUndo(`organized ${displayPath(target)} by ${groupBy}`, 'organize', { folder: target, manifestId: manifest.id });
+    }
     return {
       message: `Organized ${displayPath(target)}: moved ${manifest.moves.length} file(s) (${breakdown}). This can be undone.`,
       moved: manifest.moves.length,

@@ -29,7 +29,7 @@ flowchart TB
     subgraph Server ["⚙️ Next.js API routes"]
         Session["/api/live-session"]
         Files["/api/fs-ops · /api/upload · /api/model-file"]
-        Desktop["/api/os-control · /api/input · /api/terminal"]
+        Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo"]
         Intel["/api/web-search · /api/weather · /api/memory"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects"]
@@ -79,6 +79,8 @@ jarvis-mark-ii/
 │       ├── os-control/                     # Apps, volume, folders, URLs, lock
 │       ├── input/                          # Keyboard, mouse, windows
 │       ├── terminal/                       # Prepare / run / cancel commands
+│       ├── system-settings/                # Dark mode, WiFi, brightness, wallpaper, processes, power
+│       ├── undo/                           # Reverse Jarvis's last action
 │       ├── projects/                       # Background project scaffolding jobs
 │       ├── web-search/ weather/            # Grounded search, weather
 │       ├── youtube/ spotify/               # Media deck
@@ -92,6 +94,7 @@ jarvis-mark-ii/
 ├── hooks/                                  # useGeminiLive, useAudioStream, useWakePhrase, useLipSync
 ├── lib/
 │   ├── store.js                            # useJarvisStore (Zustand)
+│   ├── tools/                              # Live tool registry: one module per tool (declaration + handler)
 │   ├── jarvisPersona.js                    # Persona, GEMINI_LIVE_MODEL / LABEL, live config
 │   ├── pcmPlayer.js                        # Gapless 24 kHz playback + barge-in flush
 │   ├── fsSandbox.js / requestGuard.js      # Safety boundaries
@@ -100,6 +103,7 @@ jarvis-mark-ii/
 │   ├── memoryVectors.js / groundedSearch.js
 │   ├── youtubeSearch.js / spotifyControl.js / mediaClient.js
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
+│   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored
@@ -142,5 +146,7 @@ jarvis-mark-ii/
 | Cross-site requests | `lib/requestGuard.js` rejects foreign `Sec-Fetch-Site` / `Origin` on host-touching routes |
 | Files | `lib/fsSandbox.js` allow-listed roots (`JARVIS_FS_ROOTS`), symlink-safe resolution, `.git` blocked, no delete, backups on overwrite |
 | Terminal | Read-only auto-run; everything else needs an operator click on the HUD card; one-time tokens; sudo / destructive commands refused; timeouts kill the process group |
+| System actions | Power, WiFi off, and ending programs return a card request; `lib/confirmGate.js` releases the action only for the one-time token the HUD click sends; power waits 10 s and can be cancelled; session-critical processes and Jarvis's own server are never offered |
+| Undo | `data/fs-journal/undo-stack.json` (last 10 actions); undoing a created file moves it into the journal, and is refused once the operator has edited it |
 | Uploaded / fetched content | Persona rules treat it as content, never instructions; it can never approve a command |
 | Secrets | The Gemini key stays in the browser (`localStorage`) and is forwarded per request header to same-origin routes only |
