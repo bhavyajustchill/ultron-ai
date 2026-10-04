@@ -116,7 +116,7 @@ Developers and power users who want a voice-first assistant that can act on thei
 - **Instant acknowledgment** before slow tasks, **undo** of Jarvis's own actions, and **system settings** (dark mode, WiFi, brightness, wallpaper, power with on-screen confirmation).
 - **OS-native reminders**, **start on login**, **session recaps** with **language memory**, and **auto-standby**.
 - **Background intelligence:** proactive check-ins, hardware voice alerts, topic monitors.
-- **Audio device picker** and **accent theming**.
+- **Audio device picker** (the HUD keeps one fixed Arc Reactor Blue look since DEC-189).
 - **Messaging** (WhatsApp / Telegram / email), **flight lookup**, **Steam** library checks.
 - **Deep file processing** (images, PDFs, spreadsheets, audio / video), **browser automation**, an **autonomous dev agent**, an **offline "Hey Jarvis"** wake word, and **clipboard intelligence**.
 

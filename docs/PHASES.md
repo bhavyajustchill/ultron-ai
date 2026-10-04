@@ -294,3 +294,9 @@ Operator request (2026-10-04): manage conversations and their recaps like the me
 
 Verified: 50/50 archive API checks (mock Gemini), 29/29 headless HUD checks, and 9/9 live checks with Gemini 3.8 Live (talk, disconnect, greeting recall, "what did we talk about", continue by voice, remembered old turns, re-archive) (`DEC-188`).
 
+## Phase 12: One Fixed HUD Colour (`DEC-189`)
+
+Operator request (2026-10-04): remove the theme colours from Jarvis and keep only the default Arc Reactor Blue; the presets and custom colour move to the Ultron project's parity plan.
+
+- [x] **12.1 Fixed Arc Reactor Blue** — accent presets, the custom colour wheel / hex field, the voice `hud_accent` option, the saved-theme cache and boot script, and the mobile companion's theme sync removed; the HUD, orb, canvases, mobile page, and pairing QR render in Arc Reactor Blue through a fixed `ACCENT_TINT`, exactly as the default theme did (pixel-checked). Verified with 10/10 headless checks.
+

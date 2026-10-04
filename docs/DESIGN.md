@@ -1,20 +1,20 @@
 # 💠 DESIGN & UI SPECIFICATION — J.A.R.V.I.S MARK II
 
 **Visual Core:** Arc Reactor Orb (`components/Canvas3D/ArcReactorOrb.jsx`) in `JarvisViewport.jsx`  
-**Theme:** Cyberpunk Tactical HUD — Electric Aqua-Cyan on Deep Space Carbon
+**Theme:** Cyberpunk Tactical HUD — Arc Reactor Blue on Deep Space Carbon
 
 ---
 
 ## 1. Color Palette & Cyberpunk Tokens
 
-The interface is an electric aqua-cyan holographic HUD over a deep carbon void. Tokens live in `app/globals.css` (`:root` + Tailwind `@theme inline`). Since Phase 8.7 the cyan family is an **accent theme**: every cyan tone is a variable, and an operator-chosen accent re-derives the family at runtime (`lib/accentTheme.js`). Colours are authored in Arc Reactor Cyan `#00E5FF` (`DESIGN_ACCENT`, the tint identity); the default theme is Arc Reactor Blue `#00C3FF` (`DEFAULT_ACCENT`, hue 194° vs cyan's 186°), so the first-paint values below are the blue ones.
+The interface is an Arc Reactor Blue holographic HUD over a deep carbon void. Tokens live in `app/globals.css` (`:root` + Tailwind `@theme inline`). Every accent tone is a variable with a fixed value: colours are authored in electric aqua-cyan `#00E5FF` (`DESIGN_ACCENT`) and shifted to Arc Reactor Blue `#00C3FF` (`HUD_ACCENT`, hue 194° vs cyan's 186°) by `ACCENT_TINT` in `lib/accentTheme.js`; the variable values below are that tint. There are no selectable themes (the Phase 8.7 presets and custom colour were removed in DEC-189).
 
 ```css
 :root {
-  /* Accent family (overridden at runtime by the chosen theme) */
-  --jarvis-accent:      #00C3FF;   /* Primary brand: Arc Reactor Blue (cyan theme: #00E5FF) */
+  /* Accent family (fixed Arc Reactor Blue) */
+  --jarvis-accent:      #00C3FF;   /* Primary brand: Arc Reactor Blue */
   --jarvis-accent-rgb:  0, 195, 255;
-  --jarvis-accent-2:    #00CEFF;   /* Neon highlights, active states (cyan theme: #00F0FF) */
+  --jarvis-accent-2:    #00CEFF;   /* Neon highlights, active states */
   --jarvis-accent-2-rgb: 0, 206, 255;
   --jarvis-accent-soft: #70DDFF;   /* Light accent text */
   --jarvis-accent-dim:  #002C4D;   /* Subdued borders / glow drops */
@@ -25,7 +25,7 @@ The interface is an electric aqua-cyan holographic HUD over a deep carbon void. 
   --carbon-border / --cyan-border: rgba(var(--jarvis-accent-rgb), 0.32);
   --text-cyan: var(--jarvis-accent-soft);
 
-  --amber-alert:      #FFE600;  /* THINKING / caution states (never themed) */
+  --amber-alert:      #FFE600;  /* THINKING / caution states */
   --void-black:       #010E16;  /* Page background (Carbon) */
   --carbon-900:       #031520;  /* Panel bases */
   --carbon-800:       #071F30;  /* Raised surfaces */
@@ -34,17 +34,15 @@ The interface is an electric aqua-cyan holographic HUD over a deep carbon void. 
 }
 ```
 
-**Writing themed UI:** use the variables, never a literal cyan: `text-[var(--jarvis-accent)]`, `border-[rgba(var(--jarvis-accent-rgb),0.3)]`, `shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]`. Three.js and canvas code cannot read CSS variables: design the colour in cyan and pass it through `useAccentTint()` (`tint("#00E5FF")`, or `tint.rgb(r, g, b)` in pixel loops), rebuilding only when the theme changes. Status colours (amber, orange, red, green) are never tinted.
+**Writing accent UI:** use the variables, never a literal colour: `text-[var(--jarvis-accent)]`, `border-[rgba(var(--jarvis-accent-rgb),0.3)]`, `shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]`. Three.js and canvas code cannot read CSS variables: design the colour in cyan and pass it through `ACCENT_TINT` (`ACCENT_TINT("#00E5FF")`, or `ACCENT_TINT.rgb(r, g, b)` in pixel loops). Status colours (amber, orange, red, green) are never tinted.
 
-**Accent presets:** Arc Reactor Blue `#00C3FF` (default), Arc Reactor Cyan `#00E5FF`, Mark III Gold `#FFC23D`, Hot Rod Red `#FF3B4E`, Vibranium Violet `#A66BFF`, Emerald Ops `#2BFFA3`, Ice White `#DDF6FF`, or any custom hex (Settings colour wheel / hex field, or by voice via `update_operator_profile` `hud_accent`). The cached theme is applied by an inline script before first paint, so reloads never flash the default.
-
-**Mobile companion and pairing QR:** the `/mobile` page uses the same variables (its neon tones are `--jarvis-accent-2`) and follows the **saved** theme: each `/api/relay` poll (1.8 s) carries the profile's `accentColor`, applied with `applyAccentToDocument()` and cached on the phone for the next first paint (an unsaved Settings preview stays desktop-only). The desktop pairing QR code draws its modules in `--jarvis-accent-2`, or near-white `#F0F2F8` when a custom accent would fall below 4.5:1 contrast on its `#0A0B10` background.
+**Mobile companion and pairing QR:** the `/mobile` page uses the same variables (its neon tones are `--jarvis-accent-2`); the desktop pairing QR code draws its modules in `HUD_NEON` (`#00CEFF`, the `--jarvis-accent-2` value).
 
 **Semantic accents used in components:**
 
 | Purpose | Color |
 | :-- | :-- |
-| Neon highlights, active states | `var(--jarvis-accent-2)` (`#00F0FF` in the default theme) |
+| Neon highlights, active states | `var(--jarvis-accent-2)` (`#00CEFF`) |
 | Thinking / connecting | `#FFE600` |
 | Re-syncing link, warnings, terminal authorization | `#FFB020` |
 | Errors, deny, destructive hints | `#FF8095` / `#FF003C` |

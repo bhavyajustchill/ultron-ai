@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { Bounds, Center, Html, OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
 import { Box, Rotate3d } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
-import { useAccentTint } from "@/hooks/useAccentTheme";
+import { ACCENT_TINT } from "@/lib/accentTheme";
 import { modelFileUrl } from "@/lib/mediaClient";
 import { FloatingPanel } from "@/components/Media/FloatingPanel";
 
@@ -83,7 +83,7 @@ function ModelScene({ url, onStats }) {
 export function ModelViewerPanel() {
   const { isOpen, path, name, nonce } = useJarvisStore((state) => state.modelViewer);
   const setModelViewer = useJarvisStore((state) => state.setModelViewer);
-  const tint = useAccentTint();
+  const tint = ACCENT_TINT;
   const [stats, setStats] = useState(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const handleStats = useCallback((next) => setStats(next), []);

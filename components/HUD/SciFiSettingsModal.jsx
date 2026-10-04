@@ -26,14 +26,12 @@ import {
   Terminal,
   Ear,
   Power,
-  Palette,
   Headphones,
   History,
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
-import { ACCENT_PRESETS, DEFAULT_ACCENT, normalizeHex } from "@/lib/accentTheme";
 import { listAudioDevices, canChooseOutput } from "@/lib/audioDevices";
 
 const PREBUILT_VOICES = [
@@ -224,23 +222,12 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     clipboardWatch: false,
     keepTranscripts: true,
     sessionRetentionDays: 180,
-    accentColor: DEFAULT_ACCENT,
     wakeWordEnabled: true,
     wakePhrase: DEFAULT_WAKE_PHRASE,
     clearance: "Class-9 Operative",
     role: "Lead Systems Architect",
     preferences: "Prefers concise, authoritative tactical briefings, high-speed execution, dry British wit, and playful daily humor.",
   });
-
-  // Accent theme (Phase 8.7): previewed live, saved with the profile, reverted if not saved
-  const setAccentPreview = useJarvisStore((state) => state.setAccentPreview);
-  const selectAccent = (hex) => {
-    const accent = normalizeHex(hex);
-    if (!accent) return;
-    setDraft((current) => ({ ...current, accentColor: accent }));
-    setAccentPreview(accent);
-  };
-  const [accentInput, setAccentInput] = useState("");
 
   // Audio devices (Phase 8.7) are per browser and apply immediately
   const audioInput = useJarvisStore((state) => state.audioInput);
@@ -334,7 +321,6 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           clipboardWatch: operatorProfile.clipboardWatch === true,
           keepTranscripts: operatorProfile.keepTranscripts !== false,
           sessionRetentionDays: [30, 90, 180, 365, 0].includes(Number(operatorProfile.sessionRetentionDays)) ? Number(operatorProfile.sessionRetentionDays) : 180,
-          accentColor: normalizeHex(operatorProfile.accentColor) || DEFAULT_ACCENT,
           wakeWordEnabled: operatorProfile.wakeWordEnabled !== false,
           wakePhrase: operatorProfile.wakePhrase || DEFAULT_WAKE_PHRASE,
           clearance: operatorProfile.clearance || "Class-9 Operative",
@@ -409,7 +395,6 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       audioPlayerRef.current = null;
     }
     setPlayingVoice(null);
-    setAccentPreview(null);
 
     setIsClosing(true);
     closeTimeoutRef.current = setTimeout(() => {
@@ -453,13 +438,12 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       const humorChanged = draft.enableHumor !== previousHumor;
       const reconnectFn = onReconnectSession || reconnectSession;
       const relinkSession = useJarvisStore.getState().relinkSession;
-      // Only fields that shape the live session need a re-link (not the accent or HUD toggles)
+      // Only fields that shape the live session need a re-link (not the HUD toggles)
       const sessionChanged =
         humorChanged ||
         ["voiceName", "callsign", "assistantName", "role", "clearance", "preferences", "wakePhrase"].some(
           (key) => (draft[key] || "") !== (operatorProfile?.[key] || "")
         );
-      setAccentPreview(null);
       if (status !== "DISCONNECTED" && relinkSession && sessionChanged) {
         relinkSession(draft.voiceName);
       } else if (reconnectFn && (draft.voiceName !== previousVoice || humorChanged)) {
@@ -484,7 +468,6 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   };
 
   const handleResetDefaults = () => {
-    setAccentPreview(DEFAULT_ACCENT);
     setDraft({
       callsign: "Bhavya Sir",
       assistantName: "Jarvis",
@@ -496,8 +479,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       clipboardWatch: false,
       keepTranscripts: true,
       sessionRetentionDays: 180,
-      accentColor: DEFAULT_ACCENT,
-      wakeWordEnabled: true,
+        wakeWordEnabled: true,
       wakePhrase: DEFAULT_WAKE_PHRASE,
       clearance: "Class-9 Operative",
       role: "Lead Systems Architect",
@@ -1031,55 +1013,9 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             </div>
           </div>
 
-          {/* Section 5: Appearance & Audio Devices (Phase 8.7) */}
+          {/* Section 5: Audio Devices (Phase 8.7) */}
           <div className="flex flex-col gap-3 p-3 chamfer-md bg-[rgba(5,5,8,0.7)] border border-white/5">
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
-                <Palette className="w-3 h-3 text-[var(--jarvis-accent)]" /> HUD Accent Colour
-              </span>
-              <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label="Accent presets">
-                {ACCENT_PRESETS.map((preset) => {
-                  const selected = draft.accentColor === preset.hex;
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={selected}
-                      title={preset.name}
-                      onClick={() => selectAccent(preset.hex)}
-                      className={`flex items-center gap-1.5 px-2 py-1 chamfer-btn text-[10px] font-mono border transition-all cursor-pointer ${selected ? "border-white/70 bg-white/10 text-white" : "border-white/10 bg-black/40 text-[#B8BDCC] hover:border-white/30"}`}>
-                      <span className="w-3 h-3 rounded-full" style={{ background: preset.hex, boxShadow: `0 0 8px ${preset.hex}` }} />
-                      {preset.name}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  aria-label="Custom accent colour"
-                  value={draft.accentColor.toLowerCase()}
-                  onChange={(e) => selectAccent(e.target.value)}
-                  className="w-8 h-7 bg-transparent border border-white/10 chamfer-xs cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={accentInput}
-                  onChange={(e) => setAccentInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") selectAccent(accentInput);
-                  }}
-                  onBlur={() => accentInput && selectAccent(accentInput)}
-                  placeholder={draft.accentColor}
-                  maxLength={7}
-                  className="w-24 bg-black/60 border border-white/10 chamfer-xs px-2 py-1 text-[11px] text-white placeholder-white/40 font-mono focus:outline-none focus:border-[var(--jarvis-accent-2)]"
-                />
-                <span className="text-[9px] text-[#7E859E]">Previewed live; saved with the profile. Status colours (amber, red) never change.</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
                   <Headphones className="w-3 h-3 text-[var(--jarvis-accent)]" /> Audio Devices

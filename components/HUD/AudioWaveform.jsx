@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { useAccentTint } from '@/hooks/useAccentTheme';
+import { ACCENT_TINT } from '@/lib/accentTheme';
 
 /**
  * AudioWaveform — High-performance HTML5 Canvas audio spectrum visualizer.
@@ -17,7 +17,7 @@ export function AudioWaveform({
 }) {
   const canvasRef = useRef(null);
   // Accent theme (Phase 8.7): read by the draw loop through a ref so the loop never restarts
-  const tint = useAccentTint();
+  const tint = ACCENT_TINT;
   const crestColorRef = useRef(tint('#00F0FF'));
   crestColorRef.current = tint('#00F0FF');
 

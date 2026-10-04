@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import { readVault } from '@/lib/memoryVault';
-import { DEFAULT_ACCENT, normalizeHex } from '@/lib/accentTheme';
 
 // In-memory relay store shared across API invocations in the Node process
 if (!global.__jarvisRelayStore) {
@@ -58,7 +56,6 @@ export async function GET(request) {
         recentComms: newComms.slice(-10),
       },
       // The saved HUD theme, so the companion follows it whether or not the desktop is open
-      accentColor: normalizeHex(readVault().profile?.accentColor) || DEFAULT_ACCENT,
       timestamp: Date.now(),
     });
   } catch (err) {

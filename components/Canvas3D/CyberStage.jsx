@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useJarvisStore } from "@/lib/store";
-import { useAccentTint } from "@/hooks/useAccentTheme";
+import { ACCENT_TINT } from "@/lib/accentTheme";
 
 /**
  * CyberStage — Pure White Studio Lighting & Clean Stage.
@@ -16,7 +16,7 @@ import { useAccentTint } from "@/hooks/useAccentTheme";
  */
 export function CyberStage({ showFloor = true }) {
   const status = useJarvisStore((state) => state.status);
-  const tint = useAccentTint();
+  const tint = ACCENT_TINT;
   const ringRef1 = useRef(null);
   const ringRef2 = useRef(null);
   const keyLightRef = useRef(null);

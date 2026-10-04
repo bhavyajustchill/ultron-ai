@@ -30,7 +30,6 @@ import {
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { useGeminiLive } from "@/hooks/useGeminiLive";
-import { useApplyAccentTheme } from "@/hooks/useAccentTheme";
 import { GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { ApiKeyModal } from "@/components/HUD/ApiKeyModal";
 import { JarvisViewport } from "@/components/Canvas3D/JarvisViewport";
@@ -131,9 +130,6 @@ export default function Home() {
     sendContentParts,
     triggerBriefing,
   } = useGeminiLive();
-
-  // HUD accent theme (Phase 8.7): CSS variables follow the operator's chosen accent
-  useApplyAccentTheme();
 
   // Standby wake phrase: armed once the link has stayed offline for a moment, so startup and
   // reconnect blips never grab the microphone

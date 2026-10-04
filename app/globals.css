@@ -1,9 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  /* Accent family (Phase 8.7): the HUD derives every cyan tone from these; a chosen accent
-     theme overrides them at runtime (lib/accentTheme.js). First-paint values are the default
-     Arc Reactor Blue (#00C3FF) = accentCssVars(DEFAULT_ACCENT). */
+  /* Accent family: the HUD's Arc Reactor Blue (#00C3FF). Every value is ACCENT_TINT of the
+     cyan design (lib/accentTheme.js), the same tint the orb and canvases use. Fixed (DEC-189). */
   --jarvis-accent: #00c3ff;
   --jarvis-accent-rgb: 0, 195, 255;
   --jarvis-accent-2: #00ceff;

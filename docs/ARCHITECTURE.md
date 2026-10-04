@@ -101,7 +101,7 @@ jarvis-mark-ii/
 │   ├── HUD/                                # Panels, modals, upload zone, authorization card
 │   ├── Media/                              # FloatingPanel, YouTubePanel, ModelViewerPanel
 │   └── Vision/                             # ScreenShareModal, WebCamPiP
-├── hooks/                                  # useGeminiLive, useAudioStream, useWakePhrase, useAccentTheme, useLipSync
+├── hooks/                                  # useGeminiLive, useAudioStream, useWakePhrase, useLipSync
 ├── lib/
 │   ├── store.js                            # useJarvisStore (Zustand)
 │   ├── tools/                              # Live tool registry: one module per tool (declaration + handler)
@@ -118,7 +118,7 @@ jarvis-mark-ii/
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
 │   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js
 │   ├── reminders.js / autostart.js / hardwareAlerts.js / topicMonitors.js
-│   ├── accentTheme.js / audioDevices.js     # HUD accent theme, microphone / speaker choice
+│   ├── accentTheme.js / audioDevices.js     # Fixed Arc Reactor Blue tint (ACCENT_TINT), microphone / speaker choice
 │   ├── messageComposer.js / flights.js / steamLibrary.js
 │   ├── fileProcessor/                      # common, images, pdf, sheets, media
 │   ├── browserAgent.js                     # Playwright-driven browser with its own profile
