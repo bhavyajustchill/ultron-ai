@@ -235,7 +235,7 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
 
 Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 — reimplemented from scratch in this stack, no code copied) plus every remaining deferred 6.x item. Each sub-phase is committed and pushed on completion.
 
-- [ ] **8.1 Self-Describing Tool Registry** — every live tool lives in its own module under `lib/tools/` (declaration + client handler); `/api/live-session` and `useGeminiLive.js` consume the registry instead of a hand-maintained list and a long if-chain.
+- [x] **8.1 Self-Describing Tool Registry (`DEC-161`)** — every live tool lives in its own module under `lib/tools/` (declaration + client handler); `/api/live-session` and `useGeminiLive.js` consume the registry instead of a hand-maintained list and a long if-chain.
 - [ ] **8.2 Conversational Polish** — instant acknowledgment before slow tools; `[ALSO REMEMBERED]` index of memories that do not fit the prompt; `price` and `compare` web search modes; voice changes keep the conversation (resumption handle).
 - [ ] **8.3 Undo & System Settings** — `undo_last_action` stack (file create / write / replace / append / organize, volume, dark mode, WiFi, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
 - [ ] **8.4 Scheduled Reminders & Auto-Start** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel; start-on-login toggle (6.8).
