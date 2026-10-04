@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createOrbScene } from "@/lib/ultronOrbScene";
 import { HandTracker } from "@/lib/handTracker";
-import { useAdaStore } from "@/lib/store";
+import { useJarvisStore } from "@/lib/store";
 import {
   Loader2,
   ShieldAlert,
@@ -48,7 +48,7 @@ function UltronViewportComponent({
   const [gestureStatus, setGestureStatus] = useState({ hands: 0, mode: "idle" });
   const [gestureError, setGestureError] = useState(null);
 
-  const status = useAdaStore((state) => state.status);
+  const status = useJarvisStore((state) => state.status);
 
   // Audio energy computation callback
   const getAudioEnergy = useCallback(() => {
@@ -82,7 +82,7 @@ function UltronViewportComponent({
     try {
       const scene = createOrbScene(container, {
         getAudioEnergy,
-        getStatus: () => useAdaStore.getState().status,
+        getStatus: () => useJarvisStore.getState().status,
       });
       sceneRef.current = scene;
 
@@ -103,7 +103,7 @@ function UltronViewportComponent({
         if (now - lastFpsTime >= 1000) {
           const fps = Math.min(240, Math.round((frameCount / ((now - lastFpsTime) / 1000)) * 10) / 10);
           const frameTimeMs = Math.round((totalDelta / frameCount) * 10000) / 10;
-          useAdaStore.getState().setPerformanceMetrics({ fps, frameTimeMs });
+          useJarvisStore.getState().setPerformanceMetrics({ fps, frameTimeMs });
           frameCount = 0;
           totalDelta = 0;
           lastFpsTime = now;
@@ -140,8 +140,8 @@ function UltronViewportComponent({
       else if (e.detail === "out") sceneRef.current.zoomOut();
       else if (e.detail === "reset") sceneRef.current.resetView();
     };
-    window.addEventListener("ada-camera-action", onCameraAction);
-    return () => window.removeEventListener("ada-camera-action", onCameraAction);
+    window.addEventListener("jarvis-camera-action", onCameraAction);
+    return () => window.removeEventListener("jarvis-camera-action", onCameraAction);
   }, []);
 
   // Hand gesture controls
@@ -216,8 +216,8 @@ function UltronViewportComponent({
   // Listen for global gesture toggle request
   useEffect(() => {
     const onToggleGesturesEvent = () => toggleGestures();
-    window.addEventListener("ada-toggle-gestures", onToggleGesturesEvent);
-    return () => window.removeEventListener("ada-toggle-gestures", onToggleGesturesEvent);
+    window.addEventListener("jarvis-toggle-gestures", onToggleGesturesEvent);
+    return () => window.removeEventListener("jarvis-toggle-gestures", onToggleGesturesEvent);
   }, [toggleGestures]);
 
   if (!mounted) {

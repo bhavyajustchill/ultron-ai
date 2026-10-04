@@ -33,7 +33,7 @@ import { useGeminiLive } from "@/hooks/useGeminiLive";
 import { useApplyAccentTheme } from "@/hooks/useAccentTheme";
 import { GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { ApiKeyModal } from "@/components/HUD/ApiKeyModal";
-import { JarvisViewport } from "@/components/Canvas3D/JarvisViewport";
+import { UltronViewport } from "@/components/Canvas3D/UltronViewport";
 import { ScreenShareModal } from "@/components/Vision/ScreenShareModal";
 import { WebCamPiP } from "@/components/Vision/WebCamPiP";
 import { MobilePairingModal } from "@/components/HUD/MobilePairingModal";
@@ -474,7 +474,7 @@ export default function Home() {
 
       {/* FULLSCREEN 3D HOLOGRAPHIC VIEWPORT */}
       <div className="absolute inset-0 z-0 w-full h-full">
-        <JarvisViewport
+        <UltronViewport
           pcmPlayer={pcmPlayer}
           getInputByteFrequencyData={getInputByteFrequencyData}
           onToggleListening={toggleMute}
