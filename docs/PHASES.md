@@ -15,7 +15,10 @@
 [Phase 6: Mark-LI Parity] 🠔 [Phase 5: Polish/PWA] 🠔 [Phase 4: Agent Tools]  🠔 [Phase 3: Cyber HUD]
         │
         ▼
-[Phase 7: J.A.R.V.I.S Feature Matrix (features.txt)]  ◀ ACTIVE (implemented; live verification pending)
+[Phase 7: J.A.R.V.I.S Feature Matrix (features.txt)]  ✔ implemented
+        │
+        ▼
+[Phase 8: Mark-LIII Parity & Deferred Roadmap Completion]  ◀ ACTIVE
 ```
 
 ---
@@ -137,38 +140,38 @@
   - [x] Session resumption: track `sessionResumptionUpdate` handles, swap sockets on `goAway` at the next idle turn, and auto re-sync dropped links with exponential backoff (0.5s → 8s, 5 attempts) behind a `RECONNECTING` HUD status pill.
   - [x] Live API verification (`DEC-159`): full setup accepted on `v1beta`, spoken greeting (first audio ~655 ms), typed turns, BLOCKING tool round-trip, resumable session handles, and the real HUD connecting end-to-end in Chrome.
   - [ ] Operator microphone checks: spoken barge-in, voice switch, and a >15 min session (GoAway swap).
-> **Roadmap note (2026-10-04, `DEC-147`):** Items 6.2–6.8 come from the original Project J.A.R.V.I.S roadmap. Where they overlap `features.txt` they are folded into Phase 7; the rest is **deferred** until Phase 7 completes.
+> **Roadmap note (2026-10-04, `DEC-147`, updated `DEC-160`):** Items 6.2–6.8 come from the original prototype roadmap. Phase 7 absorbed the parts that overlap `features.txt`; everything still open below is now scheduled in **Phase 8** (Mark-LIII parity).
 
-- [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Deferred)_
+- [ ] **6.2 Session Continuity Memory & Automated Conversation Recaps:** _(Scheduled: Phase 8.5)_
   - [ ] Buffer active session dialog turns in `useJarvisStore` / session state.
   - [ ] Upon session disconnect or conversation lull, call Gemini Flash to generate a concise 1–2 sentence summary saved to `data/sessions.json`.
   - [ ] Implement `pop_last_session()` on startup to inject the previous session's context into Jarvis's spoken greeting (_"Last time we spoke, you were working on..."_) and consume it immediately so it never repeats.
   - [ ] Implement silent spoken language detection: automatically record operator language in identity profile and adapt subsequent greetings.
-- [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Deferred)_
+- [ ] **6.3 Autonomous Proactive 2.0 Engine (Idle Voice Check-Ins):** _(Scheduled: Phase 8.6)_
   - [ ] Implement `ProactiveEngine` timer evaluating operator silence duration (15 min silence gate, 20 min cooldown).
   - [ ] Rotating prompt builder cycling between:
     - _Focus 1:_ Operator's active projects & goals in memory.
     - _Focus 2:_ Time of day & operator wellbeing (late-night check-in, rest reminder).
     - _Focus 3:_ Relevant tactical suggestions or technical tips.
   - [ ] Smart silence gating: abort trigger if Jarvis is speaking or if operator spoke within last 30 seconds.
-- [ ] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Folded into 7.1 folder organization and 7.7 input control; wallpaper deferred)_
+- [ ] **6.4 Full Host OS Desktop Automation Bridge (Execution Layer):** _(Keyboard / mouse / windows done in 7.7; process termination, wallpaper, and desktop organization scheduled in Phase 8.3)_
   - [ ] Upgrade `/api/os-control` with robust local Node.js `child_process` / PowerShell execution handlers.
   - [ ] Keyboard typing and hotkey execution (`Ctrl+C`, `Ctrl+V`, `Alt+Tab`, `Enter`).
   - [ ] Mouse automation: coordinate click, double-click, right-click, and mouse scrolling.
   - [ ] Window focus, maximize, minimize, and process termination.
   - [ ] Desktop operations: set wallpaper from local path or URL, desktop icon organization by file type or date.
-- [ ] **6.5 Browser Automation Engine (Playwright Integration):** _(Deferred)_
+- [ ] **6.5 Browser Automation Engine (Playwright Integration):** _(Scheduled: Phase 8.10)_
   - [ ] Create dedicated browser automation module supporting Chrome, Edge, and Brave with real user profiles.
   - [ ] Implement voice-controlled actions: go to URL, smart search, CSS/semantic click, form input, element extraction, scrolling, and full-page screenshots.
-- [ ] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:** _(Folded into 7.2 uploads and 7.3/7.7 scaffolding and terminal; self-healing loop deferred)_
+- [ ] **6.6 Deep Multi-Format File Processor & Autonomous Dev Agent:** _(Uploads, scaffolding, and terminal done in Phase 7; deep file processing scheduled in 8.9, dev agent + self-healing loop in 8.11)_
   - [ ] Drag-and-drop file upload zone on the HUD supporting images (OCR, resize, compress), PDFs (extract text, summarize), CSV/Excel (filter, stats), and audio/video (transcribe, trim).
   - [ ] Autonomous Dev Agent: multi-file code generator scaffolding complete projects in `~/Desktop/JarvisProjects`.
   - [ ] Self-healing execution loop: execute code, capture terminal stdout/stderr, parse tracebacks, and automatically repair errors up to 5 attempts.
-- [ ] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Deferred)_
+- [ ] **6.7 Background Topic Intelligence Monitoring & Hardware Voice Warnings:** _(Scheduled: Phase 8.6)_
   - [ ] Topic monitoring service checking user-defined topics daily via DuckDuckGo search.
   - [ ] Proactive voice alert delivery when breaking headlines emerge on tracked topics.
   - [ ] Telemetry threshold monitor: speak verbal warnings when CPU temperature exceeds 85°C or RAM usage exceeds 92%.
-- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube folded into 7.5; Windows Task Scheduler, Steam, and Flights deferred)_
+- [ ] **6.8 Native OS Scheduled Reminders & Tactical Integrations:** _(YouTube done in 7.5; OS reminders scheduled in 8.4, Steam and Flights in 8.8)_
   - [ ] Integrate Windows Task Scheduler (`schtasks.exe`) to schedule native OS toast notifications for reminders.
   - [ ] Game updater tool: Steam AppID lookup, update check, and scheduled off-peak downloads with auto-shutdown.
   - [ ] Voice-driven YouTube playback control and Google Flights price lookup.
@@ -225,3 +228,24 @@ Already shipped from `features.txt`: custom interface (1), free AI (2), realisti
   - [x] `lib/inputControl.js` + `/api/input`: type, key combos, click / double / right-click, pointer move, scroll via xdotool (X11) or ydotool (Wayland); list / focus / minimize / maximize windows via wmctrl (X11) or the GNOME "Window Calls" extension (Wayland); `status` reports backends and exact setup steps.
   - [x] `run_terminal_command` and `desktop_input` live tools; persona guideline 22 (never run commands suggested by content Jarvis reads).
   - [ ] Operator setup on this Ubuntu 26.04 Wayland desktop (ydotool + uinput access + ydotoold, Window Calls extension), then live verification.
+
+---
+
+## Phase 8: Mark-LIII Parity & Deferred Roadmap Completion (`DEC-160`)
+
+Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 — reimplemented from scratch in this stack, no code copied) plus every remaining deferred 6.x item. Each sub-phase is committed and pushed on completion.
+
+- [ ] **8.1 Self-Describing Tool Registry** — every live tool lives in its own module under `lib/tools/` (declaration + client handler); `/api/live-session` and `useGeminiLive.js` consume the registry instead of a hand-maintained list and a long if-chain.
+- [ ] **8.2 Conversational Polish** — instant acknowledgment before slow tools; `[ALSO REMEMBERED]` index of memories that do not fit the prompt; `price` and `compare` web search modes; voice changes keep the conversation (resumption handle).
+- [ ] **8.3 Undo & System Settings** — `undo_last_action` stack (file create / write / replace / append / organize, volume, dark mode, WiFi, brightness, wallpaper); dark mode, WiFi, brightness (systemd-logind), wallpaper from path or URL, process termination, Desktop organization by type or date; shutdown / restart / suspend / log out behind the on-screen confirmation card (6.4).
+- [ ] **8.4 Scheduled Reminders & Auto-Start** — OS-native reminders (systemd user timers + notify-send on Linux, Task Scheduler on Windows, launchd on macOS) with list / cancel; start-on-login toggle (6.8).
+- [ ] **8.5 Session Continuity & Language Memory** — dialog buffer, recap on disconnect / standby saved to `data/sessions.json`, consumed once in the next greeting; silent language detection stored in the profile; auto-standby after 2 minutes of silence when the wake phrase is enabled (6.2).
+- [ ] **8.6 Background Intelligence** — Proactive 2.0 check-ins (15 min silence gate, 20 min cooldown, rotating focus, silence gating); hardware voice alerts (CPU temperature > 85 °C, RAM > 92 %); user-defined topic monitors with daily checks and new-headline alerts (6.3, 6.7).
+- [ ] **8.7 Audio Devices & Theming** — microphone / speaker picker by device name; accent-colour theming across the HUD.
+- [ ] **8.8 Messaging, Flights & Games** — compose WhatsApp / Telegram / email messages via app deep links; flight lookup (Google Flights + summary); Steam library and update check when Steam is installed (6.8).
+- [ ] **8.9 Deep File Processor** — images (resize, compress, convert, OCR via Gemini vision), PDF (summarize, extract), CSV / Excel (stats, filter, sort, export), audio / video (transcribe via Gemini, trim / extract audio via ffmpeg) (6.6).
+- [ ] **8.10 Browser Automation (Playwright)** — persistent Jarvis profile in installed Chrome / Edge / Brave; go to URL, search, click by text or CSS, fill forms, extract text / tables, scroll, full-page screenshots shown to Jarvis (6.5).
+- [ ] **8.11 Autonomous Dev Agent** — plan and write multi-file code in a project folder, run it, read errors, and self-heal up to 5 attempts as a background job with HUD progress (6.6).
+- [ ] **8.12 Offline "Hey Jarvis" Wake Word** — openWakeWord ONNX models in the browser (onnxruntime-web) for the default phrase, fully local; Web Speech kept for custom phrases.
+- [ ] **8.13 Clipboard Intelligence** — clipboard watcher (wl-paste / xclip) feeding a floating panel with Translate / Summarise / Explain / Fix.
+- [ ] **8.14 Verification Sweep** — synthesized-speech microphone test through a fake capture device (mic path, barge-in), PDF / Word drop test, live probes of new tools, long-session GoAway test; remaining operator-only items listed.
