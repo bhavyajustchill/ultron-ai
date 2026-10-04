@@ -13,7 +13,7 @@ The system has four layers:
 1. **Client Holographic Surface (browser):** the Arc Reactor Orb (R3F), the tactical HUD, Web Audio mic ingestion (`AudioWorkletNode` → 16 kHz PCM), 24 kHz gapless playback (`lib/pcmPlayer.js`), the wake-phrase listener, uploads, media panels, and the terminal authorization card.
 2. **Live Session Orchestrator (`hooks/useGeminiLive.js`):** opens the Gemini Live WebSocket directly from the browser, sends the setup frame (persona, memories, tools, compression, resumption handle), streams audio / video / client content, executes tool calls against the local API routes, and handles barge-in, GoAway swaps, auto re-sync, background job notices, and standby.
 3. **Next.js API Layer (`app/api/*`):** builds the session configuration and bridges every host capability. Routes that touch the machine reject cross-site requests (`lib/requestGuard.js`); file access is confined to sandbox roots (`lib/fsSandbox.js`).
-4. **Host Integrations:** the desktop session (`.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool, wmctrl / GNOME Window Calls), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search).
+4. **Host Integrations:** the desktop session (`.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool or the RemoteDesktop portal, wmctrl / GNOME Window Calls), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search).
 
 ```mermaid
 flowchart TB
@@ -81,7 +81,7 @@ jarvis-mark-ii/
 │       ├── upload/                         # Upload ingest + text extraction
 │       ├── model-file/[...segments]/       # Sandboxed 3D model serving
 │       ├── os-control/                     # Apps, volume, folders, URLs, lock
-│       ├── input/                          # Keyboard, mouse, windows
+│       ├── input/                          # Keyboard, mouse, windows; write_in_app
 │       ├── terminal/                       # Prepare / run / cancel commands
 │       ├── system-settings/                # Dark mode, WiFi, brightness, wallpaper, processes, power
 │       ├── undo/                           # Reverse Jarvis's last action
@@ -122,6 +122,9 @@ jarvis-mark-ii/
 │   ├── devAgent.js                         # Autonomous dev agent jobs
 │   ├── wakeWord/                           # Offline wake word: detector, listener, models
 │   ├── clipboard.js                        # Clipboard read / write, secret filter, actions
+│   ├── writeInApp.js                       # write_in_app: note handoff to editors, launch-then-type
+│   ├── remoteDesktopPortal.js              # Wayland keystrokes via the RemoteDesktop portal (drives bin/portal-keyboard.js)
+├── bin/                                    # portal-keyboard.js (GJS portal session helper), Windows volume helper
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, wakeword-worklet.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored

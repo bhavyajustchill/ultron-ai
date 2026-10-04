@@ -75,7 +75,8 @@ Developers and power users who want a voice-first assistant that can act on thei
 
 - **Apps & System:** Launch any installed app by name (`.desktop` index), volume, folders, URLs, minimize, lock.
 - **Files:** Sandboxed create / read / write / replace / append / open, folder organiser with preview, apply, and undo; no delete.
-- **Input & Windows:** Typing, key combos, mouse, scroll, and window focus / minimize / maximize via xdotool or ydotool and wmctrl or the GNOME Window Calls extension.
+- **Input & Windows:** Typing, key combos, mouse, scroll, and window focus / minimize / maximize via xdotool or ydotool and wmctrl or the GNOME Window Calls extension; on Wayland, typing also works through the RemoteDesktop portal with no setup.
+- **Write Into Apps:** "Open notepad and type hello world" opens the default text editor with the text as a saved, undoable note; other apps are launched and typed into once they have focus.
 - **Terminal:** Read-only commands run immediately; everything else requires a click on the HUD authorization card; sudo and destructive commands are refused.
 
 ### 🔍 3.8 Intelligence & Web Search

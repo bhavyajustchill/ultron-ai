@@ -49,12 +49,13 @@ next-env.d.ts
 /data/memory-vectors.json
 /data/memory-vectors.json.tmp
 
-# Jarvis runtime state (reminders, autostart log, session recaps, topic monitors, wake word models)
+# Jarvis runtime state (reminders, autostart log, session recaps, topic monitors, wake word models, keyboard portal token)
 /data/reminders.json
 /data/reminders.json.tmp
 /data/autostart.log
 /data/sessions.json
 /data/monitors.json
 /data/wakeword/
+/data/portal-token.json
 
 /Mark-LIII/

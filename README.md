@@ -86,7 +86,8 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 - **Volume** (up / down / set / mute), **open folders and URLs**, **minimise all**, **lock screen**.
 - **System settings** (`system_settings`): dark mode (including the matching GTK theme), WiFi, screen brightness (via systemd-logind, no root), wallpaper from a file or an image URL, listing and ending programs, shutdown / restart / suspend / log out (with a 10-second grace period and "cancel").
 - **Undo** (`undo_last_action`): "undo that" reverses Jarvis's own last change — files he created or edited, folder organizing, volume, dark mode, brightness, wallpaper, WiFi off — up to ten steps back.
-- **Keyboard, mouse, and windows** (`desktop_input`): typing, key combos, clicks, scrolling, and focusing / minimising / maximising windows (xdotool or ydotool, wmctrl or the GNOME Window Calls extension).
+- **Write into apps** (`write_in_app`): "open notepad and type hello world". Text editors ("notepad", "text editor", "gedit", "TextEdit" all mean your default editor) get the text as a new note saved in `~/Documents/Jarvis Notes` and opened in the editor — exact text, already saved, never typed into the wrong window, and "undo" removes it. Other apps ("open the calculator and type 12*7") are opened and typed into with real keystrokes once they come to the front; if the HUD still has focus, nothing is typed. Say "actually type it" to watch an editor being typed into.
+- **Keyboard, mouse, and windows** (`desktop_input`): typing, key combos, clicks, scrolling, and focusing / minimising / maximising windows (xdotool or ydotool, wmctrl or the GNOME Window Calls extension). On Wayland without ydotool, typing and key combos go through the desktop's RemoteDesktop portal: no setup, one "allow remote interaction" dialog the first time, remembered afterwards.
 - **Terminal** (`run_terminal_command`): read-only commands run straight away; anything else waits for your click on the HUD authorization card; sudo and destructive commands are refused.
 - **Hardware voice alerts:** CPU temperature above 85 °C, RAM above 92 %, sustained CPU load above 90 %, battery at 15 % or lower while unplugged.
 - **Audio devices** (`audio_devices`): choose the microphone and speaker by name.
@@ -183,7 +184,7 @@ Jarvis acts on a real computer, so the defaults are conservative:
 
 ## Live tools reference
 
-Jarvis decides when to use these during a conversation (30 tools, each one module in `lib/tools/`):
+Jarvis decides when to use these during a conversation (31 tools, each one module in `lib/tools/`):
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -202,6 +203,7 @@ Jarvis decides when to use these during a conversation (30 tools, each one modul
 | `process_file` | Images, PDFs, spreadsheets, audio / video |
 | `run_terminal_command` | Terminal with the authorization gate |
 | `desktop_input` | Keyboard, mouse, windows |
+| `write_in_app` | Open an app and put text in it (notes for editors, keystrokes for others) |
 | `enter_standby` | Sign off and wait for the wake phrase |
 | `youtube_player`, `spotify_control`, `view_3d_model` | Media deck |
 | `create_project` | Project scaffolding |
@@ -249,7 +251,7 @@ Core voice, memory, search, files, documents, and the HUD need only Node.js and 
 | WiFi | NetworkManager `nmcli` |
 | Brightness | systemd-logind (`gdbus`), or `brightnessctl` |
 | Reminders | `systemd-run --user`, `notify-send` |
-| Keyboard / mouse | `ydotool` + `ydotoold` (Wayland) or `xdotool` (X11) |
+| Keyboard / mouse | `ydotool` + `ydotoold` (Wayland) or `xdotool` (X11); on Wayland, typing alone also works through the RemoteDesktop portal (`gjs`, standard on GNOME) |
 | Windows | GNOME "Window Calls" extension (Wayland) or `wmctrl` (X11) |
 | Spotify | Spotify desktop app (MPRIS over D-Bus) |
 | Audio / video processing | `ffmpeg`, `ffprobe` |
@@ -318,7 +320,7 @@ Verified live on Ubuntu with a real Gemini key, including a fake-microphone spee
 - A real microphone in a room with speakers (echo and barge-in tuning, wake phrases spoken aloud).
 - Google Search grounding with function calling (needs a key with grounding quota).
 - Spotify, Steam, WhatsApp, and Telegram desktop apps.
-- Wayland keyboard / mouse setup (ydotool with uinput access, Window Calls extension).
+- Wayland keyboard / mouse setup (ydotool with uinput access, Window Calls extension), and typing through the real RemoteDesktop portal dialog (tested against a mock portal).
 - Real WiFi-off, brightness, wallpaper, and power effects (tested with mocks and dry runs).
 - Windows and macOS code paths.
 

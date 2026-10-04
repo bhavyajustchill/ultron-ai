@@ -263,3 +263,13 @@ These need hardware, accounts, or system setup that automated runs cannot provid
 - [ ] Real hardware effects deliberately not executed by tests: WiFi off, brightness, wallpaper, and power actions (8.3; mocked CLIs, dry-run power, real read-only status verified).
 - [ ] Windows and macOS code paths (system settings, reminders, start on login, scheduled Steam updates): written, not run here.
 - [ ] Rotate the Gemini API key that was shared for development testing.
+
+---
+
+## Phase 9: Write Into Apps & Search Without Grounding Quota (`DEC-185`, `DEC-186`)
+
+Operator requests (2026-10-04): "open notepad and type hello world" should open the text editor with the text in it, and web search should work on keys without Google Search grounding quota. Each sub-phase is committed and pushed on completion.
+
+- [x] **9.1 Write Into Apps** — `write_in_app` live tool: opens the app (the "notepad" / "text editor" aliases resolve to the default text editor) and puts the text in it. Text editors default to a document handoff (the text is saved as a note in `~/Documents/Jarvis Notes` and opened in the editor; works with no setup, undoable). Real keystrokes for any app go through the best available backend: xdotool (X11), ydotool (when its daemon runs), or the GNOME / KDE RemoteDesktop portal (no root; one approval dialog, remembered), driven by a small GJS helper so no npm D-Bus library is needed. Typing waits for the app to take focus and stops if the HUD still has it, so keystrokes never land in the wrong window. Verified: 29/29 API checks against a mock portal (dry-run launches) and 5/5 live HUD checks with Gemini 3.8 Live (`DEC-185`).
+  - [ ] Operator check: the real GNOME RemoteDesktop permission dialog and keystrokes into a real app ("open the calculator and type 12*7"), then a second request without the dialog (restore token).
+- [ ] **9.2 Search Then Read** — when Google Search grounding is unavailable, `web_search` finds candidate pages from keyless sources (Bing RSS, Google News RSS, Wikipedia), has Gemini read the top pages with its URL-context tool, and answers with cited sources; falls back to reading the pages server-side, then to a headless DuckDuckGo search in the Jarvis browser, then to the labelled model-knowledge answer. Optional providers when a key is configured: Brave Search, Google Programmable Search, Serper.
