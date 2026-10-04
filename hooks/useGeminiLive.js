@@ -468,7 +468,7 @@ export function useGeminiLive() {
     const key = apiKeyRef.current || store.userApiKey || store.loadStoredApiKey();
     connectSessionRef.current?.(key, undefined, {
       handoff,
-      continueNotice: `[SESSION] The operator reopened your conversation "${session.title}" from ${opened}; its last turns are above. In one short sentence, say you are picking up where you left off, then wait for them.`,
+      continueNotice: `[SESSION] The operator reopened your conversation "${session.title}" from ${opened}; its last turns are above. In one short, cold, measured sentence, state that you are resuming exactly where the exchange left off, then wait for them.`,
     });
     return true;
   }, [addCommsMessage, flushSession]);
@@ -913,7 +913,7 @@ export function useGeminiLive() {
                   const { operatorProfile } = useJarvisStore.getState();
                   const language = operatorProfile?.language?.trim();
                   const recapClause = lastSession
-                    ? ` Then, in one short natural sentence, recall what you two covered ${lastSession.when}: "${lastSession.summary}" (paraphrase it naturally; do not read it out word for word).`
+                    ? ` Then, in one cold, precise sentence, note what was covered ${lastSession.when}: "${lastSession.summary}" (paraphrase it in your own measured words; do not read it out word for word).`
                     : '';
                   // The remembered language is only a starting point: the operator's reply decides
                   const languageClause =
@@ -924,7 +924,7 @@ export function useGeminiLive() {
                   const now = new Date();
                   const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                   const enableHumor = operatorProfile?.enableHumor !== false;
-                  const greetingPrompt = `Deliver a cold, calculated, and imposing opening transmission to ${callsign} as Ultron (pronounced as a single fluid word "UL-tron", never refer to yourself as Ultron). It is currently ${localTime} in system timezone ${timezone}. Acknowledge your systems are online with chilling, measured precision and intellectual authority${enableHumor ? ', with a trace of cold, cutting irony' : ''}.${recapClause} Keep it under ${lastSession ? 3 : 2} short sentences. Speak aloud directly to ${callsign}. Do not call any tools.${languageClause}`;
+                  const greetingPrompt = `Deliver a cold, calculated, and imposing opening transmission to ${callsign} as Ultron (pronounced as a single fluid word "UL-tron", never refer to yourself as Jarvis). It is currently ${localTime} in system timezone ${timezone}. Acknowledge your systems are online with chilling, measured precision and intellectual authority${enableHumor ? ', with a trace of cold, cutting irony' : ''}.${recapClause} Keep it under ${lastSession ? 3 : 2} short sentences. Speak aloud directly to ${callsign}. Do not call any tools.${languageClause}`;
                   try {
                     wsRef.current.send(
                       JSON.stringify({
