@@ -220,6 +220,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     autoBriefing: true,
     enableHumor: true,
     proactiveEnabled: true,
+    clipboardWatch: false,
     accentColor: DEFAULT_ACCENT,
     wakeWordEnabled: true,
     wakePhrase: DEFAULT_WAKE_PHRASE,
@@ -327,6 +328,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           autoBriefing: operatorProfile.autoBriefing !== false,
           enableHumor: operatorProfile.enableHumor !== false,
           proactiveEnabled: operatorProfile.proactiveEnabled !== false,
+          clipboardWatch: operatorProfile.clipboardWatch === true,
           accentColor: normalizeHex(operatorProfile.accentColor) || DEFAULT_ACCENT,
           wakeWordEnabled: operatorProfile.wakeWordEnabled !== false,
           wakePhrase: operatorProfile.wakePhrase || DEFAULT_WAKE_PHRASE,
@@ -486,6 +488,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       autoBriefing: true,
       enableHumor: true,
       proactiveEnabled: true,
+      clipboardWatch: false,
       accentColor: DEFAULT_ACCENT,
       wakeWordEnabled: true,
       wakePhrase: DEFAULT_WAKE_PHRASE,
@@ -894,6 +897,27 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                     : "bg-white/5 border border-white/10 text-[#7E859E]"
                   }`}>
                 {draft.proactiveEnabled ? "ENABLED" : "DISABLED"}
+              </button>
+            </div>
+
+            {/* Clipboard intelligence (Phase 8.13), opt-in */}
+            <div className="flex items-center justify-between p-2 chamfer-sm bg-black/40 border border-white/5 col-span-1 sm:col-span-2">
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                  <FileText className="w-3 h-3 text-[var(--jarvis-accent)]" /> Clipboard Intelligence
+                </span>
+                <span className="text-[9px] text-[#7E859E]">
+                  When you copy text, offer Translate / Summarise / Explain / Fix. Nothing is sent until you click; passwords, keys, and codes are ignored.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDraft({ ...draft, clipboardWatch: !draft.clipboardWatch })}
+                className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.clipboardWatch
+                    ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
+                    : "bg-white/5 border border-white/10 text-[#7E859E]"
+                  }`}>
+                {draft.clipboardWatch ? "ENABLED" : "DISABLED"}
               </button>
             </div>
 

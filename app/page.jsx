@@ -48,6 +48,7 @@ import { useWakePhrase } from "@/hooks/useWakePhrase";
 import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 import { ModelViewerPanel } from "@/components/Media/ModelViewerPanel";
 import { CommandConfirmModal } from "@/components/HUD/CommandConfirmModal";
+import { ClipboardPanel } from "@/components/HUD/ClipboardPanel";
 
 export default function Home() {
   const {
@@ -734,6 +735,7 @@ export default function Home() {
 
       {/* Terminal Command Authorization Gate */}
       <CommandConfirmModal />
+      <ClipboardPanel />
     </main>
   );
 }

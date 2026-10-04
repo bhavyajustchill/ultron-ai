@@ -247,5 +247,5 @@ Features found in the Mark-LIII reference assistant (`Mark-LIII/`, CC BY-NC 4.0 
 - [x] **8.10 Browser Automation (Playwright) (`DEC-170`)** — persistent Jarvis profile in installed Chrome / Edge / Brave; go to URL, search, click by text or CSS, fill forms, extract text / tables, scroll, full-page screenshots shown to Jarvis (6.5).
 - [x] **8.11 Autonomous Dev Agent (`DEC-171`)** — plan and write multi-file code in a project folder, run it, read errors, and self-heal up to 5 attempts as a background job with HUD progress (6.6).
 - [x] **8.12 Offline "Hey Jarvis" Wake Word (`DEC-172`)** — openWakeWord ONNX models in the browser (onnxruntime-web) for the default phrase, fully local; Web Speech kept for custom phrases.
-- [ ] **8.13 Clipboard Intelligence** — clipboard watcher (wl-paste / xclip) feeding a floating panel with Translate / Summarise / Explain / Fix.
+- [x] **8.13 Clipboard Intelligence (`DEC-173`)** — clipboard watcher (wl-paste / xclip) feeding a floating panel with Translate / Summarise / Explain / Fix.
 - [ ] **8.14 Verification Sweep** — synthesized-speech microphone test through a fake capture device (mic path, barge-in), PDF / Word drop test, live probes of new tools, long-session GoAway test; remaining operator-only items listed.

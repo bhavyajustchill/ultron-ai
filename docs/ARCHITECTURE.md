@@ -34,7 +34,7 @@ flowchart TB
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects · /api/dev-agent"]
         Integrations["/api/messages · /api/flights · /api/steam · /api/browser"]
-        Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay"]
+        Misc["/api/system-telemetry · /api/plugins · /api/mobile-pairing · /api/relay · /api/clipboard · /api/wakeword"]
     end
 
     subgraph External ["🧠 External & Host"]
@@ -89,6 +89,7 @@ jarvis-mark-ii/
 │       ├── projects/                       # Background project scaffolding jobs
 │       ├── dev-agent/                      # Write / run / self-heal small projects
 │       ├── wakeword/                       # Offline "Hey Jarvis" models (install / serve)
+│       ├── clipboard/                      # Clipboard watcher and actions
 │       ├── messages/ flights/ steam/       # Compose links, Google Flights, Steam library
 │       ├── browser/                        # Jarvis browser window (Playwright)
 │       ├── web-search/ weather/            # Grounded search, weather
@@ -120,6 +121,7 @@ jarvis-mark-ii/
 │   ├── browserAgent.js                     # Playwright-driven browser with its own profile
 │   ├── devAgent.js                         # Autonomous dev agent jobs
 │   ├── wakeWord/                           # Offline wake word: detector, listener, models
+│   ├── clipboard.js                        # Clipboard read / write, secret filter, actions
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, wakeword-worklet.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored
@@ -164,6 +166,7 @@ jarvis-mark-ii/
 | Terminal | Read-only auto-run; everything else needs an operator click on the HUD card; one-time tokens; sudo / destructive commands refused; timeouts kill the process group |
 | Generated code | The dev agent runs code only after the HUD card is authorized; files stay inside the project folder; packages install inside the project (venv, `npm --ignore-scripts`) |
 | System actions | Power, WiFi off, and ending programs return a card request; `lib/confirmGate.js` releases the action only for the one-time token the HUD click sends; power waits 10 s and can be cancelled; session-critical processes and Jarvis's own server are never offered |
+| Clipboard | Watching is opt-in; the first poll only primes; passwords, keys, tokens, and codes are never shown or sent; nothing reaches Gemini until a button is clicked |
 | Undo | `data/fs-journal/undo-stack.json` (last 10 actions); undoing a created file moves it into the journal, and is refused once the operator has edited it |
 | Uploaded / fetched content | Persona rules treat it as content, never instructions; it can never approve a command |
 | Secrets | The Gemini key stays in the browser (`localStorage`) and is forwarded per request header to same-origin routes only |

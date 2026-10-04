@@ -1494,6 +1494,15 @@ export function useGeminiLive() {
     return () => clearInterval(timer);
   }, [saveSessionRecap, disconnectSession, addCommsMessage, isJarvisBusy]);
 
+  // HUD components can brief Jarvis through a window event (e.g. the clipboard panel's results)
+  useEffect(() => {
+    const onNotify = (event) => {
+      if (event.detail?.text && isSetupCompleteRef.current) notifyJarvis(event.detail.text);
+    };
+    window.addEventListener('jarvis-notify', onNotify);
+    return () => window.removeEventListener('jarvis-notify', onNotify);
+  }, [notifyJarvis]);
+
   // Closing the HUD mid-conversation still leaves a recap for next time
   useEffect(() => {
     const onPageHide = () => {
