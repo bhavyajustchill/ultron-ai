@@ -59,5 +59,7 @@ next-env.d.ts
 /data/monitors.json
 /data/wakeword/
 /data/portal-token.json
+/data/todos.json
+/data/todos.json.*.tmp
 
 /Mark-LIII/

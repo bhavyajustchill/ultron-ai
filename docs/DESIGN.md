@@ -107,13 +107,13 @@ Inherited from Jarvis Mark II (`JM2-DEC-167`, `JM2-DEC-184`) with Stark Gold as 
 - **Top right (`DEC-164`):** INTEL, then the zoom cluster, then fullscreen. The Intel panel opens at `top-18 right-6` and can be dragged.
 - **Background:** pure black stage behind the orb.
 
-### 4.0 Phone Layout (narrower than 640px, `DEC-169`)
+### 4.0 Phone & Compact Layout (narrower than 1024px, `DEC-169`, `DEC-171`)
 
-Phones are anything below Tailwind's `sm` breakpoint (`hooks/useIsPhone.js`, `PHONE_MEDIA_QUERY`). Phone styles are `max-sm:` classes added next to the desktop ones, so the layout at 640px and wider is unchanged.
+Phones are anything below Tailwind's `sm` breakpoint (`hooks/useIsPhone.js`, `PHONE_MEDIA_QUERY`). Since Phase 15 the same arrangement covers everything below `lg` (`COMPACT_MEDIA_QUERY`, 1024px): the `max-lg:` classes put the controls in a row above the title, hide the permanent stack behind the SYSTEMS / COMMS buttons, and split the dock in two; the `max-sm:` classes add the phone-only parts (full-width panels, safe-area insets, the orb further back). 1024px and wider is unchanged apart from the TASKS button and, at 1024–1279px, the left stack starting below the title.
 
 ```
 +------------------------------------+
-| [⚡][>_]           [🌐][+][-][⟳][⤢] |  controls row, below the notch
+| [⚡][>_]        [☑][🌐][+][-][⟳][⤢] |  controls row, below the notch
 |            ▪ ULTRON ▪              |  title row
 |  AUTONOMOUS ARTIFICIAL INTELLIGEN… |
 |            ( ULTRON ORB )          |  home distance × 1.5625
@@ -124,9 +124,9 @@ Phones are anything below Tailwind's `sm` breakpoint (`hooks/useIsPhone.js`, `PH
 +------------------------------------+  + home-bar inset
 ```
 
-* **Systems & Comms Log:** the permanent column is hidden; the phone-only SYSTEMS (⚡) and COMMS (>_) buttons open one panel at a time, full width under the controls row (55dvh tall, shutter animation); a second tap or Escape closes it.
+* **Systems, Comms Log & Task List:** the permanent column is hidden; the SYSTEMS (⚡) and COMMS (>_) buttons and TASKS (☑) open one panel at a time under the controls row (full width on phones) (55dvh tall, shutter animation); a second tap or Escape closes it.
 * **Height and insets:** the page is `h-dvh` (the visible height, above mobile browser toolbars); the viewport is `viewportFit: "cover"` and phone offsets add `env(safe-area-inset-top / bottom)`.
-* **Labels:** top buttons are icon-only; MUTE MIC reads MUTE / UNMUTE; the INTERRUPT label hides below 360px; the fullscreen button is hidden where the browser has no page fullscreen (iPhone Safari); the wake chip is hidden.
+* **Labels:** top buttons are icon-only below 768px; dock icons have no labels below 1024px; MUTE MIC reads MUTE / UNMUTE; the INTERRUPT label hides below 360px; the fullscreen button is hidden where the browser has no page fullscreen (iPhone Safari); the wake chip is hidden.
 * **Panels:** screen-vision and webcam windows open just above the dock; the clipboard card sits just above the input; the 3D holo-viewer is 240px tall; vault headers wrap their count badge onto its own line. Drag handles use `touch-none` so windows can be dragged with a finger.
 
 ### 4.1 Status Badge & Chips

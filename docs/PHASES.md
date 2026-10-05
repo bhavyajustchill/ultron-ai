@@ -4,7 +4,7 @@
 **Architecture:** Next.js 16 + Three.js + JavaScript (JSX) + Gemini 3.8 Live WebSockets  
 **Active 3D Core:** Holographic 3D Ultron Orb (`lib/ultronOrbScene.js`); Phases 0–5 originally targeted a humanoid avatar model, since replaced  
 **Reference Documents:** [`PRD.md`](./PRD.md), [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md)  
-**Decision numbers:** `DEC-146` – `DEC-170` are Ultron's own; `JM2-DEC-NNN` are decisions made in J.A.R.V.I.S Mark II and inherited with its features (see [`MEMORY.md`](./MEMORY.md)).
+**Decision numbers:** `DEC-146` – `DEC-171` are Ultron's own; `JM2-DEC-NNN` are decisions made in J.A.R.V.I.S Mark II and inherited with its features (see [`MEMORY.md`](./MEMORY.md)).
 
 ---
 
@@ -35,6 +35,9 @@
         │
         ▼
 [Phase 14: Windows Desktop Control, Focus Guard & Office (DEC-170)]  ✔ implemented (operator testing)
+        │
+        ▼
+[Phase 15: To-Do List & Compact Layout (DEC-171)]  ✔ implemented (operator testing)
 ```
 
 Phases 0 – 11 were built in the shared codebase and in J.A.R.V.I.S Mark II; Phase U is Ultron's own identity work; Phase 12 brought Phases 8 – 11 into Ultron under Ultron's look; Phase 13 makes the HUD usable on phones (adapted from J.A.R.V.I.S Mark II's phone layout); Phase 14 brings its Windows desktop control, focus guard, and Office support.
@@ -281,6 +284,7 @@ These need hardware, accounts, or system setup that automated runs cannot provid
 - [ ] Real hardware effects deliberately not executed by tests: WiFi off, brightness, wallpaper, and power actions (8.3; mocked CLIs, dry-run power, real read-only status verified).
 - [ ] Windows and macOS code paths (system settings, reminders, start on login, scheduled Steam updates): written, not run here.
 - [ ] Rotate the Gemini API key that was shared for development testing.
+- [ ] Phase 15: the to-do list by touch on a real phone (add box with the keyboard open, tick, edit, remove and UNDO) and by voice ("add ... to my list", "what is on my list?", "tick off ...", "undo"); the briefing sentence about open tasks; the layout on a tablet or a narrow browser window (640–1023px).
 
 ---
 
@@ -357,3 +361,18 @@ Built cleanly here; not run in Ultron (the operator tests it by voice on Windows
 
 - [ ] Operator testing on Windows by voice (open and type into Notepad with another app in front, typing with no app named, a terminal window, Word / Excel / PowerPoint, an administrator window).
 - [ ] The Linux side on Ubuntu (focus checks on X11 / Wayland, LibreOffice).
+
+---
+
+## Phase 15: To-Do List & Compact Layout (`DEC-171`)
+
+Operator request (2026-10-05): a to-do list as a panel in J.A.R.V.I.S, Ada, and Ultron that fits on desktop and on phones (J.A.R.V.I.S Mark II Phase 16, its `DEC-197`). Agreed in planning: also fix the in-between widths, where the permanent left stack covered the title and the dock ran off the right edge (640–1023px).
+
+- [x] **15.1 To-Do Store, API & Tool (from J.A.R.V.I.S Mark II)** — `lib/todoList.js` (`data/todos.json`, gitignored; to do / in progress / done; tasks named by a few words; undoable removals), `/api/todos`, and the `todo_list` live tool (35 tools: add, list, start, done, reopen, rename, remove, clear_done, show / hide); `undo_last_action` reloads the list; persona guideline 36; the BRIEFING button's briefing mentions open tasks.
+- [x] **15.2 Task List** — `components/HUD/TodoList.jsx`: add box at the top (a phone keyboard never covers it), checkbox, start / pause, tap to edit, remove with an UNDO notice, finished tasks under DONE (n) with CLEAR DONE, in amber.
+- [x] **15.3 Placement** — a TASKS button before INTEL in the top right with the open count; on desktop the panel floats at the top right, clear of the permanent Systems / Comms Log stack, and drags by its header; below 1024px it opens under the controls, one panel at a time with Systems and the Comms Log, full width on phones.
+- [x] **15.4 Compact Layout Below 1024px** — the phone arrangement now covers 640–1023px too (`useIsCompact` in `hooks/useIsPhone.js`, `max-lg:` classes): the permanent Systems / Comms Log stack is hidden and opens one panel at a time from the SYSTEMS / COMMS buttons in the top left, the controls get a row above the title (labels from 768px), the dock has two rows, and the screen-vision / webcam windows, clipboard card, and gesture mirror sit above the taller dock. At 1024–1279px the stack starts below the title so it no longer covers the subtitle. Phones keep their full-width panels and zoomed-out orb.
+
+Verified: clean production build; 20/20 to-do API checks against a separate server and a throwaway task file; the layout in headless Chrome at 320, 360, 390, 412, 640, 768, 900, 1000, 1024, 1100, 1280, 1366, and 1920px wide: no control off-screen or overlapping another, no sideways scroll, and the task list inside the screen (below 1024px, opening Systems replaces it). A real phone and voice use are operator checks (`DEC-171`).
+
+- [ ] Operator testing (see Operator-Only Checks).

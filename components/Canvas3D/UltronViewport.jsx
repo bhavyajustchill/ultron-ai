@@ -258,7 +258,7 @@ function UltronViewportComponent({
 
       {/* Hand Gestures Mirror PiP overlay (when enabled) */}
       <div
-        className={`absolute bottom-28 right-8 max-sm:bottom-[calc(env(safe-area-inset-bottom)_+_13rem)] max-sm:right-4 z-30 transition-all duration-300 pointer-events-auto ${
+        className={`absolute bottom-28 right-8 max-lg:bottom-[calc(env(safe-area-inset-bottom)_+_13rem)] max-sm:right-4 z-30 transition-all duration-300 pointer-events-auto ${
           isGesturesActive ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 pointer-events-none translate-y-4"
         }`}
       >

@@ -32,7 +32,7 @@ flowchart TB
     subgraph Server ["⚙️ Next.js API routes"]
         Session["/api/live-session"]
         Files["/api/fs-ops · /api/upload · /api/model-file · /api/file-processor"]
-        Desktop["/api/os-control · /api/input · /api/office · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
+        Desktop["/api/os-control · /api/input · /api/office · /api/terminal · /api/system-settings · /api/undo · /api/reminders · /api/todos"]
         Intel["/api/web-search · /api/weather · /api/memory · /api/sessions · /api/monitors · /api/hardware-alerts"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects · /api/dev-agent"]
@@ -90,6 +90,7 @@ ultron-ai/
 │       ├── system-settings/                # Dark mode, WiFi, brightness, wallpaper, processes, power
 │       ├── undo/                           # Reverse Ultron's last action
 │       ├── reminders/                      # OS-native reminders + due announcements
+│       ├── todos/                          # To-do list for the task list and the todo_list tool
 │       ├── projects/                       # Background project scaffolding jobs
 │       ├── dev-agent/                      # Write / run / self-heal small projects
 │       ├── wakeword/                       # Offline "Hey Jarvis" models (inherited; not offered in Ultron)
@@ -108,7 +109,7 @@ ultron-ai/
 ├── hooks/                                  # useGeminiLive, useAudioStream, useWakePhrase, useAccentTheme, useLipSync
 ├── lib/
 │   ├── store.js                            # useJarvisStore (Zustand)
-│   ├── tools/                              # Live tool registry: one module per tool (declaration + handler), 34 tools in index.js
+│   ├── tools/                              # Live tool registry: one module per tool (declaration + handler), 35 tools in index.js
 │   ├── jarvisPersona.js                    # Ultron's persona, GEMINI_LIVE_MODEL / LABEL, live config (file name shared with Jarvis Mark II)
 │   ├── ultronOrbScene.js / handTracker.js   # The Ultron orb (Three.js) and MediaPipe hand tracking
 │   ├── pcmPlayer.js                        # Gapless 24 kHz playback + barge-in flush
@@ -123,6 +124,7 @@ ultron-ai/
 │   ├── wakePhrase.js / pluginRegistry.js / qrCode.js
 │   ├── systemSettings.js / volumeControl.js / confirmGate.js / undoJournal.js / undoActions.js
 │   ├── reminders.js / autostart.js / hardwareAlerts.js / topicMonitors.js
+│   ├── todoList.js                         # To-do list in data/todos.json (todo / doing / done, undoable removals)
 │   ├── accentTheme.js / audioDevices.js     # HUD colour themes (Stark Gold palette), microphone / speaker choice
 │   ├── messageComposer.js / flights.js / steamLibrary.js
 │   ├── fileProcessor/                      # common, images, pdf, sheets, media
@@ -139,7 +141,7 @@ ultron-ai/
 ├── bin/                                    # win-desktop-host.ps1 (Windows desktop host), portal-keyboard.js (GJS portal helper), Windows volume helper
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, wakeword-worklet.js, voice samples
-├── data/                                   # memories.json (vault); caches and journals are gitignored
+├── data/                                   # memories.json (vault); caches, journals, and the to-do list are gitignored
 └── docs/                                   # PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 ```
 

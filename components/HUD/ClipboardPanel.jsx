@@ -116,7 +116,7 @@ export function ClipboardPanel() {
       aria-label="Clipboard actions"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="fixed bottom-28 max-sm:bottom-[calc(env(safe-area-inset-bottom)_+_9.5rem)] left-1/2 -translate-x-1/2 z-[80] w-[min(560px,calc(100vw-32px))] flex flex-col gap-2 p-3 chamfer-md bg-[rgba(15,12,5,0.92)] border border-[rgba(var(--jarvis-accent-rgb),0.35)] shadow-[0_0_30px_rgba(var(--jarvis-accent-rgb),0.15)] font-mono text-[#F0F2F8] backdrop-blur-md">
+      className="fixed bottom-28 max-lg:bottom-[calc(env(safe-area-inset-bottom)_+_9.5rem)] left-1/2 -translate-x-1/2 z-[80] w-[min(560px,calc(100vw-32px))] flex flex-col gap-2 p-3 chamfer-md bg-[rgba(15,12,5,0.92)] border border-[rgba(var(--jarvis-accent-rgb),0.35)] shadow-[0_0_30px_rgba(var(--jarvis-accent-rgb),0.15)] font-mono text-[#F0F2F8] backdrop-blur-md">
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-1.5 text-[10px] font-['Orbitron',sans-serif] font-bold tracking-wider text-[var(--jarvis-accent)]">
           <ClipboardList className="w-3.5 h-3.5" /> CLIPBOARD · {clip.chars} CHARS

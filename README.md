@@ -127,6 +127,7 @@ All file access is limited to allowed folders (by default `~/Desktop`, `~/Docume
 ### Communication and scheduling
 
 - **Message drafts** (`compose_message`): WhatsApp, Telegram, or email open with the message already written — Ultron never presses Send.
+- **To-do list** (`todo_list`): one list shared with the TASKS panel ("add buy milk to my list", "what's on my list?", "I'm starting on the report", "tick off the milk", "clear the finished ones"); tasks are to do, in progress, or done; removals can be undone; the briefing mentions open tasks. Saved in `data/todos.json` (never committed).
 - **Reminders** (`reminders`): scheduled with the operating system (systemd user timers on Linux), so they fire as desktop notifications even when Ultron is closed; one-off or daily / weekday / weekly; listed and cancelled by voice; spoken aloud if the HUD is linked at the time.
 - **Proactive check-ins:** after 15 quiet minutes Ultron may offer one genuinely useful remark (at most every 20 minutes; can be turned off).
 
@@ -162,11 +163,12 @@ Drop-in JavaScript plugins (`run_cyber_plugin`) with a console in the HUD. Bundl
 | Area | What it is |
 | :-- | :-- |
 | Centre | The Ultron orb: concentric shells, panels, drifting code sprites, and a volumetric core that grows while Ultron speaks. Distinct idle, thinking, and speaking states; optional hand-gesture control (**G**). |
-| Top | The **ULTRON** title. Top right: **INTEL** (search dossiers, sources, monitor alerts; opens as a panel below it), zoom in / out / reset, and fullscreen. |
+| Top | The **ULTRON** title. Top right: **TASKS** (your to-do list with the open count: add, start, tick off, edit, remove with UNDO), **INTEL** (search dossiers, sources, monitor alerts; opens as a panel below it), zoom in / out / reset, and fullscreen. |
 | Left column | Always on screen on desktop: **SYSTEMS PANEL** (CPU, memory, and uptime; the network, GPU, and process-count bars are display estimates, not measurements) above the **COMMS LOG FEED** (the full conversation plus every action Ultron takes, tagged `[FILE OPS]`, `[SYSTEM]`, `[BROWSER]`, ...). |
 | Bottom | Status pill (LISTENING / THINKING / SPEAKING / RECONNECTING), wake chip, command bar, and the dock: CONNECT, mic, INTERRUPT, BRIEFING, MEMORIES, SESSIONS, UPLOAD, API KEY, screen share, camera, settings, mobile. |
 | Overlays | Authorization card, YouTube and 3D panels, clipboard panel, upload drop zone. |
-| On a phone | Below 640px wide the top controls get their own row above the title, SYSTEMS and COMMS LOG move behind two buttons in the top left (one panel at a time, full width), the dock splits into CONNECT / MUTE / INTERRUPT over a row of nine icons, and the orb starts two zoom-out steps further back. |
+| Below 1024px | The top controls get their own row above the title (icons only below 768px), SYSTEMS and COMMS LOG move behind two buttons in the top left, SYSTEMS / COMMS LOG / TASKS open one at a time, and the dock splits into CONNECT / MUTE / INTERRUPT over a row of nine icons. |
+| On a phone | Below 640px those panels open full width, the safe areas around the notch and home bar are kept clear, and the orb starts two zoom-out steps further back. |
 
 ---
 
@@ -192,7 +194,7 @@ Ultron acts on a real computer, so the defaults are conservative:
 
 ## Live tools reference
 
-Ultron decides when to use these during a conversation (34 tools, each one module in `lib/tools/`):
+Ultron decides when to use these during a conversation (35 tools, each one module in `lib/tools/`):
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -220,6 +222,7 @@ Ultron decides when to use these during a conversation (34 tools, each one modul
 | `create_project` | Project scaffolding |
 | `dev_agent` | Write, run, and self-heal small programs |
 | `reminders` | OS-native reminders |
+| `todo_list` | The to-do list (TASKS) |
 | `topic_monitors` | Watch news topics |
 | `audio_devices` | Microphone / speaker choice |
 | `compose_message` | WhatsApp / Telegram / email drafts |
@@ -289,7 +292,7 @@ app/
   page.jsx                 HUD
   mobile/page.jsx          Mobile companion PWA
   api/                     Server routes: live-session, memory, sessions, fs-ops, file-processor,
-                           upload, os-control, system-settings, undo, input, office, terminal, reminders,
+                           upload, os-control, system-settings, undo, input, office, terminal, reminders, todos,
                            monitors, hardware-alerts, web-search, weather, flights, messages,
                            steam, browser, dev-agent, projects, youtube, spotify, clipboard,
                            wakeword, plugins, mobile-pairing, relay, ...
@@ -330,7 +333,7 @@ docs/                      PRD, ARCHITECTURE, DESIGN, RULES, PHASES, MEMORY
 
 - Your API key lives in the browser's local storage (or the server environment) and is sent only to this app's server, which forwards it to Google.
 - Audio, text, images, and documents you share go to Google's Gemini API to be processed. Hand tracking runs locally in the browser.
-- Everything Ultron remembers stays on your machine under `data/` (vault, conversation archive, reminders, monitors, undo journal), most of it gitignored. Conversation transcripts have secrets blanked out before they are saved, and can be switched off (recaps only).
+- Everything Ultron remembers stays on your machine under `data/` (vault, conversation archive, reminders, to-do list, monitors, undo journal), most of it gitignored. Conversation transcripts have secrets blanked out before they are saved, and can be switched off (recaps only).
 - The clipboard watcher is off unless you turn it on, and never shows or sends secrets.
 
 ---
@@ -345,6 +348,7 @@ The features were verified live in Jarvis Mark II on Ubuntu with a real Gemini k
 - Wayland keyboard / mouse setup (ydotool with uinput access, Window Calls extension), and typing through the real RemoteDesktop portal dialog (tested against a mock portal).
 - Real WiFi-off, brightness, wallpaper, and power effects (tested with mocks and dry runs).
 - Windows desktop control, Office, and file operations (Phase 14) come from J.A.R.V.I.S Mark II, where they were checked on Windows 11 with Office 365; here they were built but not run, so trying them by voice is yours (including the rule that typing with no app named goes only to the app Ultron is working in, the HUD card for terminal windows, and apps running as administrator). The Linux side (focus checks on X11 / Wayland, LibreOffice) needs a run on Ubuntu.
+- The to-do list and the layout below 1024px (Phase 15) were checked in a headless browser at widths from 320 to 1920px; a real phone and voice use are left for you to try.
 - Other Windows paths (system settings, reminders, start on login, scheduled Steam updates) and macOS.
 
 The full list lives under "Operator-Only Checks" in [`docs/PHASES.md`](./docs/PHASES.md).

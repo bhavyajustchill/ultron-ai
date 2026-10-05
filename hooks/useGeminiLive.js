@@ -1187,14 +1187,30 @@ export function useGeminiLive() {
                         console.warn('[useGeminiLive] News fetch failed, briefing without live intel:', err);
                       }
 
+                      // Open tasks from the to-do list (Phase 15), mentioned in one sentence
+                      let tasksLine = '';
+                      try {
+                        const todoRes = await fetch('/api/todos');
+                        if (todoRes.ok) {
+                          const { todos = [] } = await todoRes.json();
+                          const open = todos.filter((todo) => todo.status !== 'done');
+                          const doing = open.filter((todo) => todo.status === 'doing').map((todo) => `"${todo.text}"`);
+                          if (open.length) {
+                            tasksLine = ` Also mention the operator's to-do list in one short sentence: ${open.length} open task${open.length === 1 ? '' : 's'}${doing.length ? `, in progress: ${doing.join(', ')}` : ''}.`;
+                          }
+                        }
+                      } catch (err) {
+                        console.warn('[useGeminiLive] To-do list unavailable for the briefing:', err);
+                      }
+
                       const { operatorProfile } = useJarvisStore.getState();
                       const callsign = operatorProfile?.callsign?.trim() || 'Bhavya Sir';
                       const now = new Date();
                       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
                       const briefingPrompt = newsSummary
-                        ? `Deliver a cold, calculated tactical news assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). Keep it under 3 sentences with cold, penetrating logic on the state of human affairs. Here are today's top headlines: ${newsSummary}`
-                        : `Deliver a cold, calculated status assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). No live news feed available — assess system readiness with chilling, calculated authority. Keep it under 2 sentences.`;
+                        ? `Deliver a cold, calculated tactical news assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). Keep it under 3 sentences with cold, penetrating logic on the state of human affairs. Here are today's top headlines: ${newsSummary}${tasksLine}`
+                        : `Deliver a cold, calculated status assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). No live news feed available — assess system readiness with chilling, calculated authority. Keep it under 2 sentences.${tasksLine}`;
 
                       try {
                         wsRef.current.send(JSON.stringify({

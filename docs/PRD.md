@@ -122,6 +122,12 @@ Developers and power users who want a voice-first assistant that can act on thei
 - **Messaging** (WhatsApp / Telegram / email), **flight lookup**, **Steam** library checks.
 - **Deep file processing** (images, PDFs, spreadsheets, audio / video), **browser automation**, an **autonomous dev agent**, and **clipboard intelligence**. (Jarvis Mark II's offline "Hey Jarvis" detector is not offered in Ultron; the wake phrase uses browser speech recognition.)
 
+### ✅ 3.15 To-Do List (Phase 15)
+
+- **One list, two ways in:** the TASKS panel and the `todo_list` voice tool share `data/todos.json`; tasks are to do, in progress, or done.
+- **By voice:** add several tasks at once, start, tick off, reopen, rename, remove, clear finished tasks (removals undoable), show or hide the list; the briefing mentions open tasks.
+- **On any screen:** the panel floats and drags on desktop, and opens one panel at a time below 1024px (full width on phones), with the add box at the top.
+
 ---
 
 ## 4. Non-Functional & Tactical Requirements
