@@ -14,7 +14,9 @@ The system has four layers:
 1. **Client Holographic Surface (browser):** the Ultron Orb (plain Three.js) with MediaPipe hand gestures, the Stark Gold tactical HUD, Web Audio mic ingestion (`AudioWorkletNode` → 16 kHz PCM), 24 kHz gapless playback (`lib/pcmPlayer.js`), the wake-phrase listener, uploads, media panels, and the terminal authorization card.
 2. **Live Session Orchestrator (`hooks/useGeminiLive.js`):** opens the Gemini Live WebSocket directly from the browser, sends the setup frame (persona, memories, tools, compression, resumption handle), streams audio / video / client content, executes tool calls against the local API routes, and handles barge-in, GoAway swaps, auto re-sync, background job notices, and standby.
 3. **Next.js API Layer (`app/api/*`):** builds the session configuration and bridges every host capability. Routes that touch the machine reject cross-site requests (`lib/requestGuard.js`); file access is confined to sandbox roots (`lib/fsSandbox.js`).
-4. **Host Integrations:** the desktop session (`.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool or the RemoteDesktop portal, wmctrl / GNOME Window Calls), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search, URL context) plus keyless search sources (Brave Search, Google News RSS, Wikipedia, Bing RSS).
+4. **Host Integrations:** the desktop session (Linux: `.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool or the RemoteDesktop portal, wmctrl / GNOME Window Calls, LibreOffice; Windows: the Windows desktop host `bin/win-desktop-host.ps1` for windows, keyboard, mouse, UI Automation, the Start menu app list, and Office COM), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search, URL context) plus keyless search sources (Brave Search, Google News RSS, Wikipedia, Bing RSS).
+
+**Desktop control (Phase 14, from J.A.R.V.I.S Mark II):** `lib/inputControl.js` exposes one window and keyboard layer for both platforms: on Windows every call goes to the desktop host (`lib/winDesktop.js` keeps one Windows PowerShell 5.1 process running `bin/win-desktop-host.ps1`, JSON lines over stdin / stdout, restarted on a timeout or when the script changes); on Linux to xdotool / ydotool / the portal and wmctrl / Window Calls. `lib/desktopTarget.js` matches spoken app names to windows and remembers the app Ultron is working in; `ensureFocused` restores and brings a window forward and verifies it before any typing; `lib/appLauncher.js` launches through `lib/winAppIndex.js` (Windows) or `lib/appIndex.js` (Linux) and waits for the app's window. `lib/officeControl.js` drives Office through COM on Windows and LibreOffice through focus-checked keystrokes on Linux.
 
 ```mermaid
 flowchart TB
@@ -30,7 +32,7 @@ flowchart TB
     subgraph Server ["⚙️ Next.js API routes"]
         Session["/api/live-session"]
         Files["/api/fs-ops · /api/upload · /api/model-file · /api/file-processor"]
-        Desktop["/api/os-control · /api/input · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
+        Desktop["/api/os-control · /api/input · /api/office · /api/terminal · /api/system-settings · /api/undo · /api/reminders"]
         Intel["/api/web-search · /api/weather · /api/memory · /api/sessions · /api/monitors · /api/hardware-alerts"]
         Media["/api/youtube · /api/spotify"]
         Projects["/api/projects · /api/dev-agent"]
@@ -82,7 +84,8 @@ ultron-ai/
 │       ├── upload/                         # Upload ingest + text extraction
 │       ├── model-file/[...segments]/       # Sandboxed 3D model serving
 │       ├── os-control/                     # Apps, volume, folders, URLs, lock
-│       ├── input/                          # Keyboard, mouse, windows; write_in_app
+│       ├── input/                          # Keyboard, mouse, windows; write_in_app; terminal-typing confirm / cancel
+│       ├── office/                         # Word / Excel / PowerPoint (Windows COM), LibreOffice (Linux)
 │       ├── terminal/                       # Prepare / run / cancel commands
 │       ├── system-settings/                # Dark mode, WiFi, brightness, wallpaper, processes, power
 │       ├── undo/                           # Reverse Ultron's last action
@@ -105,7 +108,7 @@ ultron-ai/
 ├── hooks/                                  # useGeminiLive, useAudioStream, useWakePhrase, useAccentTheme, useLipSync
 ├── lib/
 │   ├── store.js                            # useJarvisStore (Zustand)
-│   ├── tools/                              # Live tool registry: one module per tool (declaration + handler)
+│   ├── tools/                              # Live tool registry: one module per tool (declaration + handler), 34 tools in index.js
 │   ├── jarvisPersona.js                    # Ultron's persona, GEMINI_LIVE_MODEL / LABEL, live config (file name shared with Jarvis Mark II)
 │   ├── ultronOrbScene.js / handTracker.js   # The Ultron orb (Three.js) and MediaPipe hand tracking
 │   ├── pcmPlayer.js                        # Gapless 24 kHz playback + barge-in flush
@@ -127,9 +130,13 @@ ultron-ai/
 │   ├── devAgent.js                         # Autonomous dev agent jobs
 │   ├── wakeWord/                           # Offline wake word: detector, listener, models
 │   ├── clipboard.js                        # Clipboard read / write, secret filter, actions
-│   ├── writeInApp.js                       # write_in_app: note handoff to editors, launch-then-type
+│   ├── writeInApp.js                       # write_in_app: typing into an app (opened / focused first), or a saved note
 │   ├── remoteDesktopPortal.js              # Wayland keystrokes via the RemoteDesktop portal (drives bin/portal-keyboard.js)
-├── bin/                                    # portal-keyboard.js (GJS portal session helper), Windows volume helper
+│   ├── winDesktop.js                       # Windows desktop host process (drives bin/win-desktop-host.ps1)
+│   ├── desktopTarget.js                    # App-name → window matching, terminal / HUD detection, the current app
+│   ├── winAppIndex.js / appLauncher.js     # Windows Start menu index; open an app and bring its window forward
+│   ├── officeControl.js                    # office tool: Office COM (Windows), LibreOffice (Linux)
+├── bin/                                    # win-desktop-host.ps1 (Windows desktop host), portal-keyboard.js (GJS portal helper), Windows volume helper
 ├── plugins/                                # Drop-in cyber plugins
 ├── public/                                 # audio-worklet-processor.js, wakeword-worklet.js, voice samples
 ├── data/                                   # memories.json (vault); caches and journals are gitignored
@@ -174,7 +181,8 @@ ultron-ai/
 | Boundary | Mechanism |
 | :-- | :-- |
 | Cross-site requests | `lib/requestGuard.js` rejects foreign `Sec-Fetch-Site` / `Origin` on host-touching routes |
-| Files | `lib/fsSandbox.js` allow-listed roots (`JARVIS_FS_ROOTS`), symlink-safe resolution, `.git` blocked, no delete, backups on overwrite |
+| Files | `lib/fsSandbox.js` allow-listed roots (`JARVIS_FS_ROOTS`; on Windows the registry's real user folders, case-insensitive, reserved names refused), symlink-safe resolution, `.git` blocked, no delete, backups on overwrite |
+| Typing into apps | The named app's window is brought forward and verified before any key; with no app named only the app Ultron is working in; never the HUD (its title travels with each request) or a password box; terminal windows need the HUD card (one-time token via `lib/confirmGate.js`); administrator windows refused on Windows |
 | Terminal | Read-only auto-run; everything else needs an operator click on the HUD card; one-time tokens; sudo / destructive commands refused; timeouts kill the process group |
 | Generated code | The dev agent runs code only after the HUD card is authorized; files stay inside the project folder; packages install inside the project (venv, `npm --ignore-scripts`) |
 | System actions | Power, WiFi off, and ending programs return a card request; `lib/confirmGate.js` releases the action only for the one-time token the HUD click sends; power waits 10 s and can be cancelled; session-critical processes and Ultron's own server are never offered |

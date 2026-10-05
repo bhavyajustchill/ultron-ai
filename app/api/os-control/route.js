@@ -3,7 +3,7 @@ import { exec, execSync, spawn } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
 import loudness from 'loudness';
-import { findApps, launchAppByName } from '@/lib/appIndex';
+import { listInstalledApps, openApp } from '@/lib/appLauncher';
 import { rejectCrossSiteRequest } from '@/lib/requestGuard';
 import { getVolumeState, getWindowsAudioVolumeInfo, runWindowsAudioBinary } from '@/lib/volumeControl';
 import { pushUndo } from '@/lib/undoJournal';
@@ -128,9 +128,11 @@ const WHITELISTED_APPS = {
 async function launchApplication(appKey) {
   const normalizedKey = appKey.toLowerCase().replace(/[-\s]/g, '_');
   const appConfig = WHITELISTED_APPS[normalizedKey];
-  if (!appConfig && isLinux) {
-    // Anything installed on the desktop: resolve through the .desktop application index
-    return launchAppByName(appKey);
+  if (isWindows || isLinux) {
+    // Anything installed (Start menu / .desktop index): launched, then its window brought to the front
+    const opened = await openApp(appKey);
+    if (opened.success || opened.ambiguous || !appConfig) return { ...opened, appName: opened.app };
+    // Generic words with no installed app of that name ("browser") fall back to the categories below
   }
   if (!appConfig) {
     return {
@@ -555,13 +557,13 @@ export async function POST(req) {
         break;
       }
 
-      // 1b. Search installed applications (Linux .desktop index)
+      // 1b. Search installed applications (Start menu index on Windows, .desktop index on Linux)
       case 'list_apps': {
-        if (!isLinux) {
-          result = { success: false, message: `Installed-app search is available on Linux; authorized apps: ${Object.keys(WHITELISTED_APPS).join(', ')}.` };
+        if (!isLinux && !isWindows) {
+          result = { success: false, message: `Installed-app search is available on Windows and Linux; authorized apps: ${Object.keys(WHITELISTED_APPS).join(', ')}.` };
           break;
         }
-        const matches = findApps(target || '', 10).map((m) => m.app.name);
+        const matches = target ? await listInstalledApps(target, 10) : [];
         result = {
           success: true,
           message: target

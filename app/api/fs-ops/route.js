@@ -318,6 +318,14 @@ export async function POST(req) {
     if (error instanceof SandboxError || error instanceof FsOpError) {
       return NextResponse.json({ success: false, action, message: error.message });
     }
+    // Windows locks files that are open in Word, Excel, and other apps
+    if (['EBUSY', 'EPERM', 'EACCES'].includes(error.code)) {
+      return NextResponse.json({
+        success: false,
+        action,
+        message: `${body.path ? `"${body.path}"` : 'That file'} is open or locked by another program (for example Word or Excel), or is read-only. Close it there and ask again.`,
+      });
+    }
     console.error(`[/api/fs-ops] ${action} failed:`, error);
     return NextResponse.json(
       { success: false, action, message: `File operation failed: ${error.message}` },

@@ -7,7 +7,7 @@ Ultron shares its feature set with its sibling project, J.A.R.V.I.S Mark II, and
 - **Voice core:** Gemini 3.8 Live (`models/gemini-3.8-live`), native speech-to-speech over WebSocket, about half a second to first audio.
 - **Interface:** a Next.js 16 HUD around the Ultron orb, a Three.js hologram (concentric shells, drifting code sprites, a volumetric core) that reacts to listening, thinking, and speaking, with optional hand-gesture control.
 - **Stack:** Next.js 16 (App Router + Turbopack), React 19, pure JavaScript / JSX (no TypeScript), Three.js, MediaPipe hand tracking, Web Audio, Zustand.
-- **Platform:** built and verified on Ubuntu (GNOME, Wayland). Windows and macOS paths exist for many features but are untested.
+- **Platform:** built and verified on Ubuntu (GNOME, Wayland). Opening apps, windows, typing, Office, and file operations also run on Windows 10 / 11 (Phase 14, from J.A.R.V.I.S Mark II). Other Windows paths and macOS exist for many features but are untested.
 
 ---
 
@@ -89,12 +89,13 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 
 ### Your computer
 
-- **Launch any installed app** by name (desktop-entry index across system, user, Flatpak, and Snap apps), with candidates when a name is ambiguous.
+- **Launch any installed app** by name (Linux: desktop-entry index across system, user, Flatpak, and Snap apps; Windows: Start menu apps, Store apps such as Notepad and Calculator included, and registered programs), with candidates when a name is ambiguous. The app's window is brought to the front and becomes the app Ultron is working in.
 - **Volume** (up / down / set / mute), **open folders and URLs**, **minimise all**, **lock screen**.
 - **System settings** (`system_settings`): dark mode (including the matching GTK theme), WiFi, screen brightness (via systemd-logind, no root), wallpaper from a file or an image URL, listing and ending programs, shutdown / restart / suspend / log out (with a 10-second grace period and "cancel").
 - **Undo** (`undo_last_action`): "undo that" reverses Ultron's own last change — files he created or edited, folder organizing, volume, dark mode, brightness, wallpaper, WiFi off — up to ten steps back.
-- **Write into apps** (`write_in_app`): "open notepad and type hello world". Text editors ("notepad", "text editor", "gedit", "TextEdit" all mean your default editor) get the text as a new note saved in `~/Documents/Ultron Notes` and opened in the editor — exact text, already saved, never typed into the wrong window, and "undo" removes it. Other apps ("open the calculator and type 12*7") are opened and typed into with real keystrokes once they come to the front; if the HUD still has focus, nothing is typed. Say "actually type it" to watch an editor being typed into.
-- **Keyboard, mouse, and windows** (`desktop_input`): typing, key combos, clicks, scrolling, and focusing / minimising / maximising windows (xdotool or ydotool, wmctrl or the GNOME Window Calls extension). On Wayland without ydotool, typing and key combos go through the desktop's RemoteDesktop portal: no setup, one "allow remote interaction" dialog the first time, remembered afterwards.
+- **Write into apps** (`write_in_app`): "open notepad and type hello world", then "now in Notepad type hello". If the app is open, its window is used, otherwise it is opened; if something else is in front, the app is brought forward and checked before a single key is typed (and Ultron says so). Never the HUD itself, never a password box, and a terminal only after your click on the HUD card. Works for any app ("type 12*7 in the calculator"); "notepad" and "text editor" mean your default editor. Say "save it as a note" for a note in `~/Documents/Ultron Notes` opened in the editor (also the fallback when typing is impossible); "undo" removes it.
+- **Keyboard, mouse, and windows** (`desktop_input`): typing and key combos into a named app (focused and checked first; with no app named, only into the app Ultron is working in), clicks, scrolling, and list / focus / minimise / maximise / restore / close windows, plus "what's in front?". Windows: a built-in helper (Windows PowerShell, nothing to install); Linux: xdotool or ydotool, wmctrl or the GNOME Window Calls extension. On Wayland without ydotool, typing and key combos go through the desktop's RemoteDesktop portal: no setup, one "allow remote interaction" dialog the first time, remembered afterwards.
+- **Office** (`office`): Word, Excel, and PowerPoint on Windows (through Office itself: text at the cursor, cells and formulas, new slides, reading the open document, save / save as / PDF, close), LibreOffice Writer, Calc, and Impress on Linux (new documents with content, typing into the open document, cells, slides, save). The app comes to the front so you see the change; existing files are never replaced without asking.
 - **Terminal** (`run_terminal_command`): read-only commands run straight away; anything else waits for your click on the HUD authorization card; sudo and destructive commands are refused.
 - **Hardware voice alerts:** CPU temperature above 85 °C, RAM above 92 %, sustained CPU load above 90 %, battery at 15 % or lower while unplugged.
 - **Audio devices** (`audio_devices`): choose the microphone and speaker by name.
@@ -191,7 +192,7 @@ Ultron acts on a real computer, so the defaults are conservative:
 
 ## Live tools reference
 
-Ultron decides when to use these during a conversation (33 tools, each one module in `lib/tools/`):
+Ultron decides when to use these during a conversation (34 tools, each one module in `lib/tools/`):
 
 | Tool | Purpose |
 | :-- | :-- |
@@ -211,8 +212,9 @@ Ultron decides when to use these during a conversation (33 tools, each one modul
 | `create_document` | PDF / Word from markdown |
 | `process_file` | Images, PDFs, spreadsheets, audio / video |
 | `run_terminal_command` | Terminal with the authorization gate |
-| `desktop_input` | Keyboard, mouse, windows |
-| `write_in_app` | Open an app and put text in it (notes for editors, keystrokes for others) |
+| `desktop_input` | Keyboard and keys into a named app (focused first), mouse, windows |
+| `write_in_app` | Type into an app (opened and focused first), or save a note |
+| `office` | Word, Excel, PowerPoint (Windows) / LibreOffice (Linux) |
 | `enter_standby` | Sign off and wait for the wake phrase |
 | `youtube_player`, `spotify_control`, `view_3d_model` | Media deck |
 | `create_project` | Project scaffolding |
@@ -235,7 +237,7 @@ Everything works without configuration. Optional environment variables (for exam
 | Variable | Purpose |
 | :-- | :-- |
 | `GEMINI_API_KEY` | Server-side key (otherwise the key typed into the HUD is used) |
-| `JARVIS_FS_ROOTS` | Allowed folders, separated by `:` (default: Desktop, Documents, Downloads, Pictures, Music, Videos, dev) |
+| `JARVIS_FS_ROOTS` | Allowed folders, separated by `;` on Windows and `:` elsewhere (default: Desktop, Documents, Downloads, Pictures, Music, Videos, dev; on Windows the real locations, OneDrive included). Add other drives this way, e.g. `~/Desktop;~/Documents;F:\Projects` |
 | `JARVIS_UPLOAD_DIR` | Where uploads are saved (default `~/Documents/Ultron Uploads`) |
 | `JARVIS_DEV_PROJECTS_DIR` | Dev agent projects (default `~/Desktop/UltronProjects`) |
 | `JARVIS_SEARCH_MODEL`, `JARVIS_FALLBACK_MODEL` | Text models for search, summaries, and processing (default `gemini-3.8-flash`, then `gemini-3.5-flash-lite`) |
@@ -266,6 +268,7 @@ Core voice, memory, search, files, documents, and the HUD need only Node.js and 
 | Reminders | `systemd-run --user`, `notify-send` |
 | Keyboard / mouse | `ydotool` + `ydotoold` (Wayland) or `xdotool` (X11); on Wayland, typing alone also works through the RemoteDesktop portal (`gjs`, standard on GNOME) |
 | Windows | GNOME "Window Calls" extension (Wayland) or `wmctrl` (X11) |
+| Office | LibreOffice (`soffice`) |
 | Spotify | Spotify desktop app (MPRIS over D-Bus) |
 | Audio / video processing | `ffmpeg`, `ffprobe` |
 | Clipboard | `wl-clipboard` (Wayland) or `xclip` / `xsel` (X11) |
@@ -274,6 +277,8 @@ Core voice, memory, search, files, documents, and the HUD need only Node.js and 
 | Project scaffolding | `npx`, and `flutter` for Flutter projects |
 
 When something is missing, Ultron says so and how to install it.
+
+On Windows, opening apps, windows, keyboard and mouse, and Office need nothing extra: a helper script (`bin/win-desktop-host.ps1`) runs in the built-in Windows PowerShell 5.1, and the `office` tool uses Microsoft Office when it is installed. Windows does not let a normal program type into apps running as administrator, so those need Ultron run as administrator too.
 
 ---
 
@@ -284,7 +289,7 @@ app/
   page.jsx                 HUD
   mobile/page.jsx          Mobile companion PWA
   api/                     Server routes: live-session, memory, sessions, fs-ops, file-processor,
-                           upload, os-control, system-settings, undo, input, terminal, reminders,
+                           upload, os-control, system-settings, undo, input, office, terminal, reminders,
                            monitors, hardware-alerts, web-search, weather, flights, messages,
                            steam, browser, dev-agent, projects, youtube, spotify, clipboard,
                            wakeword, plugins, mobile-pairing, relay, ...
@@ -302,6 +307,7 @@ lib/
   accentTheme.js           Colour themes (Stark Gold palette, presets, derived colours)
   fileProcessor/, wakeWord/  Feature packages
   ...                      Sandbox, request guard, undo journal, settings, reminders, browser, dev agent, ...
+bin/                       Windows desktop helper (win-desktop-host.ps1), Wayland keyboard helper, volume helper
 plugins/                   Bundled cyber plugins
 public/                    Audio worklets, voice samples
 data/                      memories.json (vault); caches, journals, and runtime state are gitignored
@@ -338,7 +344,8 @@ The features were verified live in Jarvis Mark II on Ubuntu with a real Gemini k
 - Spotify, Steam, WhatsApp, and Telegram desktop apps.
 - Wayland keyboard / mouse setup (ydotool with uinput access, Window Calls extension), and typing through the real RemoteDesktop portal dialog (tested against a mock portal).
 - Real WiFi-off, brightness, wallpaper, and power effects (tested with mocks and dry runs).
-- Windows and macOS code paths.
+- Windows desktop control, Office, and file operations (Phase 14) come from J.A.R.V.I.S Mark II, where they were checked on Windows 11 with Office 365; here they were built but not run, so trying them by voice is yours (including the rule that typing with no app named goes only to the app Ultron is working in, the HUD card for terminal windows, and apps running as administrator). The Linux side (focus checks on X11 / Wayland, LibreOffice) needs a run on Ubuntu.
+- Other Windows paths (system settings, reminders, start on login, scheduled Steam updates) and macOS.
 
 The full list lives under "Operator-Only Checks" in [`docs/PHASES.md`](./docs/PHASES.md).
 

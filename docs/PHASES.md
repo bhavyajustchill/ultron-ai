@@ -4,7 +4,7 @@
 **Architecture:** Next.js 16 + Three.js + JavaScript (JSX) + Gemini 3.8 Live WebSockets  
 **Active 3D Core:** Holographic 3D Ultron Orb (`lib/ultronOrbScene.js`); Phases 0–5 originally targeted a humanoid avatar model, since replaced  
 **Reference Documents:** [`PRD.md`](./PRD.md), [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md)  
-**Decision numbers:** `DEC-146` – `DEC-168` are Ultron's own; `JM2-DEC-NNN` are decisions made in J.A.R.V.I.S Mark II and inherited with its features (see [`MEMORY.md`](./MEMORY.md)).
+**Decision numbers:** `DEC-146` – `DEC-170` are Ultron's own; `JM2-DEC-NNN` are decisions made in J.A.R.V.I.S Mark II and inherited with its features (see [`MEMORY.md`](./MEMORY.md)).
 
 ---
 
@@ -32,9 +32,12 @@
         │
         ▼
 [Phase 13: Phone Layout & Mobile Zoom (DEC-169)]  ✔ implemented
+        │
+        ▼
+[Phase 14: Windows Desktop Control, Focus Guard & Office (DEC-170)]  ✔ implemented (operator testing)
 ```
 
-Phases 0 – 11 were built in the shared codebase and in J.A.R.V.I.S Mark II; Phase U is Ultron's own identity work; Phase 12 brought Phases 8 – 11 into Ultron under Ultron's look; Phase 13 makes the HUD usable on phones (adapted from J.A.R.V.I.S Mark II's phone layout).
+Phases 0 – 11 were built in the shared codebase and in J.A.R.V.I.S Mark II; Phase U is Ultron's own identity work; Phase 12 brought Phases 8 – 11 into Ultron under Ultron's look; Phase 13 makes the HUD usable on phones (adapted from J.A.R.V.I.S Mark II's phone layout); Phase 14 brings its Windows desktop control, focus guard, and Office support.
 
 ---
 
@@ -340,3 +343,17 @@ Operator request (2026-10-05): the same phone responsiveness as J.A.R.V.I.S Mark
 - [x] **13.4 Panel Sweep** — every panel and modal opened at 360px and 390px wide: the Session / Memory vault count badges wrap instead of running under the header buttons; screen-vision and webcam windows open above the dock; the clipboard card sits just above the input; the 3D holo-viewer is shorter; the hand-gesture camera panel sits above the dock; drag handles accept touch (`touch-none`).
 
 Verified: clean production build; every desktop control and panel in identical positions at 1920×1080, 1280×720, 1024×768, and 640×900; at 320, 360, 390, and 412px wide no control off-screen and none overlapping; SYSTEMS / COMMS open one at a time and close on a second tap or Escape; the phone default framing is exactly two zoom-ins away from the old one and reset returns to it; all 12 panels and modals inside the screen at 360 and 390px (headless Chrome). A real phone is an operator check (`DEC-169`).
+
+---
+
+## Phase 14: Windows Desktop Control, Focus Guard & Office (`DEC-170`)
+
+Operator request (2026-10-05): the same as J.A.R.V.I.S Mark II's Phase 15 (its `DEC-195`). Desktop input, window management, and file operations worked only on Linux; on Windows too, "open Notepad" should open and focus it, and "now in Notepad type hello" should check whether Notepad is in front, bring it there if not, and type; and Office tools should work on Windows and Linux.
+
+- [x] **14.1 Ported from J.A.R.V.I.S Mark II** — the Windows desktop host (`bin/win-desktop-host.ps1` in the built-in Windows PowerShell 5.1, driven by `lib/winDesktop.js`: windows, keyboard, mouse, UI Automation, Office COM); the focus guard and the app Ultron is working in (`lib/desktopTarget.js`, `lib/inputControl.js`: the named app is restored, brought to the front, and checked before typing; with no app named only the app Ultron is working in; never the HUD or a password box; terminals behind the HUD card; administrator windows refused); restore / close / active window actions; Start-menu app launching with the window brought forward (`lib/winAppIndex.js`, `lib/appLauncher.js`); typing-first `write_in_app`; the `office` tool (`lib/officeControl.js`, `/api/office`, 34 tools: Word / Excel / PowerPoint through COM on Windows, LibreOffice on Linux); Windows-aware file sandboxing (real user folders, case-insensitive paths, reserved names, locked-file messages); GUI apps no longer start hidden and `.cmd` launchers start through `cmd.exe`. Each file was copied only after checking it matched Jarvis's pre-Phase-15 version apart from names and comments, then given Ultron's names (Ultron Notes, Ultron Documents, messages).
+- [x] **14.2 Persona** — guidelines 18, 22, 32 updated and 35 (Office) added, as in Jarvis.
+
+Built cleanly here; not run in Ultron (the operator tests it by voice on Windows, and on Ubuntu for the Linux side) (`DEC-170`).
+
+- [ ] Operator testing on Windows by voice (open and type into Notepad with another app in front, typing with no app named, a terminal window, Word / Excel / PowerPoint, an administrator window).
+- [ ] The Linux side on Ubuntu (focus checks on X11 / Wayland, LibreOffice).

@@ -75,10 +75,11 @@ Developers and power users who want a voice-first assistant that can act on thei
 
 ### 🖥️ 3.7 Desktop & File Control
 
-- **Apps & System:** Launch any installed app by name (`.desktop` index), volume, folders, URLs, minimize, lock.
-- **Files:** Sandboxed create / read / write / replace / append / open, folder organiser with preview, apply, and undo; no delete.
-- **Input & Windows:** Typing, key combos, mouse, scroll, and window focus / minimize / maximize via xdotool or ydotool and wmctrl or the GNOME Window Calls extension; on Wayland, typing also works through the RemoteDesktop portal with no setup.
-- **Write Into Apps:** "Open notepad and type hello world" opens the default text editor with the text as a saved, undoable note; other apps are launched and typed into once they have focus.
+- **Apps & System:** Launch any installed app by name (Linux `.desktop` index; Windows Start menu and Store apps), with its window brought to the front and remembered as the app Ultron is working in; volume, folders, URLs, minimize, lock.
+- **Files:** Sandboxed create / read / write / replace / append / open, folder organiser with preview, apply, and undo; no delete. On Windows the real user folders (OneDrive included), case-insensitive paths, and clear messages for files locked by other programs.
+- **Input & Windows (Windows and Linux):** Typing, key combos, mouse, scroll, and window list / focus / minimize / maximize / restore / close / "what's in front". Windows: a built-in PowerShell helper, nothing to install. Linux: xdotool or ydotool and wmctrl or the GNOME Window Calls extension; on Wayland, typing also works through the RemoteDesktop portal with no setup.
+- **Focus Guard:** "Open Notepad", then "now in Notepad type hello": the named app's window is restored and brought to the front if something else is there, checked, and only then typed into. With no app named, only the app Ultron is working in. Never the HUD itself or a password box; terminals only after the operator's click on the HUD card.
+- **Write Into Apps:** "Open notepad and type hello world" types into the app (opening it if needed) on Windows and Linux; "save it as a note" keeps the text as a saved, undoable note in the editor.
 - **Terminal:** Read-only commands run immediately; everything else requires a click on the HUD authorization card; sudo and destructive commands are refused.
 
 ### 🔍 3.8 Intelligence & Web Search
@@ -90,6 +91,7 @@ Developers and power users who want a voice-first assistant that can act on thei
 ### 📄 3.9 Documents, Uploads & Projects
 
 - **Document Forge:** Markdown ➔ PDF (`pdf-lib`) or Word (`docx`) via `create_document`.
+- **Office:** The `office` tool works in Word, Excel, and PowerPoint on Windows (through Office itself: text at the cursor, cells and formulas, new slides, reading the open document, save / save as / PDF, close) and LibreOffice Writer, Calc, and Impress on Linux (new documents with content, typing, cells, slides, save), showing the app as it works; existing files are never replaced without asking.
 - **Uploads:** Drag-and-drop or UPLOAD button; images go to Gemini as images, PDFs / Word / text as extracted content.
 - **Project Scaffolder:** Node/Express API (JS or TS) and admin panel via `@bhavyajustchill/init`, Next.js via `create-next-app`, React (JavaScript) via Vite, Flutter via `flutter create`, run as background jobs.
 
