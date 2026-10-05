@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import {
+  Activity,
   Mic,
   MicOff,
   Square,
@@ -45,6 +46,7 @@ import { IntelModal } from "@/components/HUD/IntelModal";
 import { UploadDropZone } from "@/components/HUD/UploadDropZone";
 import { YouTubePanel } from "@/components/Media/YouTubePanel";
 import { useWakePhrase } from "@/hooks/useWakePhrase";
+import { useIsPhone } from "@/hooks/useIsPhone";
 import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 import { ModelViewerPanel } from "@/components/Media/ModelViewerPanel";
 import { CommandConfirmModal } from "@/components/HUD/CommandConfirmModal";
@@ -80,9 +82,26 @@ export default function Home() {
 
   const [textInput, setTextInput] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // iPhone Safari has no page fullscreen, so its button is hidden there
+  const [canFullscreen, setCanFullscreen] = useState(true);
+  const isPhone = useIsPhone();
+  // Phones hide the permanent Systems / Comms Log stack and open one panel at a time, full width
+  // ("systems" | "comms" | null); desktop always shows both
+  const [phonePanel, setPhonePanel] = useState(null);
+  const togglePhonePanel = (panel) => setPhonePanel((open) => (open === panel ? null : panel));
+
+  React.useEffect(() => {
+    if (!isPhone || !phonePanel) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setPhonePanel(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isPhone, phonePanel]);
 
   // Sync fullscreen state with document fullscreenchange
   React.useEffect(() => {
+    setCanFullscreen(Boolean(document.fullscreenEnabled));
     const onFullscreenChange = () => {
       setIsFullscreen(Boolean(document.fullscreenElement));
     };
@@ -344,12 +363,15 @@ export default function Home() {
   const statusBadge = getStatusBadge();
 
   return (
-    <main className="relative w-screen h-screen bg-black text-[#F0F2F8] overflow-hidden select-none">
+    // Phones (below `sm`, see hooks/useIsPhone.js) use the max-sm: classes: controls in a row of their own
+    // under the notch, the title below them, Systems / Comms Log behind buttons, and a two-row dock above
+    // the home bar. h-dvh keeps the dock above mobile browser toolbars.
+    <main className="relative w-screen h-dvh bg-black text-[#F0F2F8] overflow-hidden select-none">
       {/* Pure Black Void Backdrop */}
       <div className="absolute inset-0 bg-black pointer-events-none" />
 
       {/* TOP MIDDLE BRANDING: ULTRON // AUTONOMOUS ARTIFICIAL INTELLIGENCE SYSTEM */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
+      <div className="absolute top-6 max-sm:top-[calc(env(safe-area-inset-top)_+_3.25rem)] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none text-center">
         <div className="flex items-center gap-2.5">
           <span className="w-1.5 h-1.5 bg-[var(--jarvis-accent)] animate-pulse shadow-[0_0_8px_var(--jarvis-accent)]" />
           <h1 className="font-['Orbitron',sans-serif] text-lg sm:text-xl md:text-2xl font-black tracking-[0.28em] text-[#F0F2F8] drop-shadow-[0_0_14px_rgba(var(--jarvis-accent-rgb),0.45)]">
@@ -362,8 +384,27 @@ export default function Home() {
         </span>
       </div>
 
+      {/* TOP LEFT CLUSTER (PHONES ONLY): SYSTEMS & COMMS LOG, which desktop shows permanently */}
+      <div className="hidden max-sm:flex absolute top-[calc(env(safe-area-inset-top)_+_0.75rem)] left-4 z-20 items-center gap-1.5">
+        {[
+          { panel: "systems", Icon: Activity, title: "Toggle Systems & Telemetry Panel" },
+          { panel: "comms", Icon: Terminal, title: "Toggle Comms Log Feed" },
+        ].map(({ panel, Icon, title }) => (
+          <button
+            key={panel}
+            onClick={() => togglePhonePanel(panel)}
+            className={`flex items-center px-2.5 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${phonePanel === panel
+              ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
+              : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+              }`}
+            title={title}>
+            <Icon className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
+          </button>
+        ))}
+      </div>
+
       {/* TOP RIGHT CLUSTER: INTEL + ZOOM CONTROLS + FULLSCREEN */}
-      <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
+      <div className="absolute top-6 right-6 max-sm:top-[calc(env(safe-area-inset-top)_+_0.75rem)] max-sm:right-4 z-20 flex items-center gap-2 max-sm:gap-1.5">
         {/* Intel Modal Toggle */}
         <button
           onClick={() => {
@@ -373,7 +414,7 @@ export default function Home() {
               setIsIntelOpen(true);
             }
           }}
-          className={`flex items-center gap-2 px-3 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isIntelOpen
+          className={`flex items-center gap-2 px-3 max-sm:px-2.5 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isIntelOpen
             ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
             : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
@@ -409,10 +450,10 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Fullscreen Toggle Button */}
+        {/* Fullscreen Toggle Button (hidden where the browser has no page fullscreen) */}
         <button
           onClick={toggleFullscreen}
-          className={`flex items-center justify-center px-2.5 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isFullscreen
+          className={`${canFullscreen ? "flex" : "hidden"} items-center justify-center px-2.5 max-sm:px-2 py-1.5 chamfer-btn text-xs font-mono font-semibold border transition-all cursor-pointer ${isFullscreen
             ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
             : "border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[rgba(15,12,5,0.35)] backdrop-blur-xl backdrop-saturate-150 text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.1)] shadow-[0_0_20px_rgba(var(--jarvis-accent-rgb),0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
             }`}
@@ -449,7 +490,7 @@ export default function Home() {
       />
 
       {/* FLOATING BOTTOM HUD DOCK (BELOW THE ORB) */}
-      <div className="absolute bottom-5 left-0 right-0 z-20 w-full px-6 sm:px-10 md:px-14 flex flex-col gap-2.5 items-center">
+      <div className="absolute bottom-5 max-sm:bottom-[calc(env(safe-area-inset-bottom)_+_0.75rem)] left-0 right-0 z-20 w-full px-6 max-sm:px-4 sm:px-10 md:px-14 flex flex-col gap-2.5 max-sm:gap-2 items-center">
         {/* Subtle Live Status & Latency Line */}
         <div className="flex items-center justify-between w-full px-1 py-0.5 text-[10px] font-mono">
           <div className="flex items-center gap-2">
@@ -502,13 +543,13 @@ export default function Home() {
           </button>
         </form>
 
-        {/* Action Controls Cluster */}
-        <div className="flex items-center justify-between w-full gap-2 pt-1">
-          <div className="flex items-center gap-2">
+        {/* Action Controls Cluster (phones: link controls in three equal buttons, then a row of nine icons) */}
+        <div className="flex items-center justify-between w-full gap-2 pt-1 max-sm:flex-col max-sm:items-stretch">
+          <div className="flex items-center gap-2 max-sm:grid max-sm:grid-cols-3">
             {/* Connect / Disconnect Button */}
             <button
               onClick={handleToggleConnection}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 chamfer-btn text-xs font-mono font-semibold transition-all cursor-pointer ${isConnected
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 max-sm:justify-center max-sm:gap-1 max-sm:px-1.5 max-sm:py-2 chamfer-btn text-xs font-mono font-semibold transition-all cursor-pointer ${isConnected
                 ? "border border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.15)] text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.25)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.3)]"
                 : "bg-[var(--jarvis-accent)] hover:bg-[var(--jarvis-accent-soft)] text-[#080602] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.5)] font-bold"
                 }`}
@@ -521,7 +562,7 @@ export default function Home() {
             <button
               onClick={toggleMute}
               disabled={!isConnected}
-              className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
+              className={`flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:gap-1 max-sm:px-1.5 max-sm:py-2 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#9E8B65]"
                 : isMuted
                   ? "border-[#FFAA00] bg-[rgba(255,170,0,0.15)] text-[#FFAA00] shadow-[0_0_10px_rgba(255,170,0,0.2)]"
@@ -529,28 +570,31 @@ export default function Home() {
                 }`}
               title={isMuted ? "Unmute microphone" : "Mute microphone"}>
               {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-              <span>{isMuted ? "UNMUTE MIC" : "MUTE MIC"}</span>
+              <span>
+                {isMuted ? "UNMUTE" : "MUTE"}
+                <span className="max-sm:hidden">{" MIC"}</span>
+              </span>
             </button>
 
             {/* Interrupt (Barge-In) Button */}
             <button
               onClick={handleBargeIn}
               disabled={!isConnected}
-              className={`flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
+              className={`flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:gap-1 max-sm:px-1.5 max-sm:py-2 chamfer-btn text-xs font-mono border transition-all cursor-pointer ${!isConnected
                 ? "opacity-40 cursor-not-allowed border-[rgba(255,255,255,0.1)] text-[#9E8B65]"
                 : "border-[rgba(var(--jarvis-accent-rgb),0.5)] bg-[rgba(var(--jarvis-accent-rgb),0.1)] text-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.25)] hover:border-[var(--jarvis-accent)] shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.2)]"
                 }`}
               title="Instantly stop Ultron's playback within 50ms (Barge-in)">
               <Square className="w-3.5 h-3.5 fill-current" />
-              <span className="hidden sm:inline">INTERRUPT</span>
+              <span className="max-[359px]:hidden">INTERRUPT</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 max-sm:grid max-sm:grid-cols-9 max-sm:gap-1">
             {/* Autonomous Daily / Tactical Briefing Button */}
             <button
               onClick={triggerBriefing}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer shadow-[0_0_10px_rgba(var(--jarvis-accent-rgb),0.15)]"
+              className="flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:px-0 max-sm:py-2.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer shadow-[0_0_10px_rgba(var(--jarvis-accent-rgb),0.15)]"
               title="Execute Autonomous Daily / Tactical Briefing">
               <SunMedium className="w-3.5 h-3.5 text-[var(--jarvis-accent)]" />
               <span className="hidden sm:inline">BRIEFING</span>
@@ -559,7 +603,7 @@ export default function Home() {
             {/* Neural Memory Vault Modal Button */}
             <button
               onClick={() => setIsMemoryVaultOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:px-0 max-sm:py-2.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Open Neural Memory Vault">
               <Brain className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">MEMORIES</span>
@@ -568,7 +612,7 @@ export default function Home() {
             {/* Session Archive Button (Phase 11) */}
             <button
               onClick={() => useJarvisStore.getState().setIsSessionVaultOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:px-0 max-sm:py-2.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Open the Session Archive: past conversations and recaps">
               <History className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">SESSIONS</span>
@@ -577,7 +621,7 @@ export default function Home() {
             {/* File Uplink Button (drag-and-drop works anywhere on the HUD too) */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("jarvis-open-upload"))}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:px-0 max-sm:py-2.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Upload files to Ultron (or drag and drop anywhere)">
               <Paperclip className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">UPLOAD</span>
@@ -586,7 +630,7 @@ export default function Home() {
             {/* API Key Modal Button */}
             <button
               onClick={() => setIsKeyModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 max-sm:justify-center max-sm:px-0 max-sm:py-2.5 chamfer-btn text-xs font-mono border border-[rgba(var(--jarvis-accent-rgb),0.3)] bg-[rgba(var(--jarvis-accent-rgb),0.06)] text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] hover:bg-[rgba(var(--jarvis-accent-rgb),0.15)] transition-all cursor-pointer"
               title="Configure Gemini API Key">
               <Key className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">API KEY</span>
@@ -601,7 +645,7 @@ export default function Home() {
                   setIsScreenModalOpen(true);
                 }
               }}
-              className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isScreenSharing || isScreenModalOpen
+              className={`p-1.5 max-sm:flex max-sm:items-center max-sm:justify-center max-sm:py-2.5 chamfer-btn text-xs border transition-all cursor-pointer ${isScreenSharing || isScreenModalOpen
                 ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)]"
                 : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
@@ -617,7 +661,7 @@ export default function Home() {
                   setIsWebcamOpen(true);
                 }
               }}
-              className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isWebcamOpen
+              className={`p-1.5 max-sm:flex max-sm:items-center max-sm:justify-center max-sm:py-2.5 chamfer-btn text-xs border transition-all cursor-pointer ${isWebcamOpen
                 ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)]"
                 : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
@@ -627,7 +671,7 @@ export default function Home() {
 
             <button
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-1.5 chamfer-btn text-xs border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] transition-all cursor-pointer"
+              className="p-1.5 max-sm:flex max-sm:items-center max-sm:justify-center max-sm:py-2.5 chamfer-btn text-xs border border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)] transition-all cursor-pointer"
               title="Open Operative Settings">
               <Settings className="w-3.5 h-3.5" />
             </button>
@@ -640,7 +684,7 @@ export default function Home() {
                   setIsMobileModalOpen(true);
                 }
               }}
-              className={`p-1.5 chamfer-btn text-xs border transition-all cursor-pointer ${isMobileModalOpen
+              className={`p-1.5 max-sm:flex max-sm:items-center max-sm:justify-center max-sm:py-2.5 chamfer-btn text-xs border transition-all cursor-pointer ${isMobileModalOpen
                 ? "border-[var(--jarvis-accent)] bg-[rgba(var(--jarvis-accent-rgb),0.2)] text-[var(--jarvis-accent)] shadow-[0_0_15px_rgba(var(--jarvis-accent-rgb),0.4)]"
                 : "border-[rgba(var(--jarvis-accent-rgb),0.25)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] text-[#9E8B65] hover:text-[var(--jarvis-accent)] hover:border-[var(--jarvis-accent)]"
                 }`}
@@ -671,15 +715,17 @@ export default function Home() {
       {/* Session Archive Modal (Phase 11) */}
       <SciFiSessionVaultModal />
 
-      {/* PERMANENT LEFT HUD STACK (SYSTEMS ABOVE, COMMS LOG ON BOTTOM) */}
-      <aside className="fixed top-6 left-4 sm:left-6 bottom-40 w-88 sm:w-96 max-w-[calc(100vw-2rem)] z-30 flex flex-col gap-2.5 pointer-events-none">
-        <div className="flex-[1.15] min-h-0 flex flex-col pointer-events-auto">
+      {/* PERMANENT LEFT HUD STACK (SYSTEMS ABOVE, COMMS LOG ON BOTTOM); on phones one panel at a time, full
+          width under the controls row, opened from the phone-only buttons in the top left */}
+      <aside
+        className={`fixed top-6 left-4 sm:left-6 bottom-40 w-88 sm:w-96 max-w-[calc(100vw-2rem)] z-30 flex flex-col gap-2.5 pointer-events-none max-sm:top-[calc(env(safe-area-inset-top)_+_3.5rem)] max-sm:left-3 max-sm:right-3 max-sm:bottom-auto max-sm:h-[55dvh] max-sm:w-auto max-sm:max-w-none ${phonePanel ? "" : "max-sm:hidden"} ${isPhone && phonePanel ? "scifi-modal-unfold-down" : ""}`}>
+        <div className={`flex-[1.15] min-h-0 flex flex-col pointer-events-auto ${phonePanel === "comms" ? "max-sm:hidden" : ""}`}>
           <TelemetryPanel
             isConnected={isConnected}
             onToggleConnection={handleToggleConnection}
           />
         </div>
-        <div className="flex-1 min-h-0 flex flex-col pointer-events-auto">
+        <div className={`flex-1 min-h-0 flex flex-col pointer-events-auto ${phonePanel === "systems" ? "max-sm:hidden" : ""}`}>
           <CommsLog sendTextMessage={sendTextMessage} />
         </div>
       </aside>

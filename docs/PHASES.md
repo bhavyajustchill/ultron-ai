@@ -29,9 +29,12 @@
         │
         ▼
 [Phase 12: J.A.R.V.I.S Mark II Parity Port (DEC-168)]  ✔ implemented
+        │
+        ▼
+[Phase 13: Phone Layout & Mobile Zoom (DEC-169)]  ✔ implemented
 ```
 
-Phases 0 – 11 were built in the shared codebase and in J.A.R.V.I.S Mark II; Phase U is Ultron's own identity work; Phase 12 brought Phases 8 – 11 into Ultron under Ultron's look.
+Phases 0 – 11 were built in the shared codebase and in J.A.R.V.I.S Mark II; Phase U is Ultron's own identity work; Phase 12 brought Phases 8 – 11 into Ultron under Ultron's look; Phase 13 makes the HUD usable on phones (adapted from J.A.R.V.I.S Mark II's phone layout).
 
 ---
 
@@ -324,3 +327,16 @@ Operator request (2026-10-05): everything built in J.A.R.V.I.S Mark II should wo
 - [x] **12.3 Ultron's look and identity** — every screen back to its reference (Stark Gold, square corners, left column, Intel top right, ULTRON title); the new panels (memory vault, session archive, authorization card, clipboard, media panels) dressed the same way; colour themes with Stark Gold first that never recolour the orb; Ultron persona with all current guidelines; Algenib; "Hey Ultron"; Ultron's own folders, notifications, and OS-level names so it never collides with a Jarvis install.
 - [x] **12.4 Docs** — README, AGENTS, PRD, ARCHITECTURE, RULES, DESIGN, PHASES, and MEMORY updated; Jarvis's decisions listed as `JM2-DEC-NNN`.
 - [x] **12.5 Verification** — clean build; screenshots of every screen against the pre-port references; the Phase 9 – 11 suites against Ultron with scratch data (write into apps 29/29, search 27/27 + keyed 6/6, vault API and UI, session API and UI) with four expected differences: export file names are `ultron-*`, one "yesterday" check fails on Jarvis too because its seed date is fixed, and the Escape checks need a longer wait under software rendering of the heavier orb; theme checks (Stark Gold default, blue and red previews recolour the HUD and QR, the orb stays gold); live Gemini 3.8 Live runs in character (greeting, identity, telemetry, memory, "make the HUD red" and back to Stark Gold, archive with recap, greeting recall, "what did we talk about earlier today" through `session_history`, no reply ever calling itself Jarvis).
+
+---
+
+## Phase 13: Phone Layout & Mobile Zoom (`DEC-169`)
+
+Operator request (2026-10-05): the same phone responsiveness as J.A.R.V.I.S Mark II. On a phone the dock buttons ran off the screen, the top controls covered the ULTRON title, and the permanent Systems / Comms Log column covered almost the whole orb.
+
+- [x] **13.1 HUD Layout on Phones** — below 640px (`hooks/useIsPhone.js`, `max-sm:` classes): the top controls get their own row under the notch with the title below; the dock becomes three equal link buttons (CONNECT / MUTE / INTERRUPT) above a row of nine equal icon buttons, clear of the home bar; the page is `h-dvh` so mobile browser toolbars never hide the dock; `viewportFit: "cover"` with safe-area insets; the fullscreen button is hidden where the browser has no page fullscreen. Desktop (640px and wider) is unchanged.
+- [x] **13.2 Systems & Comms Log Behind Buttons** — on phones the permanent left column is hidden; phone-only SYSTEMS and COMMS buttons in the top left open one panel at a time, full width under the controls row (tap again or Escape to close). Desktop keeps both panels on screen.
+- [x] **13.3 Phone Zoom** — `lib/ultronOrbScene.js` takes a `homeScale` and `setHomeScale()`; phones use 1.25² (two zoom-out presses, home distance ≈ 12.5 instead of 8.0) on load, on reset, and when the screen crosses the breakpoint. The orb itself is unchanged and stays gold.
+- [x] **13.4 Panel Sweep** — every panel and modal opened at 360px and 390px wide: the Session / Memory vault count badges wrap instead of running under the header buttons; screen-vision and webcam windows open above the dock; the clipboard card sits just above the input; the 3D holo-viewer is shorter; the hand-gesture camera panel sits above the dock; drag handles accept touch (`touch-none`).
+
+Verified: clean production build; every desktop control and panel in identical positions at 1920×1080, 1280×720, 1024×768, and 640×900; at 320, 360, 390, and 412px wide no control off-screen and none overlapping; SYSTEMS / COMMS open one at a time and close on a second tap or Escape; the phone default framing is exactly two zoom-ins away from the old one and reset returns to it; all 12 panels and modals inside the screen at 360 and 390px (headless Chrome). A real phone is an operator check (`DEC-169`).

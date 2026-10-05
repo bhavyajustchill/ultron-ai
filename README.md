@@ -162,9 +162,10 @@ Drop-in JavaScript plugins (`run_cyber_plugin`) with a console in the HUD. Bundl
 | :-- | :-- |
 | Centre | The Ultron orb: concentric shells, panels, drifting code sprites, and a volumetric core that grows while Ultron speaks. Distinct idle, thinking, and speaking states; optional hand-gesture control (**G**). |
 | Top | The **ULTRON** title. Top right: **INTEL** (search dossiers, sources, monitor alerts; opens as a panel below it), zoom in / out / reset, and fullscreen. |
-| Left column | Always on screen: **SYSTEMS PANEL** (CPU, memory, and uptime; the network, GPU, and process-count bars are display estimates, not measurements) above the **COMMS LOG FEED** (the full conversation plus every action Ultron takes, tagged `[FILE OPS]`, `[SYSTEM]`, `[BROWSER]`, ...). |
+| Left column | Always on screen on desktop: **SYSTEMS PANEL** (CPU, memory, and uptime; the network, GPU, and process-count bars are display estimates, not measurements) above the **COMMS LOG FEED** (the full conversation plus every action Ultron takes, tagged `[FILE OPS]`, `[SYSTEM]`, `[BROWSER]`, ...). |
 | Bottom | Status pill (LISTENING / THINKING / SPEAKING / RECONNECTING), wake chip, command bar, and the dock: CONNECT, mic, INTERRUPT, BRIEFING, MEMORIES, SESSIONS, UPLOAD, API KEY, screen share, camera, settings, mobile. |
 | Overlays | Authorization card, YouTube and 3D panels, clipboard panel, upload drop zone. |
+| On a phone | Below 640px wide the top controls get their own row above the title, SYSTEMS and COMMS LOG move behind two buttons in the top left (one panel at a time, full width), the dock splits into CONNECT / MUTE / INTERRUPT over a row of nine icons, and the orb starts two zoom-out steps further back. |
 
 ---
 

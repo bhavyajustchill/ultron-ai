@@ -25,6 +25,8 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  // Draw under the notch and home bar; the HUD pads itself with env(safe-area-inset-*) on phones
+  viewportFit: "cover",
   themeColor: "#0A0B10",
 };
 

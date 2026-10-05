@@ -78,8 +78,8 @@ Inherited from Jarvis Mark II (`JM2-DEC-167`, `JM2-DEC-184`) with Stark Gold as 
 - **Form (`DEC-156` – `DEC-158`, matched to `ultron_ref.png`):** a starburst geodesic hologram with 72 spikes, glowing cages and belts, curved ribbons, a radiant sun core, orbit rings with floating halo particles, and drifting gold stardust and code sprites.
 - **Palette (`DEC-167`):** pure Stark Gold; red and crimson tones removed entirely (ray tips `[1.0, 0.72, 0.0]`, corona and inner cage `0xffaa00` / `0xff9900`). The orb never reads the HUD colour theme.
 - **States (`DEC-151`, `DEC-152`, `DEC-160` – `DEC-162`):** IDLE (ultra-slow planetary drift), THINKING, and SPEAKING, blended with exponential damping; during speech the core grows and only the core shines, with multidirectional gyroscopic rotation of rays, arcs, rings, and belts.
-- **Framing (`DEC-150`, `DEC-163`):** default and reset camera at `Z = 7.975` (one level zoomed out). Zoom in / out / reset from the top-right buttons or **+** / **−** / **R**.
-- **Hand gestures:** **G** toggles MediaPipe hand tracking (`lib/handTracker.js`); one-hand pinch spins the orb, two-hand pinch zooms. A mirrored 192 × 144 camera panel ("GESTURE TRACKER", hand count and mode) sits at the bottom right while tracking is on.
+- **Framing (`DEC-150`, `DEC-163`, `DEC-169`):** default and reset camera at `Z = 7.975` (one level zoomed out); on phones the home position is scaled by `ZOOM_OUT_STEP ** 2` = 1.5625 (two zoom-out presses, `setHomeScale()`), re-applied when the screen crosses the phone breakpoint. Zoom in / out (× 0.8 / × 1.25) / reset from the top-right buttons or **+** / **−** / **R**.
+- **Hand gestures:** **G** toggles MediaPipe hand tracking (`lib/handTracker.js`); one-hand pinch spins the orb, two-hand pinch zooms. A mirrored 192 × 144 camera panel ("GESTURE TRACKER", hand count and mode) sits at the bottom right while tracking is on (above the two-row dock on phones).
 - **Performance:** zero allocations inside the `animate()` loop; the viewport reports FPS and frame time to the Systems panel.
 
 ---
@@ -103,9 +103,31 @@ Inherited from Jarvis Mark II (`JM2-DEC-167`, `JM2-DEC-184`) with Stark Gold as 
 +-------------------------------------------------------------------------------+
 ```
 
-- **Left column (`DEC-163` – `DEC-165`):** the Systems panel (above, `flex-[1.15]`) and the Comms Log feed (below) are permanent: no close buttons, no header toggles, no Escape. The column keeps `bottom-40` clearance above the command bar.
+- **Left column (`DEC-163` – `DEC-165`):** the Systems panel (above, `flex-[1.15]`) and the Comms Log feed (below) are permanent on desktop: no close buttons, no header toggles, no Escape. The column keeps `bottom-40` clearance above the command bar. On phones it is behind buttons (see 4.0).
 - **Top right (`DEC-164`):** INTEL, then the zoom cluster, then fullscreen. The Intel panel opens at `top-18 right-6` and can be dragged.
 - **Background:** pure black stage behind the orb.
+
+### 4.0 Phone Layout (narrower than 640px, `DEC-169`)
+
+Phones are anything below Tailwind's `sm` breakpoint (`hooks/useIsPhone.js`, `PHONE_MEDIA_QUERY`). Phone styles are `max-sm:` classes added next to the desktop ones, so the layout at 640px and wider is unchanged.
+
+```
++------------------------------------+
+| [⚡][>_]           [🌐][+][-][⟳][⤢] |  controls row, below the notch
+|            ▪ ULTRON ▪              |  title row
+|  AUTONOMOUS ARTIFICIAL INTELLIGEN… |
+|            ( ULTRON ORB )          |  home distance × 1.5625
+| [● STATUS BADGE]      [📶 latency] |
+| Type directive…               [➤]  |
+| [⏻ CONNECT] [🎤 MUTE] [■ INTERRUPT] |  three equal buttons
+| [☀][🧠][🕘][📎][🔑][🖥][📷][⚙][📱]  |  nine equal icon buttons
++------------------------------------+  + home-bar inset
+```
+
+* **Systems & Comms Log:** the permanent column is hidden; the phone-only SYSTEMS (⚡) and COMMS (>_) buttons open one panel at a time, full width under the controls row (55dvh tall, shutter animation); a second tap or Escape closes it.
+* **Height and insets:** the page is `h-dvh` (the visible height, above mobile browser toolbars); the viewport is `viewportFit: "cover"` and phone offsets add `env(safe-area-inset-top / bottom)`.
+* **Labels:** top buttons are icon-only; MUTE MIC reads MUTE / UNMUTE; the INTERRUPT label hides below 360px; the fullscreen button is hidden where the browser has no page fullscreen (iPhone Safari); the wake chip is hidden.
+* **Panels:** screen-vision and webcam windows open just above the dock; the clipboard card sits just above the input; the 3D holo-viewer is 240px tall; vault headers wrap their count badge onto its own line. Drag handles use `touch-none` so windows can be dragged with a finger.
 
 ### 4.1 Status Badge & Chips
 

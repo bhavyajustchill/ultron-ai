@@ -199,7 +199,7 @@ export function IntelModal() {
       {/* Header Bar */}
       <div
         onPointerDown={handlePointerDown}
-        className="flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] pb-2 shrink-0 cursor-grab active:cursor-grabbing">
+        className="touch-none flex items-center justify-between border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] pb-2 shrink-0 cursor-grab active:cursor-grabbing">
         <div className="flex items-center gap-2 pointer-events-none">
           <GripHorizontal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]/60" />
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.1)] border border-[rgba(var(--jarvis-accent-rgb),0.3)] shadow-[0_0_8px_rgba(var(--jarvis-accent-rgb),0.25)]">

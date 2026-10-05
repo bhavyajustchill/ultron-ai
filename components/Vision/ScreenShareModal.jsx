@@ -17,6 +17,7 @@ import {
   GripHorizontal,
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
+import { PHONE_MEDIA_QUERY } from "@/hooks/useIsPhone";
 
 /**
  * ScreenShareModal
@@ -66,10 +67,13 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       const defaultX = Math.max(20, window.innerWidth - panelWidth - 24);
       // Comms Log is top-18 (72px) with h-[44vh] max-h-[440px]
       const commsBottom = 72 + Math.min(440, window.innerHeight * 0.44);
-      const defaultY = Math.min(
-        Math.max(commsBottom + 16, 480),
-        Math.max(100, window.innerHeight - 340)
-      );
+      // Phones: just above the two-row dock (about 200px tall)
+      const defaultY = window.matchMedia(PHONE_MEDIA_QUERY).matches
+        ? Math.max(100, window.innerHeight - (panelRef.current?.offsetHeight || 260) - 200)
+        : Math.min(
+          Math.max(commsBottom + 16, 480),
+          Math.max(100, window.innerHeight - 340)
+        );
       setPosition({ x: defaultX, y: defaultY });
     }
   }, [isOpen, position]);
@@ -330,7 +334,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       {/* Header */}
       <div
         onPointerDown={handlePointerDown}
-        className="flex items-center justify-between px-3 py-2 border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] select-none cursor-grab active:cursor-grabbing">
+        className="touch-none flex items-center justify-between px-3 py-2 border-b border-[rgba(var(--jarvis-accent-rgb),0.18)] bg-[rgba(var(--jarvis-accent-rgb),0.04)] select-none cursor-grab active:cursor-grabbing">
         <div className="flex items-center gap-2 pointer-events-none">
           <GripHorizontal className="w-3.5 h-3.5 text-[var(--jarvis-accent)]/60" />
           <div className="p-1 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.12)] border border-[rgba(var(--jarvis-accent-rgb),0.3)] text-[var(--jarvis-accent)]">

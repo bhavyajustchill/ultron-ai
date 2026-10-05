@@ -282,9 +282,9 @@ export function SciFiSessionVaultModal() {
               <History className="w-4 h-4 text-[var(--jarvis-accent)]" />
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-bold tracking-wider text-white flex items-center gap-2 font-['Orbitron',sans-serif]">
+              <span className="text-sm font-bold tracking-wider text-white flex items-center gap-2 max-sm:flex-wrap max-sm:gap-y-1 font-['Orbitron',sans-serif]">
                 SESSION ARCHIVE
-                <span className="text-[10px] font-mono px-1.5 chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.15)] border border-[rgba(var(--jarvis-accent-rgb),0.4)] text-[var(--jarvis-accent)] font-bold" data-testid="sessions-count">
+                <span className="text-[10px] font-mono px-1.5 max-sm:whitespace-nowrap chamfer-xs bg-[rgba(var(--jarvis-accent-rgb),0.15)] border border-[rgba(var(--jarvis-accent-rgb),0.4)] text-[var(--jarvis-accent)] font-bold" data-testid="sessions-count">
                   {sessions.length} CONVERSATIONS
                 </span>
               </span>

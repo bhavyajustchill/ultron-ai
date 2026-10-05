@@ -114,7 +114,7 @@ export function ModelViewerPanel() {
           <Rotate3d className="w-3.5 h-3.5" />
         </button>
       }>
-      <div className="relative w-full h-[340px] chamfer-md overflow-hidden border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[radial-gradient(ellipse_at_center,rgba(var(--jarvis-accent-rgb),0.08),rgba(8,6,2,0.95))]">
+      <div className="relative w-full h-[340px] max-sm:h-[240px] chamfer-md overflow-hidden border border-[rgba(var(--jarvis-accent-rgb),0.2)] bg-[radial-gradient(ellipse_at_center,rgba(var(--jarvis-accent-rgb),0.08),rgba(8,6,2,0.95))]">
         <ModelErrorBoundary resetKey={url}>
           <Canvas camera={{ position: [3, 2, 3], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
             <ambientLight intensity={0.7} />

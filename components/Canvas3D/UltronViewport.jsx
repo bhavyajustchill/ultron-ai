@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { createOrbScene } from "@/lib/ultronOrbScene";
+import { createOrbScene, ZOOM_OUT_STEP } from "@/lib/ultronOrbScene";
 import { HandTracker } from "@/lib/handTracker";
 import { useJarvisStore } from "@/lib/store";
+import { useIsPhone, PHONE_MEDIA_QUERY } from "@/hooks/useIsPhone";
 import {
   Loader2,
   ShieldAlert,
@@ -13,6 +14,11 @@ import {
   Maximize2,
   Minimize2,
 } from "lucide-react";
+
+// Phones open the orb two zoom-out steps further back (Phase 13): the camera's field of view is vertical, so
+// on a narrow portrait screen the default framing made the orb wider than the screen
+const PHONE_HOME_SCALE = ZOOM_OUT_STEP ** 2;
+const homeScaleForScreen = () => (window.matchMedia(PHONE_MEDIA_QUERY).matches ? PHONE_HOME_SCALE : 1);
 
 function HologramLoadingFallback() {
   return (
@@ -49,6 +55,7 @@ function UltronViewportComponent({
   const [gestureError, setGestureError] = useState(null);
 
   const status = useJarvisStore((state) => state.status);
+  const isPhone = useIsPhone();
 
   // Audio energy computation callback: the low speech band of a frequency spectrum, same scale for
   // Ultron's voice and the operator's microphone
@@ -84,6 +91,7 @@ function UltronViewportComponent({
       const scene = createOrbScene(container, {
         getAudioEnergy,
         getStatus: () => useJarvisStore.getState().status,
+        homeScale: homeScaleForScreen(),
       });
       sceneRef.current = scene;
 
@@ -125,6 +133,12 @@ function UltronViewportComponent({
       setHasError(true);
     }
   }, [getAudioEnergy]);
+
+  // Re-frame the home view when the screen crosses the phone breakpoint (for example a phone rotating).
+  // The scale is read from the media query itself, so a stale isPhone during hydration cannot misframe it.
+  useEffect(() => {
+    sceneRef.current?.setHomeScale(homeScaleForScreen());
+  }, [isPhone]);
 
   // Synchronize dynamic status changes to 3D scene
   useEffect(() => {
@@ -244,7 +258,7 @@ function UltronViewportComponent({
 
       {/* Hand Gestures Mirror PiP overlay (when enabled) */}
       <div
-        className={`absolute bottom-28 right-8 z-30 transition-all duration-300 pointer-events-auto ${
+        className={`absolute bottom-28 right-8 max-sm:bottom-[calc(env(safe-area-inset-bottom)_+_13rem)] max-sm:right-4 z-30 transition-all duration-300 pointer-events-auto ${
           isGesturesActive ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 pointer-events-none translate-y-4"
         }`}
       >
