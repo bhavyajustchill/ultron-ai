@@ -32,11 +32,16 @@ export default function MobileRemotePage() {
   const [syncStatus, setSyncStatus] = useState("SYNCED");
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
-  // Extract token from query params on mount
+  // Extract token from query params or localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const urlToken = params.get("token") || "relay_mobile_guest";
+      let urlToken = params.get("token");
+      if (urlToken) {
+        try { localStorage.setItem("ultron_mobile_token", urlToken); } catch {}
+      } else {
+        try { urlToken = localStorage.getItem("ultron_mobile_token") || ""; } catch { urlToken = ""; }
+      }
       setToken(urlToken);
     }
   }, []);
@@ -44,11 +49,17 @@ export default function MobileRemotePage() {
   // Poll desktop state from /api/relay every 1.8 seconds
   const accentRef = useRef(null);
   useEffect(() => {
+    if (!token) {
+      setSyncStatus("DISCONNECTED");
+      return undefined;
+    }
     let isMounted = true;
 
     const pollDesktop = async () => {
       try {
-        const res = await fetch("/api/relay?client=mobile");
+        const res = await fetch(`/api/relay?client=mobile&token=${encodeURIComponent(token)}`, {
+          headers: { "x-pairing-token": token },
+        });
         if (res.ok && isMounted) {
           const data = await res.json();
           // Follow the HUD's saved accent theme (cached for the next visit's first paint)
@@ -63,6 +74,8 @@ export default function MobileRemotePage() {
             }));
             setSyncStatus("SYNCED");
           }
+        } else if (res.status === 401 && isMounted) {
+          setSyncStatus("UNPAIRED");
         }
       } catch (err) {
         if (isMounted) setSyncStatus("DISCONNECTED");
@@ -76,14 +89,21 @@ export default function MobileRemotePage() {
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [token]);
 
   const sendDirective = async (type, payload) => {
+    if (!token) {
+      setFeedbackMsg("Please pair with the desktop HUD first.");
+      return;
+    }
     try {
       setSyncStatus("DISPATCHING");
       const res = await fetch("/api/relay", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-pairing-token": token,
+        },
         body: JSON.stringify({
           source: "mobile",
           token,
@@ -91,6 +111,7 @@ export default function MobileRemotePage() {
           payload,
         }),
       });
+
 
       if (res.ok) {
         setSyncStatus("SYNCED");

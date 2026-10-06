@@ -294,12 +294,25 @@ export default function Home() {
                 storeState.addCommsMessage("system", "[MOBILE RELAY] Directive received from the paired phone.");
                 sendTextMessage(d.payload);
               } else if (d.type === "os_action") {
-                storeState.addCommsMessage(
-                  "system",
-                  `[MOBILE RELAY] Executing OS Action: ${d.payload}`,
-                );
-                storeState.executeOsActionApi(d.payload);
+                const allowedActions = [
+                  "mute", "unmute", "volume_up", "volume_down",
+                  "screenshot", "lock_screen", "browser", "editor",
+                  "terminal", "calc", "explorer", "spotify"
+                ];
+                if (allowedActions.includes(d.payload)) {
+                  storeState.addCommsMessage(
+                    "system",
+                    `[MOBILE RELAY] Executing OS Action: ${d.payload}`,
+                  );
+                  storeState.executeOsActionApi(d.payload);
+                } else {
+                  storeState.addCommsMessage(
+                    "system",
+                    `[MOBILE RELAY] Refused unknown OS Action: ${d.payload}`,
+                  );
+                }
               } else if (d.type === "briefing") {
+
                 handleTriggerBriefing();
               }
             }

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import os from 'os';
 import { generateQrSvg } from '@/lib/qrCode';
+import { rejectCrossSiteRequest } from '@/lib/requestGuard';
+import { registerPairingToken } from '@/lib/pairingAuth';
 
 /**
  * GET /api/mobile-pairing
@@ -8,7 +10,11 @@ import { generateQrSvg } from '@/lib/qrCode';
  * generates a cyberpunk SVG QR code, and returns the mobile access endpoints.
  */
 export async function GET(request) {
+  const blocked = rejectCrossSiteRequest(request);
+  if (blocked) return blocked;
+
   try {
+
     const interfaces = os.networkInterfaces();
     const candidateIps = [];
 
@@ -44,7 +50,9 @@ export async function GET(request) {
 
     // Ephemeral pairing token valid for this session
     const pairingToken = `pair_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+    registerPairingToken(pairingToken);
     const mobileUrl = `http://${primaryIp}:${port}/mobile?token=${pairingToken}`;
+
 
     // Render crisp neon cyberpunk QR code
     const qrSvg = await generateQrSvg(mobileUrl, {
