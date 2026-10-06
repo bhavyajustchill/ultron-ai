@@ -44,6 +44,26 @@ export function CommandConfirmModal() {
   if (!request) return null;
   const isSystem = request.kind === "system";
 
+  const handleAuthorize = async () => {
+    try {
+      const endpoint = request.kind === "terminal" || !request.kind ? "/api/terminal" : "/api/confirm-gate";
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "authorize", id: request.id }),
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        respondToCommand(request.id, true, data.token);
+      } else {
+        respondToCommand(request.id, false);
+      }
+    } catch {
+      respondToCommand(request.id, false);
+    }
+  };
+
+
   return (
     <div className="fixed inset-0 z-[95] flex items-center justify-center bg-[rgba(8,6,2,0.7)] backdrop-blur-sm px-4">
       <div
@@ -115,10 +135,11 @@ export function CommandConfirmModal() {
           </button>
           <button
             type="button"
-            onClick={() => respondToCommand(request.id, true)}
+            onClick={handleAuthorize}
             className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-[#FFB020] bg-[rgba(255,176,32,0.18)] text-[#FFB020] hover:bg-[rgba(255,176,32,0.3)] shadow-[0_0_14px_rgba(255,176,32,0.25)] transition-all cursor-pointer">
             {isSystem ? "AUTHORIZE" : <>AUTHORIZE &amp; RUN</>}
           </button>
+
         </div>
       </div>
     </div>

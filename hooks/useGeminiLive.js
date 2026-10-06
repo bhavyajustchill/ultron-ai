@@ -531,10 +531,13 @@ export function useGeminiLive() {
 
         if (job.request && !prompted) {
           prompted = true;
-          const decision = await requestOperatorApproval(job.request);
-          const body = decision === 'approved' ? { action: 'approve', id: job.request.id, token: job.request.token } : { action: 'decline', id: job.request.id, job: jobId };
+          const approval = await requestOperatorApproval(job.request);
+          const decision = approval?.decision || approval;
+          const token = approval?.token || job.request.token;
+          const body = decision === 'approved' ? { action: 'approve', id: job.request.id, token } : { action: 'decline', id: job.request.id, job: jobId };
           fetch('/api/dev-agent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => {});
         }
+
         if (['running', 'awaiting_approval'].includes(job.status)) return;
 
         clearInterval(timer);
