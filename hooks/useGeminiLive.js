@@ -284,6 +284,8 @@ export function useGeminiLive() {
     goAwayPendingRef.current = false;
     isTurnActiveRef.current = false;
     awaitingReplyRef.current = 0;
+    linkPendingRef.current = false;
+    isSetupCompleteRef.current = false;
     cancelledToolIdsRef.current.clear();
   }, []);
 
@@ -318,6 +320,12 @@ export function useGeminiLive() {
     if (attempt >= MAX_RECONNECT_ATTEMPTS) {
       resetLinkState();
       stopMic();
+      if (wsRef.current) {
+        wsRef.current.onclose = null;
+        wsRef.current.onerror = null;
+        try { wsRef.current.close(); } catch {}
+        wsRef.current = null;
+      }
       setStatus('DISCONNECTED');
       addCommsMessage(
         'system',
@@ -1446,7 +1454,7 @@ export function useGeminiLive() {
         return true;
       }
 
-      if (linkPendingRef.current) {
+      if (linkPendingRef.current && wsRef.current && wsRef.current.readyState === WebSocket.CONNECTING) {
         addCommsMessage('system', 'Link handshake pending. Transmitting upon sync...');
       } else if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
@@ -1505,7 +1513,7 @@ export function useGeminiLive() {
         return true;
       }
 
-      if (linkPendingRef.current) {
+      if (linkPendingRef.current && wsRef.current && wsRef.current.readyState === WebSocket.CONNECTING) {
         addCommsMessage('system', 'Link handshake pending. Transmitting upload upon sync...');
       } else if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
