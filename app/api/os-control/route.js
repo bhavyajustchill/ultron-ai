@@ -600,11 +600,19 @@ export async function POST(req) {
       case 'open_folder': {
         const folderPath = target || process.cwd();
         const safePath = path.resolve(/*turbopackIgnore: true*/ folderPath);
+        if (/["\r\n]/.test(safePath)) {
+          result = {
+            success: false,
+            message: 'Invalid characters in folder path.',
+          };
+          break;
+        }
+
         let execRes;
         if (isWindows) {
-          execRes = await runSystemCommand(`explorer.exe "${safePath}"`);
+          execRes = await launchDetachedGui('explorer.exe', [safePath]);
         } else if (isMac) {
-          execRes = await runSystemCommand(`open "${safePath}"`);
+          execRes = await launchDetachedGui('open', [safePath]);
         } else {
           execRes = await launchDetachedGui('xdg-open', [safePath]);
         }
@@ -621,33 +629,44 @@ export async function POST(req) {
 
       // 4. Open External URL in Browser
       case 'open_url': {
-        if (!target.startsWith('http://') && !target.startsWith('https://')) {
+        let parsedUrl;
+        try {
+          parsedUrl = new URL(target);
+          if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+            throw new Error('Protocol must be http: or https:');
+          }
+          if (/["\r\n\0]/.test(target)) {
+            throw new Error('Forbidden control characters');
+          }
+        } catch {
           result = {
             success: false,
-            message: 'Invalid URL format. Target must start with http:// or https://.',
+            message: 'Invalid URL format. Target must be a valid http:// or https:// URL with no quotes or line breaks.',
           };
-        } else {
-          let execRes;
-          if (isWindows) {
-            execRes = await runSystemCommand(`start "" "${target}"`);
-          } else if (isMac) {
-            execRes = await runSystemCommand(`open "${target}"`);
-          } else {
-            execRes = await launchDetachedGui('xdg-open', [target]);
-          }
-
-          result = {
-            success: execRes.success,
-            message: execRes.success
-              ? `Dispatched navigation directive to browser for: ${target}`
-              : `Failed to open URL: ${execRes.error}`,
-            url: target,
-          };
+          break;
         }
+
+        let execRes;
+        if (isWindows) {
+          execRes = await launchDetachedGui('explorer.exe', [target]);
+        } else if (isMac) {
+          execRes = await launchDetachedGui('open', [target]);
+        } else {
+          execRes = await launchDetachedGui('xdg-open', [target]);
+        }
+
+        result = {
+          success: execRes.success,
+          message: execRes.success
+            ? `Dispatched navigation directive to browser for: ${target}`
+            : `Failed to open URL: ${execRes.error}`,
+          url: target,
+        };
         break;
       }
 
       // 5. Minimize All Desktop Windows
+
       case 'minimize_all': {
         let execRes;
         if (isWindows) {
