@@ -211,6 +211,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   // Audio sample preview player state
   const [playingVoice, setPlayingVoice] = useState(null);
   const audioPlayerRef = useRef(null);
+  const wasOpenRef = useRef(false);
 
   // Draft state initialized from current operatorProfile
   const [draft, setDraft] = useState({
@@ -315,14 +316,15 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     }
   };
 
-  // Sync draft whenever modal opens or profile updates
+  // Sync draft only when modal opens so background memory recalls don't wipe unsaved edits
   useEffect(() => {
     if (isSettingsModalOpen) {
       loadPlugins();
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
       setIsClosing(false);
       setSavedSuccess(false);
-      if (operatorProfile) {
+      if (!wasOpenRef.current && operatorProfile) {
+        wasOpenRef.current = true;
         setDraft({
           callsign: operatorProfile.callsign || "Bhavya Sir",
           assistantName: operatorProfile.assistantName || "Ultron",
@@ -342,6 +344,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
           preferences: operatorProfile.preferences || "",
         });
       }
+    } else {
+      wasOpenRef.current = false;
     }
   }, [isSettingsModalOpen, operatorProfile]);
 
