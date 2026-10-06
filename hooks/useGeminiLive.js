@@ -212,6 +212,11 @@ export function useGeminiLive() {
     if (isPlaying) {
       pcmPlayerRef.current.stopAndFlush();
     }
+    // Cancel any pending standby transition if operator speaks over goodbye
+    if (standbyRequestedRef.current) {
+      standbyRequestedRef.current = false;
+      addCommsMessage('system', '[STANDBY] Standby cancelled by operator speech.');
+    }
     // Cancel any pending briefing Phase 2 dispatch
     if (briefingTimeoutRef.current) {
       clearTimeout(briefingTimeoutRef.current);
@@ -1397,6 +1402,10 @@ export function useGeminiLive() {
       // Synchronously ensure Web Audio playback context is unlocked on user text dispatch
       if (pcmPlayerRef.current) {
         pcmPlayerRef.current.initContext();
+      }
+
+      if (standbyRequestedRef.current) {
+        standbyRequestedRef.current = false;
       }
 
       // If active and setup complete, send directly
