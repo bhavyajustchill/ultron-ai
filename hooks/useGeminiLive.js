@@ -203,6 +203,7 @@ export function useGeminiLive() {
 
   // Handle instant user barge-in (speech or manual click)
   const handleBargeIn = useCallback(() => {
+    lastOperatorActivityRef.current = Date.now();
     const isPlaying =
       pcmPlayerRef.current &&
       pcmPlayerRef.current.activeSources &&
@@ -1152,13 +1153,13 @@ export function useGeminiLive() {
                     briefingTimeoutRef.current = setTimeout(async () => {
                       briefingTimeoutRef.current = null;
                       if (briefingStateRef.current !== 'PHASE2') return; // cancelled by barge-in
-                      briefingStateRef.current = 'IDLE';
 
                       if (
                         !wsRef.current ||
                         wsRef.current.readyState !== WebSocket.OPEN ||
                         !isSetupCompleteRef.current
                       ) {
+                        briefingStateRef.current = 'IDLE';
                         return;
                       }
 
@@ -1204,6 +1205,26 @@ export function useGeminiLive() {
                         }
                       } catch (err) {
                         console.warn('[useGeminiLive] To-do list unavailable for the briefing:', err);
+                      }
+
+                      // Do not cut off operator if speech or barge-in occurred during intel fetch
+                      if (
+                        briefingStateRef.current !== 'PHASE2' ||
+                        isTurnActiveRef.current ||
+                        Date.now() - lastOperatorActivityRef.current < 2500 ||
+                        (pcmPlayerRef.current?.activeSources && pcmPlayerRef.current.activeSources.size > 0)
+                      ) {
+                        briefingStateRef.current = 'IDLE';
+                        return;
+                      }
+                      briefingStateRef.current = 'IDLE';
+
+                      if (
+                        !wsRef.current ||
+                        wsRef.current.readyState !== WebSocket.OPEN ||
+                        !isSetupCompleteRef.current
+                      ) {
+                        return;
                       }
 
                       const { operatorProfile } = useJarvisStore.getState();
