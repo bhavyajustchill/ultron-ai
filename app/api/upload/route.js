@@ -62,6 +62,14 @@ export async function POST(req) {
   const blocked = rejectCrossSiteRequest(req);
   if (blocked) return blocked;
 
+  const contentLength = parseInt(req.headers.get('content-length') || '', 10);
+  if (!Number.isNaN(contentLength) && contentLength > MAX_UPLOAD_BYTES) {
+    return NextResponse.json(
+      { success: false, message: `Upload is larger than the ${MAX_UPLOAD_BYTES / 1024 / 1024} MB upload limit.` },
+      { status: 413 }
+    );
+  }
+
   let file;
   try {
     file = (await req.formData()).get('file');
