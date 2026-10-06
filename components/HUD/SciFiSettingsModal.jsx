@@ -440,7 +440,10 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     setIsSaving(true);
     const previousVoice = operatorProfile?.voiceName;
     try {
-      await updateProfileApi({ ...draft, wakePhrase: draft.wakePhrase.trim() || DEFAULT_WAKE_PHRASE });
+      const updated = await updateProfileApi({ ...draft, wakePhrase: draft.wakePhrase.trim() || DEFAULT_WAKE_PHRASE });
+      if (!updated) {
+        throw new Error("Neural Vault rejected the settings update.");
+      }
       setSavedSuccess(true);
       addCommsMessage(
         "system",
