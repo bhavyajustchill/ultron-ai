@@ -27,8 +27,9 @@ async function resolveModelFile(req, params) {
   if (blocked) return { error: blocked };
 
   const { segments } = await params;
-  // "~/..." stays home-relative; anything else is an absolute path
-  const requested = segments[0] === '~' ? segments.join('/') : `/${segments.join('/')}`;
+  // "~/..." stays home-relative; Windows drive stays drive-relative (e.g. C:/...); anything else is an absolute path
+  const isWindowsDrive = /^[A-Za-z]:$/i.test(segments[0]);
+  const requested = segments[0] === '~' || isWindowsDrive ? segments.join('/') : `/${segments.join('/')}`;
   const ext = path.extname(requested).slice(1).toLowerCase();
   if (!CONTENT_TYPES[ext]) {
     return { error: NextResponse.json({ success: false, message: `.${ext} files are not served to the model viewer.` }, { status: 415 }) };
