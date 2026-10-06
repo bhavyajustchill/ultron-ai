@@ -56,7 +56,13 @@ export async function POST(req) {
         return NextResponse.json({ success: false, message: `Unknown reminders action "${body.action}".` }, { status: 400 });
     }
   } catch (error) {
-    if (error instanceof ReminderError) return NextResponse.json({ success: false, message: error.message });
+    if (error instanceof ReminderError) {
+      return NextResponse.json({
+        success: false,
+        message: error.message,
+        ...(error.ambiguous ? { ambiguous: true, candidates: error.candidates } : {}),
+      });
+    }
     console.error('[/api/reminders] failed:', error);
     return NextResponse.json({ success: false, message: `Reminder failed: ${error.message}` }, { status: 500 });
   }
