@@ -32,12 +32,17 @@ export function CommandConfirmModal() {
     tick();
     const timer = setInterval(tick, 1000);
     const onKeyDown = (e) => {
-      if (e.key === "Escape") respondToCommand(request.id, false);
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation?.();
+        respondToCommand(request.id, false);
+      }
     };
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown, true);
     return () => {
       clearInterval(timer);
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", onKeyDown, true);
     };
   }, [request]);
 
