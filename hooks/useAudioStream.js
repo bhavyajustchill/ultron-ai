@@ -19,6 +19,7 @@ export function useAudioStream({ onAudioChunk, onUserSpeaking }) {
   const frequencyDataRef = useRef(null);
   const isRecordingRef = useRef(false);
   const isStartingRef = useRef(false);
+  const consecutiveSpeechFramesRef = useRef(0);
 
   const isMuted = useJarvisStore((state) => state.isMuted);
   const status = useJarvisStore((state) => state.status);
@@ -106,9 +107,15 @@ export function useAudioStream({ onAudioChunk, onUserSpeaking }) {
         }
         const rms = Math.sqrt(sumSquares / int16View.length);
 
-        // Threshold for human voice detection (for automatic barge-in)
-        if (rms > 0.045 && onUserSpeaking) {
-          onUserSpeaking();
+        // Require sustained human vocal energy (>= 3 consecutive frames, ~96ms, rms > 0.05)
+        // to prevent isolated keyboard clicks, coughs, or desk taps from triggering barge-in
+        if (rms > 0.05) {
+          consecutiveSpeechFramesRef.current = (consecutiveSpeechFramesRef.current || 0) + 1;
+          if (consecutiveSpeechFramesRef.current >= 3 && onUserSpeaking) {
+            onUserSpeaking();
+          }
+        } else {
+          consecutiveSpeechFramesRef.current = 0;
         }
 
         if (onAudioChunk) {

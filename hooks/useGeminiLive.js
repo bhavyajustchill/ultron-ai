@@ -1136,8 +1136,8 @@ export function useGeminiLive() {
                 // Flush complete text turn to comms log once turn concludes
                 if (currentTurnTextRef.current.trim()) {
                   addCommsMessage('jarvis', currentTurnTextRef.current.trim());
-                  currentTurnTextRef.current = '';
                 }
+                currentTurnTextRef.current = '';
 
                 // Return to idle state once full turn concludes
                 if (!pcmPlayerRef.current || pcmPlayerRef.current.activeSources.size === 0) {
