@@ -273,36 +273,20 @@ export async function fetchLiveWeather(city = '', openBrowser = false) {
     }
   }
 
-  // 3. Last-ditch synthetic fallback if network is completely severed
+  // 3. When offline and meteorological sources are unreachable, report failure rather than fabricating data
   if (!weatherData) {
-    dataSource = 'Offline Diagnostic Cache';
-    weatherData = {
+    return {
+      success: false,
+      error: 'WEATHER_OFFLINE',
+      message: `Unable to retrieve atmospheric telemetry for "${location.name || targetCity || 'current location'}". The system is offline or meteorological services are unreachable.`,
+      summary: `Unable to retrieve live weather telemetry. Meteorological services are currently unreachable.`,
       location: {
-        name: location.name || 'Sector Alpha',
+        name: location.name || targetCity || 'Unknown',
         region: location.region || '',
         country: location.country || '',
-        full_address: location.name || 'Current Sector',
-        latitude: location.latitude,
-        longitude: location.longitude,
+        full_address: location.name || targetCity || 'Unknown Location',
       },
-      current: {
-        temperature_c: 26.0,
-        temperature_f: 78.8,
-        feels_like_c: 26.5,
-        feels_like_f: 79.7,
-        condition: 'Clear sky',
-        humidity_percent: 55,
-        wind_speed_kmh: 8.0,
-        precipitation_mm: 0,
-        is_day: true,
-      },
-      forecast: {
-        today_max_c: 28.0,
-        today_min_c: 22.0,
-        today_max_f: 82.4,
-        today_min_f: 71.6,
-        outlook: [],
-      },
+      timestamp: new Date().toLocaleTimeString(),
     };
   }
 
@@ -349,7 +333,7 @@ export async function GET(req) {
     const openBrowser = searchParams.get('open_browser') === 'true' || searchParams.get('openBrowser') === 'true';
 
     const result = await fetchLiveWeather(city, openBrowser);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: result.success ? 200 : 503 });
   } catch (error) {
     console.error('[/api/weather] Fatal error:', error);
     return NextResponse.json(
