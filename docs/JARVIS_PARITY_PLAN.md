@@ -1,8 +1,9 @@
 # Implementation Plan — Ultron × Jarvis Mark II Parity
 
 **Status:** Carried out on branch `experimental` (Phase 12, DEC-168 in [`MEMORY.md`](./MEMORY.md)); `master` is untouched until the operator merges.
-**Written:** 2026-10-04 (revised: Ultron keeps its original orb and look)
-**Source of features:** `jarvis-mark-ii` (`~/dev/_Fun/jarvis-mark-ii`), branch `experimental` at `311b327` (Phases 6.x – 12). The HUD colour themes come from `ce2ed17`, the last Jarvis commit that had them: Jarvis removed them in `311b327` (DEC-189), and they now live in Ultron.
+**Written:** 2026-10-04 (revised: Ultron keeps its original orb and look)  
+**Source of features:** `jarvis-mark-ii` (portable: `../jarvis-mark-ii`; Linux: `/home/bhavyajustchill/dev/_Fun/desktop_ai/jarvis-mark-ii`; Windows: `F:\__Development\__Fun\desktop_ai\jarvis-mark-ii`), branch `experimental` at `311b327` (Phases 6.x – 12). The HUD colour themes come from `ce2ed17`, the last Jarvis commit that had them: Jarvis removed them in `311b327` (DEC-189), and they now live in Ultron.  
+**Fleet Ecosystem:** [`ECOSYSTEM.md`](./ECOSYSTEM.md)  
 **Target:** this repo (`ultron-ai`), `master` at `40ef578`
 
 > **The rule for this port: Ultron looks exactly as it does today, and gains every feature Jarvis Mark II has.**
@@ -92,7 +93,7 @@ These are the yardstick for "looks the same".
 ### U1 — Import Jarvis with git
 
 1. Create branch `experimental` from `master`.
-2. Add Jarvis as a local remote: `git remote add jarvis ~/dev/_Fun/jarvis-mark-ii`, then `git fetch jarvis`.
+2. Add Jarvis as a local remote: `git remote add jarvis ../jarvis-mark-ii` (portable relative path working identically on Linux and Windows; or Linux `/home/bhavyajustchill/dev/_Fun/desktop_ai/jarvis-mark-ii`, Windows `F:\__Development\__Fun\desktop_ai\jarvis-mark-ii`), then `git fetch jarvis`.
 3. Merge: `git merge --allow-unrelated-histories jarvis/experimental`. The histories are unrelated, so every file both sides changed conflicts. Resolve as follows:
    - **Ultron's visual identity files: keep Ultron's version.** These are `lib/ultronOrbScene.js`, `components/Canvas3D/UltronViewport.jsx`, `lib/handTracker.js`, `lib/ultronPersona.js`, `docs/ultron_ref.png`, and `ultron_view.md`.
    - **Jarvis's orb files are not used by Ultron:** `ArcReactorOrb.jsx` and `JarvisViewport.jsx`.

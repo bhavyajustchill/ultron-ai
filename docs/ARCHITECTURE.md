@@ -3,7 +3,9 @@
 **Codename:** Project ULTRON // Cyber-Grid Architecture Blueprint  
 **Stack:** Next.js 16 (App Router, Turbopack) + React 19 + Three.js + Pure JavaScript (JSX) + Web Audio API + Gemini 3.8 Live WebSocket  
 **Active 3D Core:** Holographic 3D Ultron Orb (`lib/ultronOrbScene.js`, mounted by `components/Canvas3D/UltronViewport.jsx`) with MediaPipe Vision (`lib/handTracker.js`)  
-**Shared Features:** the J.A.R.V.I.S Mark II feature set ([`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md))
+**Shared Features:** the J.A.R.V.I.S Mark II feature set ([`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md))  
+**Ecosystem Reference:** [`ECOSYSTEM.md`](./ECOSYSTEM.md) (Unified 5-Assistant Desktop AI Fleet)  
+**Dual-Machine Topology:** Linux (`/home/bhavyajustchill/dev/_Fun/desktop_ai/ultron-ai`) & Windows (`F:\__Development\__Fun\desktop_ai\ultron-ai`), sibling relative `../ultron-ai`
 
 ---
 
@@ -15,6 +17,15 @@ The system has four layers:
 2. **Live Session Orchestrator (`hooks/useGeminiLive.js`):** opens the Gemini Live WebSocket directly from the browser, sends the setup frame (persona, memories, tools, compression, resumption handle), streams audio / video / client content, executes tool calls against the local API routes, and handles barge-in, GoAway swaps, auto re-sync, background job notices, and standby.
 3. **Next.js API Layer (`app/api/*`):** builds the session configuration and bridges every host capability. Routes that touch the machine reject cross-site requests (`lib/requestGuard.js`); file access is confined to sandbox roots (`lib/fsSandbox.js`).
 4. **Host Integrations:** the desktop session (Linux: `.desktop` app index, `xdg-open`, MPRIS / D-Bus, xdotool / ydotool or the RemoteDesktop portal, wmctrl / GNOME Window Calls, LibreOffice; Windows: the Windows desktop host `bin/win-desktop-host.ps1` for windows, keyboard, mouse, UI Automation, the Start menu app list, and Office COM), the filesystem, project generators, `bash`, and Google APIs (Gemini embeddings, grounded search, URL context) plus keyless search sources (Brave Search, Google News RSS, Wikipedia, Bing RSS).
+
+**Dual-machine platform support:**
+- **Linux Workstation (Ubuntu 26.04 GNOME Wayland):** `/home/bhavyajustchill/dev/_Fun/desktop_ai/ultron-ai` — native bash, xdotool/ydotool/portal, LibreOffice CLI, PipeWire/PulseAudio loudness, `systemd-run --user` reminders.
+- **Windows Workstation (Windows 11):** `F:\__Development\__Fun\desktop_ai\ultron-ai` — persistent PowerShell desktop host (`bin/win-desktop-host.ps1`), Win32/UI Automation, Microsoft Office COM, Windows Core Audio, `Register-ScheduledTask` reminders.
+- **Sister Assistants in Fleet:** Seamlessly co-located under `desktop_ai/`:
+  - [J.A.R.V.I.S Mark II](../../jarvis-mark-ii/docs/ARCHITECTURE.md) (`../jarvis-mark-ii`) — Port 6061, Arc Reactor Orb & foundational baseline
+  - [Project A.D.A](../../ada_autonomous-desktop-agent/docs/ARCHITECTURE.md) (`../ada_autonomous-desktop-agent`) — Port 8000, Ada Wong 3D avatar & Syndicate theme
+  - [A.L.F.R.E.D.](../../alfred/docs/ARCHITECTURE.md) (`../alfred`) — Port 6061/6063, Bat-Signal core & Wayne Manor butler
+  - [Project E.V.](../../ev/docs/ARCHITECTURE.md) (`../ev`) — Port 6061/6062, 3D Web Reactor & Spider-Tech
 
 **Desktop control (Phase 14, from J.A.R.V.I.S Mark II):** `lib/inputControl.js` exposes one window and keyboard layer for both platforms: on Windows every call goes to the desktop host (`lib/winDesktop.js` keeps one Windows PowerShell 5.1 process running `bin/win-desktop-host.ps1`, JSON lines over stdin / stdout, restarted on a timeout or when the script changes); on Linux to xdotool / ydotool / the portal and wmctrl / Window Calls. `lib/desktopTarget.js` matches spoken app names to windows and remembers the app Ultron is working in; `ensureFocused` restores and brings a window forward and verifies it before any typing; `lib/appLauncher.js` launches through `lib/winAppIndex.js` (Windows) or `lib/appIndex.js` (Linux) and waits for the app's window. `lib/officeControl.js` drives Office through COM on Windows and LibreOffice through focus-checked keystrokes on Linux.
 

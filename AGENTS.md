@@ -11,6 +11,7 @@
 - **Incremental Task Progression:** Link to [PHASES.md](./docs/PHASES.md)
 - **UI Design & Cyberpunk Aesthetic:** Link to [DESIGN.md](./docs/DESIGN.md)
 - **Persistent Session State Logging:** Link to [MEMORY.md](./docs/MEMORY.md)
+- **Fleet Ecosystem & Dual-Machine Setup:** Link to [ECOSYSTEM.md](./docs/ECOSYSTEM.md)
 
 ---
 

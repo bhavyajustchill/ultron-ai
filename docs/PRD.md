@@ -4,7 +4,9 @@
 **Target Platform:** Next.js 16 (App Router + Turbopack) + Three.js + Pure JavaScript (JSX) + Web Audio API  
 **AI Core:** Gemini 3.8 Live API (Bidirectional WebSocket Audio, `models/gemini-3.8-live`)  
 **Persona:** Ultron (Avengers: Age of Ultron // Autonomous Super-Intelligence)  
-**Scope Source:** [`features.txt`](../features.txt) (Phase 7 in [`PHASES.md`](./PHASES.md)), shared with J.A.R.V.I.S Mark II ([`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md))
+**Scope Source:** [`features.txt`](../features.txt) (Phase 7 in [`PHASES.md`](./PHASES.md)), shared with J.A.R.V.I.S Mark II ([`JARVIS_PARITY_PLAN.md`](./JARVIS_PARITY_PLAN.md))  
+**Fleet Ecosystem:** [`ECOSYSTEM.md`](./ECOSYSTEM.md) (5-assistant desktop AI fleet across Linux & Windows)  
+**Dual-Machine Workspace:** Linux (`/home/bhavyajustchill/dev/_Fun/desktop_ai/ultron-ai`) & Windows (`F:\__Development\__Fun\desktop_ai\ultron-ai`)
 
 ---
 

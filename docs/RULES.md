@@ -1,7 +1,7 @@
 # 🛡️ AI CODING RULES & GUARDRAILS — PROJECT ULTRON
 **Codename:** Protocol-Rules // Engineering Standards  
 **Scope:** Next.js 16, React 19, JavaScript (JSX), Three.js, Web Audio API  
-**Reference Documents:** [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`DESIGN.md`](./DESIGN.md)
+**Reference Documents:** [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`DESIGN.md`](./DESIGN.md), [`ECOSYSTEM.md`](./ECOSYSTEM.md)
 
 ---
 
@@ -76,3 +76,19 @@
 * **Non-Blocking Tool Calls:**
   - Long-running tools (like deep web search or local file scans) must never freeze the audio thread or 3D animation loop.
   - Always inform the user via Ultron's voice channel or HUD comms log while a tool is in flight.
+
+---
+
+## 6. Cross-Machine & Ecosystem Portability Guardrails
+
+* **Dual-Machine Workstation Topology:**
+  - The codebase must run seamlessly on both development workstations:
+    - **Linux:** `/home/bhavyajustchill/dev/_Fun/desktop_ai/ultron-ai` (Ubuntu 26.04, Wayland/bash)
+    - **Windows:** `F:\__Development\__Fun\desktop_ai\ultron-ai` (Windows 11, PowerShell/cmd)
+* **Path Normalization:**
+  - NEVER hardcode absolute Unix or Windows paths in runtime logic. Always use `path.join()`, `path.resolve()`, or `os.homedir()`.
+  - Filesystem sandbox roots must resolve relative to user homedir on both machines.
+* **Portable Relative Sibling References:**
+  - All 5 desktop AI projects (`jarvis-mark-ii`, `ada_autonomous-desktop-agent`, `alfred`, `ev`, `ultron-ai`) sit side-by-side in `desktop_ai/`.
+  - Always reference sibling assistants using portable relative paths (`../<sibling>` from repository root; `../../<sibling>/docs/` from markdown docs).
+  - Git remotes must use portable relative URLs (`../jarvis-mark-ii`). See [`ECOSYSTEM.md`](./ECOSYSTEM.md) for full details.
