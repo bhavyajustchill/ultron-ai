@@ -270,7 +270,15 @@ const ACTIONS = {
     }
 
     if (mode !== 'apply') throw new FsOpError(`Unknown organize mode "${mode}".`);
-    const manifest = applyOrganize(plan, JOURNAL_DIR);
+    let manifest;
+    try {
+      manifest = applyOrganize(plan, JOURNAL_DIR);
+    } catch (err) {
+      if (err.manifest?.moves?.length) {
+        pushUndo(`organized ${displayPath(target)} by ${groupBy}`, 'organize', { folder: target, manifestId: err.manifest.id });
+      }
+      throw err;
+    }
     if (manifest.moves.length) {
       pushUndo(`organized ${displayPath(target)} by ${groupBy}`, 'organize', { folder: target, manifestId: manifest.id });
     }
