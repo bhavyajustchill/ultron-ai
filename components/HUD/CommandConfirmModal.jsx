@@ -15,6 +15,11 @@ export function CommandConfirmModal() {
   const request = useJarvisStore((state) => state.pendingCommand);
   const addCommsMessage = useJarvisStore((state) => state.addCommsMessage);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+
+  useEffect(() => {
+    setIsAuthorizing(false);
+  }, [request?.id]);
 
   // Other HUD components can run a command through the same gate:
   // dispatchEvent(new CustomEvent("jarvis-run-command", { detail: { command, cwd, reason } }))
@@ -50,6 +55,8 @@ export function CommandConfirmModal() {
   const isSystem = request.kind === "system";
 
   const handleAuthorize = async () => {
+    if (isAuthorizing) return;
+    setIsAuthorizing(true);
     try {
       const endpoint = request.kind === "terminal" || !request.kind ? "/api/terminal" : "/api/confirm-gate";
       const res = await fetch(endpoint, {
@@ -65,6 +72,8 @@ export function CommandConfirmModal() {
       }
     } catch {
       respondToCommand(request.id, false);
+    } finally {
+      setIsAuthorizing(false);
     }
   };
 
@@ -134,15 +143,17 @@ export function CommandConfirmModal() {
         <div className="flex items-center justify-end gap-2 pt-1">
           <button
             type="button"
+            disabled={isAuthorizing}
             onClick={() => respondToCommand(request.id, false)}
-            className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-white/15 bg-white/5 text-[#CBC6B9] hover:border-[rgba(255,0,60,0.5)] hover:text-[#FF8095] transition-all cursor-pointer">
+            className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-white/15 bg-white/5 text-[#CBC6B9] hover:border-[rgba(255,0,60,0.5)] hover:text-[#FF8095] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
             DENY (ESC)
           </button>
           <button
             type="button"
+            disabled={isAuthorizing}
             onClick={handleAuthorize}
-            className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-[#FFB020] bg-[rgba(255,176,32,0.18)] text-[#FFB020] hover:bg-[rgba(255,176,32,0.3)] shadow-[0_0_14px_rgba(255,176,32,0.25)] transition-all cursor-pointer">
-            {isSystem ? "AUTHORIZE" : <>AUTHORIZE &amp; RUN</>}
+            className="px-4 py-1.5 chamfer-btn text-[11px] font-bold border border-[#FFB020] bg-[rgba(255,176,32,0.18)] text-[#FFB020] hover:bg-[rgba(255,176,32,0.3)] shadow-[0_0_14px_rgba(255,176,32,0.25)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+            {isSystem ? (isAuthorizing ? "AUTHORIZING..." : "AUTHORIZE") : (isAuthorizing ? "AUTHORIZING..." : <>AUTHORIZE &amp; RUN</>)}
           </button>
 
         </div>

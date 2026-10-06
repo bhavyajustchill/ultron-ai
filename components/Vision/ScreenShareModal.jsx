@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { COMPACT_MEDIA_QUERY } from "@/hooks/useIsPhone";
+import { useEscapeKey } from "@/lib/escapeStack";
 
 /**
  * ScreenShareModal
@@ -43,6 +44,13 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const streamIntervalRef = useRef(null);
+
+  const isOpenRef = useRef(isOpen);
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+  const isMountedRef = useRef(true);
+  const activeSessionIdRef = useRef(0);
 
   const [streamResolution, setStreamResolution] = useState({ width: 0, height: 0 });
   const [isStreaming, setIsStreaming] = useState(false);
@@ -124,6 +132,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
 
   // Stop active display media stream
   const stopStream = useCallback(() => {
+    activeSessionIdRef.current++;
     if (streamIntervalRef.current) {
       clearInterval(streamIntervalRef.current);
       streamIntervalRef.current = null;
@@ -180,6 +189,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
   // Start desktop display media capture
   const startScreenCapture = async () => {
     setErrorMsg("");
+    const sessionId = ++activeSessionIdRef.current;
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
@@ -188,6 +198,11 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
         },
         audio: false,
       });
+
+      if (sessionId !== activeSessionIdRef.current || !isMountedRef.current || !isOpenRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
 
       streamRef.current = stream;
       if (videoRef.current) {
@@ -213,6 +228,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       resetVisionFrames();
       addCommsMessage("system", "Desktop vision link established. Interrogation channel active.");
     } catch (err) {
+      if (sessionId !== activeSessionIdRef.current || !isMountedRef.current || !isOpenRef.current) return;
       console.error("[ScreenShareModal] Error starting screen capture:", err);
       if (err.name !== "NotAllowedError") {
         setErrorMsg(`Failed to initiate display capture: ${err.message}`);
@@ -284,20 +300,15 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
     return () => window.removeEventListener("jarvis-close-screen", handleExternalClose);
   }, [isOpen, triggerClose]);
 
-  // Keyboard shortcut: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, triggerClose]);
+  // Keyboard shortcut: Escape to close (scoped stack)
+  useEscapeKey(isOpen, triggerClose);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
+      activeSessionIdRef.current++;
       if (closeTimeoutRef.current) {
         clearTimeout(closeTimeoutRef.current);
       }
@@ -306,6 +317,7 @@ export function ScreenShareModal({ isOpen, onClose, sendVideoFrame }) {
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
       }
     };
   }, []);

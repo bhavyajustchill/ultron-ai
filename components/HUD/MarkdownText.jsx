@@ -18,8 +18,8 @@ export function renderInlineMarkdown(text, isJarvis = false) {
   let remaining = text;
   let key = 0;
 
-  // Regex matching inline elements
-  const regex = /(`[^`]+`|\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|__[^_]+__|_[^_]+_|~~[^~]+~~|\[[^\]]+\]\([^)]+\))/;
+  // Regex matching inline elements (underscores require non-word boundaries to avoid mangling filenames/variables)
+  const regex = /(`[^`]+`|\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|(?<=\W|^)__[^_]+__(?=\W|$)|(?<=\W|^)_[^_]+_(?=\W|$)|~~[^~]+~~|\[[^\]]+\]\([^)]+\))/;
 
   while (remaining) {
     const match = remaining.match(regex);

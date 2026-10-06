@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { matchesWakePhrase, normalizeWords, DEFAULT_WAKE_PHRASE } from '@/lib/wakePhrase';
+import { matchesWakePhrase, normalizeWords, OFFLINE_WAKE_PHRASE } from '@/lib/wakePhrase';
 import { startOfflineWakeListener } from '@/lib/wakeWord/listener';
 import { listAudioDevices, resolveDevice } from '@/lib/audioDevices';
 import { useJarvisStore } from '@/lib/store';
 
 const MAX_RESTART_DELAY_MS = 15000;
 
-const isDefaultPhrase = (phrase) => normalizeWords(phrase).join(' ') === normalizeWords(DEFAULT_WAKE_PHRASE).join(' ');
+const isOfflinePhrase = (phrase) => normalizeWords(phrase).join(' ') === normalizeWords(OFFLINE_WAKE_PHRASE).join(' ');
 
 /**
- * Standby wake-phrase listener. The default "Hey Jarvis" runs fully offline on the openWakeWord
+ * Standby wake-phrase listener. The offline model ("Hey Jarvis") runs fully offline on the openWakeWord
  * models when they are installed (Phase 8.12); any custom phrase — or a failure to start the
  * offline engine — uses the browser's Web Speech API (Chrome / Edge, Phase 7.6). Listens only while
  * `active` (Jarvis is offline) and calls `onWake` once per detection.
@@ -33,7 +33,7 @@ export function useWakePhrase({ enabled, active, phrase, onWake }) {
       return undefined;
     }
 
-    if (offlineReady && !offlineFailed && isDefaultPhrase(phrase)) {
+    if (offlineReady && !offlineFailed && isOfflinePhrase(phrase)) {
       let stop = null;
       let cancelled = false;
       (async () => {

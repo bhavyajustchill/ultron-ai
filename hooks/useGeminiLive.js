@@ -148,6 +148,9 @@ export function useGeminiLive() {
   const connectSessionRef = useRef(null);
   const projectPollersRef = useRef(new Map());
   const standbyRequestedRef = useRef(false);
+  const isEnteringStandbyRef = useRef(false);
+  const standbyCancelledRef = useRef(false);
+  const pendingTextQueueRef = useRef([]);
   // Session archive (Phase 11): the conversation being recorded, when it started, the Comms Log
   // index of the first turn not yet sent to the archive, and when turns were last sent
   const sessionIdRef = useRef(null);
@@ -213,8 +216,10 @@ export function useGeminiLive() {
       pcmPlayerRef.current.stopAndFlush();
     }
     // Cancel any pending standby transition if operator speaks over goodbye
-    if (standbyRequestedRef.current) {
+    if (standbyRequestedRef.current || isEnteringStandbyRef.current) {
       standbyRequestedRef.current = false;
+      isEnteringStandbyRef.current = false;
+      standbyCancelledRef.current = true;
       addCommsMessage('system', '[STANDBY] Standby cancelled by operator speech.');
     }
     // Cancel any pending briefing Phase 2 dispatch
@@ -287,6 +292,9 @@ export function useGeminiLive() {
     linkPendingRef.current = false;
     isSetupCompleteRef.current = false;
     cancelledToolIdsRef.current.clear();
+    standbyRequestedRef.current = false;
+    isEnteringStandbyRef.current = false;
+    standbyCancelledRef.current = false;
   }, []);
 
   // Disconnect active session
@@ -440,7 +448,14 @@ export function useGeminiLive() {
 
   // Close the link once Jarvis has finished his farewell (enter_standby tool)
   const enterStandbyWhenQuiet = useCallback(() => {
+    isEnteringStandbyRef.current = true;
+    standbyCancelledRef.current = false;
     runWhenQuiet(() => {
+      if (standbyCancelledRef.current) {
+        isEnteringStandbyRef.current = false;
+        return;
+      }
+      isEnteringStandbyRef.current = false;
       flushSession({ final: true });
       disconnectSession();
       addCommsMessage('system', '[WAKE] Standing by. Say the wake phrase to bring Ultron back online.');
@@ -661,13 +676,13 @@ export function useGeminiLive() {
         pcmPlayerRef.current.initContext();
       }
 
-      // Resolve vocal core: overrideVoice || store || localStorage || 'Aoede'
+      // Resolve vocal core: overrideVoice || store || localStorage || 'Algenib'
       const activeVoice = isResume
         ? voiceRef.current
         : overrideVoice ||
           useJarvisStore.getState().operatorProfile?.voiceName ||
-          (typeof window !== 'undefined' ? localStorage.getItem('jarvis_voice_name') : null) ||
-          'Aoede';
+          (typeof window !== 'undefined' ? localStorage.getItem('ultron_voice_name') : null) ||
+          'Algenib';
 
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
@@ -880,11 +895,18 @@ export function useGeminiLive() {
               }
 
               // Transmit queued text directive / upload parts if sent while connecting
-              if (pendingTextRef.current || pendingPartsRef.current) {
+              if (pendingTextRef.current || pendingPartsRef.current || (pendingTextQueueRef.current && pendingTextQueueRef.current.length > 0)) {
                 const queuedParts = [];
                 if (pendingTextRef.current) {
                   const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
                   queuedParts.push({ text: `[Time: ${timeNow}] ${pendingTextRef.current}` });
+                }
+                if (pendingTextQueueRef.current && pendingTextQueueRef.current.length > 0) {
+                  for (const qText of pendingTextQueueRef.current) {
+                    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                    queuedParts.push({ text: `[Time: ${timeNow}] ${qText}` });
+                  }
+                  pendingTextQueueRef.current = [];
                 }
                 if (pendingPartsRef.current) {
                   queuedParts.push(...pendingPartsRef.current);
@@ -1413,9 +1435,19 @@ export function useGeminiLive() {
         pcmPlayerRef.current.initContext();
       }
 
-      if (standbyRequestedRef.current) {
+      // Cancel any pending standby transition if operator types a message
+      if (standbyRequestedRef.current || isEnteringStandbyRef.current) {
         standbyRequestedRef.current = false;
+        isEnteringStandbyRef.current = false;
+        standbyCancelledRef.current = true;
       }
+
+      // Cancel any pending briefing Phase 2 dispatch so it cannot talk over typed message
+      if (briefingTimeoutRef.current) {
+        clearTimeout(briefingTimeoutRef.current);
+        briefingTimeoutRef.current = null;
+      }
+      briefingStateRef.current = 'IDLE';
 
       // If active and setup complete, send directly
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && isSetupCompleteRef.current) {
@@ -1446,18 +1478,20 @@ export function useGeminiLive() {
       }
 
       // If not connected or handshake in progress, queue message and initiate link
+      if (!pendingTextQueueRef.current) {
+        pendingTextQueueRef.current = [];
+      }
+      pendingTextQueueRef.current.push(trimmed);
       pendingTextRef.current = trimmed;
       addCommsMessage('user', trimmed);
 
-      // Auto re-sync in progress: let the resumed session deliver the queued text
-      if (isEstablishedRef.current) {
-        addCommsMessage('system', 'Link re-syncing. Transmitting upon sync...');
+      // Auto re-sync in progress or link handshake pending: let the session deliver the queued text
+      if (isEstablishedRef.current || linkPendingRef.current || reconnectTimerRef.current || (wsRef.current && wsRef.current.readyState === WebSocket.CONNECTING)) {
+        addCommsMessage('system', 'Link handshake pending. Transmitting upon sync...');
         return true;
       }
 
-      if (linkPendingRef.current && wsRef.current && wsRef.current.readyState === WebSocket.CONNECTING) {
-        addCommsMessage('system', 'Link handshake pending. Transmitting upon sync...');
-      } else if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
         const activeKey = useJarvisStore.getState().userApiKey || useJarvisStore.getState().loadStoredApiKey();
         if (!activeKey) {
           addCommsMessage('system', 'Gemini API Key required to link live session. Please enter your key in the prompt.');

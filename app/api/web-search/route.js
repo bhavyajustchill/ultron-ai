@@ -160,26 +160,28 @@ export async function GET(req) {
     }
 
     // Weather safety interception: detect if query is asking about weather/temperature/forecast
-    const isExplicitNonWeather = /\b(climate|temp\s*(?:files?|dir|directory|folders?|table|var|variable|storage|data)|temporary|economic|financial|sales|market|business|revenue|growth|forecast\s*model|model\s*forecast)\b/i.test(query);
+    const isExplicitNonWeather = /\b(climate|temp\s*(?:files?|dir|directory|folders?|table|var|variable|storage|data)|temporary|economic|financial|sales|market|business|revenue|growth|forecast\s*model|model\s*forecast|body|human|fever|medical|oral|rectal|normal|cpu|gpu|processor|chip|hardware|core|ssd|battery|device|bitcoin|crypto|btc|eth|stock|share|price|inflation|economy|election|poll|vote|voting|ballot|political|democrat|republican)\b/i.test(query);
 
     const isWeatherQuery = !isExplicitNonWeather && (
       /\bweather\b/i.test(query) ||
-      /\b(?:is it|will it)\s+(?:going to\s+)?(?:rain|snow|raining|snowing)\b/i.test(query) ||
-      /\b(?:temperature|forecast)\s+(?:in|for|at|around|near|of)\b/i.test(query) ||
-      /\b[a-zA-Z\s]+\s+(?:weather|temperature|forecast)$/i.test(query) ||
-      /^(?:what(?:'s| is) (?:the )?)?(?:temperature|forecast|weather)(?: (?:today|now|outside))?$/i.test(query)
+      /\b(?:is it|will it)\s+(?:going to\s+)?(?:rain|snow|raining|snowing|hail|storm)\b/i.test(query) ||
+      /\b(?:temperature|forecast)\s+(?:in|for|at|around|near|of)\s+[a-zA-Z]/i.test(query) ||
+      /^(?:what(?:'s| is) (?:the )?)?(?:current |today(?:'s)? )?(?:temperature|forecast|weather)(?: (?:today|now|outside))?$/i.test(query) ||
+      /^[a-zA-Z\s]{2,30}\s+weather$/i.test(query)
     );
 
     if (isWeatherQuery) {
-      // Extract target location if present: e.g. "weather in Delhi", "temperature in Tokyo", "forecast for London"
+      // Extract target location if present: e.g. "weather in Delhi", "temperature in Tokyo", "forecast for London", "rain in London"
       let targetCity = '';
       const cityMatch =
-        query.match(/(?:weather|temperature|forecast)\s+(?:in|for|at|around|near|of)\s+([a-zA-Z\s]+)/i) ||
-        query.match(/([a-zA-Z\s]+)\s+(?:weather|temperature|forecast)/i);
+        query.match(/(?:weather|temperature|forecast|rain|raining|snow|snowing|hail|storm)\s+(?:in|for|at|around|near|of)\s+([a-zA-Z\s]+)/i) ||
+        query.match(/(?:in|for|at)\s+([a-zA-Z\s]+?)(?:\s+(?:today|tomorrow|now|\?|$))/i) ||
+        query.match(/([a-zA-Z\s]+)\s+weather/i);
 
       if (cityMatch && cityMatch[1]) {
         targetCity = cityMatch[1]
-          .replace(/\b(?:today|tomorrow|now|currently|tonight|please|show|get|tell|me|what is|how is)\b/gi, '')
+          .replace(/[?!.]+$/, '')
+          .replace(/\b(?:today|tomorrow|now|currently|tonight|please|show|get|tell|me|what is|how is|is it|will it)\b/gi, '')
           .trim();
       }
 

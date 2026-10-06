@@ -297,7 +297,7 @@ export default function Home() {
                 const allowedActions = [
                   "mute", "unmute", "volume_up", "volume_down",
                   "screenshot", "lock_screen", "browser", "editor",
-                  "terminal", "calc", "explorer", "spotify"
+                  "terminal", "calc", "explorer", "spotify", "minimize_all"
                 ];
                 if (allowedActions.includes(d.payload)) {
                   storeState.addCommsMessage(

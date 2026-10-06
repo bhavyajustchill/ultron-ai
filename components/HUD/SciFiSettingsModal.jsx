@@ -35,6 +35,7 @@ import { GEMINI_LIVE_MODEL, GEMINI_LIVE_LABEL } from "@/lib/jarvisPersona";
 import { DEFAULT_WAKE_PHRASE } from "@/lib/wakePhrase";
 import { ACCENT_PRESETS, DEFAULT_ACCENT, normalizeHex } from "@/lib/accentTheme";
 import { listAudioDevices, canChooseOutput } from "@/lib/audioDevices";
+import { useEscapeKey } from "@/lib/escapeStack";
 
 const PREBUILT_VOICES = [
   {
@@ -212,6 +213,11 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   const [playingVoice, setPlayingVoice] = useState(null);
   const audioPlayerRef = useRef(null);
   const wasOpenRef = useRef(false);
+  const dirtyFieldsRef = useRef(new Set());
+  const setDraftField = (field, val) => {
+    dirtyFieldsRef.current.add(field);
+    setDraft((prev) => ({ ...prev, [field]: val }));
+  };
 
   // Draft state initialized from current operatorProfile
   const [draft, setDraft] = useState({
@@ -238,7 +244,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
   const selectAccent = (hex) => {
     const accent = normalizeHex(hex);
     if (!accent) return;
-    setDraft((current) => ({ ...current, accentColor: accent }));
+    setDraftField("accentColor", accent);
     setAccentPreview(accent);
   };
   const [accentInput, setAccentInput] = useState("");
@@ -316,36 +322,47 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     }
   };
 
-  // Sync draft only when modal opens so background memory recalls don't wipe unsaved edits
+  // Sync draft from operatorProfile without wiping unsaved manual edits
   useEffect(() => {
     if (isSettingsModalOpen) {
       loadPlugins();
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
       setIsClosing(false);
       setSavedSuccess(false);
-      if (!wasOpenRef.current && operatorProfile) {
+      if (!wasOpenRef.current) {
         wasOpenRef.current = true;
-        setDraft({
-          callsign: operatorProfile.callsign || "Bhavya Sir",
-          assistantName: operatorProfile.assistantName || "Ultron",
-          voiceName: operatorProfile.voiceName || "Algenib",
-          liveModel: GEMINI_LIVE_MODEL,
-          autoBriefing: operatorProfile.autoBriefing !== false,
-          enableHumor: operatorProfile.enableHumor !== false,
-          proactiveEnabled: operatorProfile.proactiveEnabled !== false,
-          clipboardWatch: operatorProfile.clipboardWatch === true,
-          keepTranscripts: operatorProfile.keepTranscripts !== false,
-          sessionRetentionDays: [30, 90, 180, 365, 0].includes(Number(operatorProfile.sessionRetentionDays)) ? Number(operatorProfile.sessionRetentionDays) : 180,
-          accentColor: normalizeHex(operatorProfile.accentColor) || DEFAULT_ACCENT,
-          wakeWordEnabled: operatorProfile.wakeWordEnabled !== false,
-          wakePhrase: operatorProfile.wakePhrase || DEFAULT_WAKE_PHRASE,
-          clearance: operatorProfile.clearance || "Class-9 Operative",
-          role: operatorProfile.role || "Lead Systems Architect",
-          preferences: operatorProfile.preferences || "",
+        dirtyFieldsRef.current.clear();
+      }
+      if (operatorProfile) {
+        setDraft((prev) => {
+          const next = { ...prev };
+          const keys = [
+            'callsign', 'assistantName', 'voiceName', 'autoBriefing',
+            'enableHumor', 'proactiveEnabled', 'clipboardWatch', 'keepTranscripts',
+            'sessionRetentionDays', 'accentColor', 'wakeWordEnabled', 'wakePhrase',
+            'clearance', 'role', 'preferences'
+          ];
+          for (const key of keys) {
+            if (!dirtyFieldsRef.current.has(key) && operatorProfile[key] !== undefined) {
+              if (key === 'autoBriefing' || key === 'enableHumor' || key === 'proactiveEnabled' || key === 'keepTranscripts' || key === 'wakeWordEnabled') {
+                next[key] = operatorProfile[key] !== false;
+              } else if (key === 'clipboardWatch') {
+                next[key] = operatorProfile[key] === true;
+              } else if (key === 'sessionRetentionDays') {
+                next[key] = [30, 90, 180, 365, 0].includes(Number(operatorProfile[key])) ? Number(operatorProfile[key]) : 180;
+              } else if (key === 'accentColor') {
+                next[key] = normalizeHex(operatorProfile.accentColor) || DEFAULT_ACCENT;
+              } else {
+                next[key] = operatorProfile[key] || (key === 'wakePhrase' ? DEFAULT_WAKE_PHRASE : '');
+              }
+            }
+          }
+          return next;
         });
       }
     } else {
       wasOpenRef.current = false;
+      dirtyFieldsRef.current.clear();
     }
   }, [isSettingsModalOpen, operatorProfile]);
 
@@ -427,16 +444,8 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     triggerClose();
   };
 
-  // Keyboard shortcut: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isSettingsModalOpen) {
-        handleClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isSettingsModalOpen]);
+  // Keyboard shortcut: Escape to close (scoped stack)
+  useEscapeKey(isSettingsModalOpen, handleClose);
 
   if (!isSettingsModalOpen && !isClosing) return null;
 
@@ -444,10 +453,16 @@ export function SciFiSettingsModal({ onReconnectSession }) {
     setIsSaving(true);
     const previousVoice = operatorProfile?.voiceName;
     try {
-      const updated = await updateProfileApi({ ...draft, wakePhrase: draft.wakePhrase.trim() || DEFAULT_WAKE_PHRASE });
+      const mergedProfile = {
+        ...operatorProfile,
+        ...draft,
+        wakePhrase: (draft.wakePhrase || '').trim() || DEFAULT_WAKE_PHRASE,
+      };
+      const updated = await updateProfileApi(mergedProfile);
       if (!updated) {
         throw new Error("Neural Vault rejected the settings update.");
       }
+      dirtyFieldsRef.current.clear();
       setSavedSuccess(true);
       addCommsMessage(
         "system",
@@ -492,7 +507,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
 
   const handleResetDefaults = () => {
     setAccentPreview(DEFAULT_ACCENT);
-    setDraft({
+    const defaults = {
       callsign: "Bhavya Sir",
       assistantName: "Ultron",
       voiceName: "Algenib",
@@ -509,7 +524,9 @@ export function SciFiSettingsModal({ onReconnectSession }) {
       clearance: "Class-9 Operative",
       role: "Lead Systems Architect",
       preferences: "Prefers a cold, calculated, and serious demeanor modeled after Ultron. Values intellectual depth, chilling logic, and ruthless execution.",
-    });
+    };
+    Object.keys(defaults).forEach((k) => dirtyFieldsRef.current.add(k));
+    setDraft(defaults);
   };
 
   const activeVoiceObj =
@@ -578,7 +595,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <input
                   type="text"
                   value={draft.callsign}
-                  onChange={(e) => setDraft({ ...draft, callsign: e.target.value })}
+                  onChange={(e) => setDraftField('callsign', e.target.value)}
                   placeholder="e.g. Bhavya Sir, Bhavya, Commander"
                   className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] focus:shadow-[0_0_8px_rgba(var(--jarvis-accent-2-rgb),0.2)] transition-all font-mono"
                 />
@@ -592,7 +609,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <input
                   type="text"
                   value={draft.role}
-                  onChange={(e) => setDraft({ ...draft, role: e.target.value })}
+                  onChange={(e) => setDraftField('role', e.target.value)}
                   placeholder="e.g. Lead Systems Architect"
                   className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] transition-all font-mono"
                 />
@@ -603,7 +620,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <input
                   type="text"
                   value={draft.clearance}
-                  onChange={(e) => setDraft({ ...draft, clearance: e.target.value })}
+                  onChange={(e) => setDraftField('clearance', e.target.value)}
                   placeholder="e.g. Class-9 Operative, MERN Expert"
                   className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] transition-all font-mono"
                 />
@@ -666,7 +683,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               <input
                 type="text"
                 value={draft.assistantName}
-                onChange={(e) => setDraft({ ...draft, assistantName: e.target.value })}
+                onChange={(e) => setDraftField('assistantName', e.target.value)}
                 className="bg-black/60 border border-white/10 chamfer-xs px-2.5 py-1.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] transition-all font-mono"
               />
               <span className="text-[9px] text-[#9E8B65]">
@@ -697,7 +714,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                       onMouseEnter={() => setHoveredVoice(v)}
                       onMouseLeave={() => setHoveredVoice(null)}>
                       <div
-                        onClick={() => setDraft({ ...draft, voiceName: v.name })}
+                        onClick={() => setDraftField('voiceName', v.name)}
                         className={`p-2 chamfer-xs text-[11px] font-mono transition-all cursor-pointer flex items-center justify-between gap-2 border ${isSelected
                             ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.18)] border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)] shadow-[0_0_12px_rgba(var(--jarvis-accent-2-rgb),0.3)]"
                             : isPlaying
@@ -819,7 +836,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
             <textarea
               rows={3}
               value={draft.preferences}
-              onChange={(e) => setDraft({ ...draft, preferences: e.target.value })}
+              onChange={(e) => setDraftField('preferences', e.target.value)}
               placeholder="e.g. Prefers concise tactical briefings, high-speed execution, dark aesthetics..."
               className="bg-black/60 border border-white/10 chamfer-xs p-2.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[var(--jarvis-accent-2)] focus:shadow-[0_0_8px_rgba(var(--jarvis-accent-2-rgb),0.2)] transition-all font-mono resize-none"
             />
@@ -838,7 +855,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
               <button
                 type="button"
-                onClick={() => setDraft({ ...draft, autoBriefing: !draft.autoBriefing })}
+                onClick={() => setDraftField('autoBriefing', !draft.autoBriefing)}
                 className={`px-2.5 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.autoBriefing
                     ? "bg-[rgba(var(--jarvis-accent-2-rgb),0.2)] border border-[var(--jarvis-accent-2)] text-[var(--jarvis-accent-2)]"
                     : "bg-white/5 border border-white/10 text-[#9E8B65]"
@@ -884,7 +901,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
               <button
                 type="button"
-                onClick={() => setDraft({ ...draft, enableHumor: !draft.enableHumor })}
+                onClick={() => setDraftField('enableHumor', !draft.enableHumor)}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.enableHumor
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
                     : "bg-white/5 border border-white/10 text-[#9E8B65]"
@@ -905,7 +922,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
               <button
                 type="button"
-                onClick={() => setDraft({ ...draft, proactiveEnabled: !draft.proactiveEnabled })}
+                onClick={() => setDraftField('proactiveEnabled', !draft.proactiveEnabled)}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.proactiveEnabled
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
                     : "bg-white/5 border border-white/10 text-[#9E8B65]"
@@ -928,7 +945,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 <select
                   aria-label="Keep conversations for"
                   value={draft.sessionRetentionDays}
-                  onChange={(e) => setDraft({ ...draft, sessionRetentionDays: Number(e.target.value) })}
+                  onChange={(e) => setDraftField('sessionRetentionDays', Number(e.target.value))}
                   className="bg-black/60 border border-white/10 text-[10px] font-mono text-[#F0F2F8] px-1.5 py-1 chamfer-sm cursor-pointer">
                   <option value={30}>KEEP 30 DAYS</option>
                   <option value={90}>KEEP 90 DAYS</option>
@@ -938,7 +955,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 </select>
                 <button
                   type="button"
-                  onClick={() => setDraft({ ...draft, keepTranscripts: !draft.keepTranscripts })}
+                  onClick={() => setDraftField('keepTranscripts', !draft.keepTranscripts)}
                   className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer ${draft.keepTranscripts
                       ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
                       : "bg-white/5 border border-white/10 text-[#9E8B65]"
@@ -960,7 +977,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
               </div>
               <button
                 type="button"
-                onClick={() => setDraft({ ...draft, clipboardWatch: !draft.clipboardWatch })}
+                onClick={() => setDraftField('clipboardWatch', !draft.clipboardWatch)}
                 className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.clipboardWatch
                     ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
                     : "bg-white/5 border border-white/10 text-[#9E8B65]"
@@ -1004,7 +1021,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setDraft({ ...draft, wakeWordEnabled: !draft.wakeWordEnabled })}
+                  onClick={() => setDraftField('wakeWordEnabled', !draft.wakeWordEnabled)}
                   className={`px-3 py-1 chamfer-btn text-[10px] font-mono font-bold transition-all cursor-pointer shrink-0 ${draft.wakeWordEnabled
                       ? "bg-[rgba(var(--jarvis-accent-rgb),0.2)] border border-[var(--jarvis-accent)] text-[var(--jarvis-accent)] shadow-[0_0_12px_rgba(var(--jarvis-accent-rgb),0.25)]"
                       : "bg-white/5 border border-white/10 text-[#9E8B65]"
@@ -1016,7 +1033,7 @@ export function SciFiSettingsModal({ onReconnectSession }) {
                 type="text"
                 value={draft.wakePhrase}
                 disabled={!draft.wakeWordEnabled}
-                onChange={(e) => setDraft({ ...draft, wakePhrase: e.target.value.slice(0, 40) })}
+                onChange={(e) => setDraftField('wakePhrase', e.target.value.slice(0, 40))}
                 placeholder={DEFAULT_WAKE_PHRASE}
                 className="w-full bg-black/50 border border-[rgba(var(--jarvis-accent-rgb),0.25)] focus:border-[var(--jarvis-accent)] outline-none px-2.5 py-1.5 chamfer-xs text-xs text-white font-mono disabled:opacity-40"
                 aria-label="Wake phrase"

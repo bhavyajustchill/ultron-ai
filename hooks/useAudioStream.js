@@ -107,11 +107,11 @@ export function useAudioStream({ onAudioChunk, onUserSpeaking }) {
         }
         const rms = Math.sqrt(sumSquares / int16View.length);
 
-        // Require sustained human vocal energy (>= 3 consecutive frames, ~96ms, rms > 0.05)
+        // Require sustained human vocal energy (>= 8 consecutive frames, ~256ms, rms > 0.05)
         // to prevent isolated keyboard clicks, coughs, or desk taps from triggering barge-in
         if (rms > 0.05) {
           consecutiveSpeechFramesRef.current = (consecutiveSpeechFramesRef.current || 0) + 1;
-          if (consecutiveSpeechFramesRef.current >= 3 && onUserSpeaking) {
+          if (consecutiveSpeechFramesRef.current >= 8 && onUserSpeaking) {
             onUserSpeaking();
           }
         } else {

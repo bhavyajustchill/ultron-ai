@@ -369,6 +369,7 @@ async function executeMasterVolume(action, target) {
           };
         }
 
+        case 'volume_mute':
         case 'mute': {
           await runWindowsAudioBinary('mute');
           return { success: true, message: 'Audio muted.' };
@@ -427,6 +428,7 @@ async function executeMasterVolume(action, target) {
         };
       }
 
+      case 'volume_mute':
       case 'mute': {
         await loudness.setMuted(true);
         return { success: true, message: 'Audio muted.' };
@@ -542,7 +544,10 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const action = (body.action || '').trim().toLowerCase();
-    const target = (body.target || '').toString().trim();
+    const rawTarget = typeof body.target === 'object' && body.target !== null
+      ? (body.target.app || body.target.path || body.target.url || '')
+      : body.target;
+    const target = (rawTarget || '').toString().trim();
 
     let result = { success: false, message: '' };
     const timestamp = new Date().toLocaleTimeString();
@@ -579,6 +584,7 @@ export async function POST(req) {
       // 2. Audio Master Volume Controls (loudness package with Linux cascade fallback)
       case 'volume_up':
       case 'volume_down':
+      case 'volume_mute':
       case 'mute':
       case 'unmute':
       case 'toggle_mute':
@@ -597,6 +603,8 @@ export async function POST(req) {
       }
 
       // 3. Open Directory in Desktop File Manager
+      case 'open_workspace':
+      case 'open_workspace_folder':
       case 'open_folder': {
         const folderPath = target || process.cwd();
         const safePath = path.resolve(/*turbopackIgnore: true*/ folderPath);

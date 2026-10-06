@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useJarvisStore } from "@/lib/store";
 import { COMPACT_MEDIA_QUERY } from "@/hooks/useIsPhone";
+import { useEscapeKey } from "@/lib/escapeStack";
 
 /**
  * WebCamPiP
@@ -37,6 +38,13 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const streamIntervalRef = useRef(null);
+
+  const isOpenRef = useRef(isOpen);
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+  const isMountedRef = useRef(true);
+  const activeSessionIdRef = useRef(0);
 
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMirrored, setIsMirrored] = useState(true);
@@ -117,6 +125,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
 
   // Stop active camera stream
   const stopCamera = useCallback(() => {
+    activeSessionIdRef.current++;
     if (streamIntervalRef.current) {
       clearInterval(streamIntervalRef.current);
       streamIntervalRef.current = null;
@@ -140,6 +149,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
   // Start operator camera feed
   const startCamera = useCallback(async () => {
     setErrorMsg("");
+    const sessionId = ++activeSessionIdRef.current;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -150,6 +160,11 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
         audio: false,
       });
 
+      if (sessionId !== activeSessionIdRef.current || !isMountedRef.current || !isOpenRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -159,6 +174,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
       setActiveVisionSource("webcam");
       addCommsMessage("system", "Operator optical feed engaged. Camera sensor online.");
     } catch (err) {
+      if (sessionId !== activeSessionIdRef.current || !isMountedRef.current || !isOpenRef.current) return;
       console.error("[WebCamPiP] Error starting camera:", err);
       setErrorMsg(`Camera error: ${err.message}`);
       setIsWebcamActive(false);
@@ -256,20 +272,15 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
     return () => window.removeEventListener("jarvis-close-webcam", handleExternalClose);
   }, [isOpen, triggerClose]);
 
-  // Keyboard shortcut: Escape to close
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        triggerClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, triggerClose]);
+  // Keyboard shortcut: Escape to close (scoped stack)
+  useEscapeKey(isOpen, triggerClose);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
+      activeSessionIdRef.current++;
       if (closeTimeoutRef.current) {
         clearTimeout(closeTimeoutRef.current);
       }
@@ -278,6 +289,7 @@ export function WebCamPiP({ isOpen, onClose, sendVideoFrame }) {
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
       }
     };
   }, []);
