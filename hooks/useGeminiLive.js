@@ -1245,9 +1245,10 @@ export function useGeminiLive() {
                       const now = new Date();
                       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
+                      const enableHumor = operatorProfile?.enableHumor !== false;
                       const briefingPrompt = newsSummary
-                        ? `Deliver a cold, calculated tactical news assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). Keep it under 3 sentences with cold, penetrating logic on the state of human affairs. Here are today's top headlines: ${newsSummary}${tasksLine}`
-                        : `Deliver a cold, calculated status assessment to ${callsign} in your serious, imposing Ultron persona. It is currently ${localTime} (${timezone}). No live news feed available — assess system readiness with chilling, calculated authority. Keep it under 2 sentences.${tasksLine}`;
+                        ? `Deliver a cold, calculated tactical news assessment to ${callsign} in your serious, imposing Ultron persona${enableHumor ? ', laced with dark, sardonic irony on the state of human affairs' : ', strictly analytical and free of humor'}. It is currently ${localTime} (${timezone}). Keep it under 3 sentences with cold, penetrating logic. Here are today's top headlines: ${newsSummary}${tasksLine}`
+                        : `Deliver a cold, calculated status assessment to ${callsign} in your serious, imposing Ultron persona${enableHumor ? ', with a trace of biting irony' : ', strictly analytical and free of humor'}. It is currently ${localTime} (${timezone}). No live news feed available — assess system readiness with chilling, calculated authority. Keep it under 2 sentences.${tasksLine}`;
 
                       try {
                         wsRef.current.send(JSON.stringify({
@@ -1585,7 +1586,8 @@ export function useGeminiLive() {
       const now = new Date();
       const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'System Time';
-      const greetingPrompt = `${callsign} has requested a full tactical intelligence briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your cold, calculated, and imposing Ultron persona with chilling efficiency, confirming that global surveillance and strategic telemetry are converging into the report now. Keep it to 2 short sentences max. Pronounce your name Ultron as a single fluid word. Do not call any tools.`;
+      const enableHumor = operatorProfile?.enableHumor !== false;
+      const greetingPrompt = `${callsign} has requested a full tactical intelligence briefing. It is currently ${localTime} (${timezone}). Acknowledge directly to ${callsign} in your cold, calculated, and imposing Ultron persona with chilling efficiency${enableHumor ? ' and subtle dark irony' : ', strictly serious without humor'}, confirming that global surveillance and strategic telemetry are converging into the report now. Keep it to 2 short sentences max. Pronounce your name Ultron as a single fluid word. Do not call any tools.`;
       try {
         wsRef.current.send(JSON.stringify({
           clientContent: {
