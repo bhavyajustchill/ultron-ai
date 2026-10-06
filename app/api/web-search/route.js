@@ -160,13 +160,22 @@ export async function GET(req) {
     }
 
     // Weather safety interception: detect if query is asking about weather/temperature/forecast
-    const weatherKeywords = /\b(weather|temperature|temp|forecast|climate|rain|raining|humidity|wind speed)\b/i;
-    if (weatherKeywords.test(query)) {
+    const isExplicitNonWeather = /\b(climate|temp\s*(?:files?|dir|directory|folders?|table|var|variable|storage|data)|temporary|economic|financial|sales|market|business|revenue|growth|forecast\s*model|model\s*forecast)\b/i.test(query);
+
+    const isWeatherQuery = !isExplicitNonWeather && (
+      /\bweather\b/i.test(query) ||
+      /\b(?:is it|will it)\s+(?:going to\s+)?(?:rain|snow|raining|snowing)\b/i.test(query) ||
+      /\b(?:temperature|forecast)\s+(?:in|for|at|around|near|of)\b/i.test(query) ||
+      /\b[a-zA-Z\s]+\s+(?:weather|temperature|forecast)$/i.test(query) ||
+      /^(?:what(?:'s| is) (?:the )?)?(?:temperature|forecast|weather)(?: (?:today|now|outside))?$/i.test(query)
+    );
+
+    if (isWeatherQuery) {
       // Extract target location if present: e.g. "weather in Delhi", "temperature in Tokyo", "forecast for London"
       let targetCity = '';
       const cityMatch =
-        query.match(/(?:weather|temperature|temp|forecast|climate|rain|humidity)\s+(?:in|for|at|around|near)?\s*([a-zA-Z\s]+)/i) ||
-        query.match(/([a-zA-Z\s]+)\s+(?:weather|temperature|temp|forecast|climate)/i);
+        query.match(/(?:weather|temperature|forecast)\s+(?:in|for|at|around|near|of)\s+([a-zA-Z\s]+)/i) ||
+        query.match(/([a-zA-Z\s]+)\s+(?:weather|temperature|forecast)/i);
 
       if (cityMatch && cityMatch[1]) {
         targetCity = cityMatch[1]
