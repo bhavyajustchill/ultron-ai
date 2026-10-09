@@ -54,7 +54,7 @@ Want it ready every time you log in? Turn on **Start on Login** in Settings (or 
 ## Talking to Ultron
 
 - **Speak** once the mic is live (the **UNMUTE MIC** button toggles it), or **type** in the command bar and press Enter.
-- **Interrupt** any time by talking over him (instant barge-in: playback stops within 50 ms), or press **INTERRUPT**.
+- **Interrupt** with the **INTERRUPT** button (playback stops within 50 ms). Talking over him does not cut him off: he finishes what he is saying, and any action in that reply, before he listens again.
 - **Upload** by dragging files onto the HUD or using **UPLOAD**: images go straight to Gemini's vision, PDFs / Word / text files are read, 3D models open in the holo-viewer.
 - **Show** your screen or webcam with the screen and camera buttons; Ultron can see and discuss them.
 - **Standby:** say "go to standby" (or let auto-standby kick in after two quiet minutes) and the link closes; say **"Hey Ultron"** (or your custom wake phrase) to bring him back.

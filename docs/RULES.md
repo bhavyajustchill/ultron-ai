@@ -47,7 +47,8 @@
 * **Zero Audio Glitch Scheduling:**
   - Incoming 24kHz PCM chunks must be queued using precise Web Audio clock time (`audioContext.currentTime + offset`) to ensure gapless streaming.
 * **Barge-In (Instant Interruption):**
-  - When the operator speaks or clicks the interrupt button, immediately call `stopAndFlush()` to terminate active audio sources and reset the jitter queue within 50ms.
+  - When the operator clicks the interrupt button, immediately call `stopAndFlush()` to terminate active audio sources and reset the jitter queue within 50ms.
+  - Speech does not interrupt (`DEC-172`): while Ultron is replying (speaking, running a tool call, or within 300 ms of his voice stopping) the microphone sends silence to Gemini, so only INTERRUPT can cut a reply short.
 
 ---
 

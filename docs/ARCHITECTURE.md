@@ -161,7 +161,7 @@ ultron-ai/
 ## 4. Audio Pipeline & Visual Sync
 
 1. **Capture:** the microphone streams Float32 at the device rate; `audio-worklet-processor.js` downsamples off-thread to 16 kHz Int16 PCM.
-2. **Transmit:** ~64 ms chunks go over the WebSocket as `realtimeInput.audio` (`audio/pcm;rate=16000`); a client-side RMS gate triggers instant barge-in.
+2. **Transmit:** ~64 ms chunks go over the WebSocket as `realtimeInput.audio` (`audio/pcm;rate=16000`); while Ultron is replying (speaking, running a tool call, or within 300 ms of his voice stopping) silence is sent instead, so speech cannot interrupt him (`DEC-172`).
 3. **Receive:** Gemini Live returns 24 kHz Int16 PCM plus input / output transcriptions for the Comms Log.
 4. **Playback:** `pcmPlayer.js` schedules gapless `AudioBufferSourceNode` slices through an `AnalyserNode`; `stopAndFlush()` clears everything within 50 ms.
 5. **Visual sync:** the Ultron Orb follows the HUD status (IDLE / THINKING / SPEAKING) and the speech-band energy of Ultron's voice (the player's analyser) and the microphone each frame (zero allocations in the `animate()` loop) to drive its state transitions, core growth, and motion. It never reads the colour theme: the orb stays gold.

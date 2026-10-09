@@ -44,6 +44,11 @@ const REMINDER_POLL_MS = 20 * 1000;
 // (localStorage "jarvis_auto_standby_ms" overrides it for testing)
 const AUTO_STANDBY_MS = 2 * 60 * 1000;
 const AWAITING_REPLY_TIMEOUT_MS = 30 * 1000;
+// The microphone stays closed this long after Jarvis's voice stops, so his echo off a phone
+// speaker is not heard as the operator talking
+const LISTEN_AFTER_REPLY_MS = 300;
+// A reply that has sent nothing for this long counts as over, in case its turn end never arrives
+const REPLY_STALL_MS = 10 * 1000;
 // Background intelligence (Phase 8.6); proactive timings can be overridden the same way
 // ("jarvis_proactive_silence_ms", "jarvis_proactive_cooldown_ms")
 const BACKGROUND_TICK_MS = 15 * 1000;
@@ -163,8 +168,16 @@ export function useGeminiLive() {
   // the send and the model's first output Jarvis is silent but busy; a background notice sent then
   // would arrive as a new turn and cut the pending reply off.
   const awaitingReplyRef = useRef(0);
-  // Set when the operator talks over Jarvis: the interrupted reply's late transcript is dropped
+  // Set when the operator presses INTERRUPT mid-reply: the rest of that reply (late audio,
+  // transcript, and actions) is dropped until the turn ends
   const bargedInRef = useRef(false);
+  // Jarvis finishes a reply, and the actions in it, before he listens again: the last time the
+  // reply showed progress, how many tool calls are running, when his voice last stopped, and the
+  // silent chunk sent in place of the microphone meanwhile
+  const replyActivityAtRef = useRef(0);
+  const toolsRunningRef = useRef(0);
+  const replyEndedAtRef = useRef(0);
+  const silenceRef = useRef({ bytes: 0, data: '' });
   const lastReplyAtRef = useRef(0);
   const relinkRequestedRef = useRef(false);
 
@@ -188,6 +201,7 @@ export function useGeminiLive() {
       if (isPlaying) {
         setStatus('SPEAKING');
       } else {
+        replyEndedAtRef.current = Date.now();
         if (wsRef.current && isSetupCompleteRef.current) {
           const isMutedNow = useJarvisStore.getState().isMuted;
           setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
@@ -201,7 +215,15 @@ export function useGeminiLive() {
     };
   }, [setStatus]);
 
-  // Handle instant user barge-in (speech or manual click)
+  // Jarvis's reply is still arriving from the server or running an action
+  const isReplyStreaming = useCallback(
+    () =>
+      toolsRunningRef.current > 0 ||
+      (isTurnActiveRef.current && Date.now() - replyActivityAtRef.current < REPLY_STALL_MS),
+    []
+  );
+
+  // Handle the INTERRUPT button (the only way to cut Jarvis off) and the server's interruption notice
   const handleBargeIn = useCallback(() => {
     const isPlaying =
       pcmPlayerRef.current &&
@@ -217,11 +239,13 @@ export function useGeminiLive() {
       briefingTimeoutRef.current = null;
     }
     briefingStateRef.current = 'IDLE';
-    // Keep what Jarvis had already said in the Comms Log, then ignore the rest of that reply's
-    // transcript until the server confirms the interruption
+    // Keep what Jarvis had already said in the Comms Log, then drop the rest of a reply still
+    // arriving (its audio, transcript, and actions) until its turn ends
     const partial = currentTurnTextRef.current.trim();
     if (partial && (isPlaying || isTurnActiveRef.current)) {
       addCommsMessage('jarvis', `${partial} [Interrupted]`);
+    }
+    if (isReplyStreaming()) {
       bargedInRef.current = true;
     }
     currentTurnTextRef.current = '';
@@ -229,7 +253,7 @@ export function useGeminiLive() {
       const isMutedNow = useJarvisStore.getState().isMuted;
       setStatus(isMutedNow ? 'CONNECTED' : 'LISTENING');
     }
-  }, [setStatus, addCommsMessage]);
+  }, [setStatus, addCommsMessage, isReplyStreaming]);
 
   // Send 16kHz Int16 audio chunk over WebSocket
   const handleAudioChunk = useCallback(
@@ -237,7 +261,25 @@ export function useGeminiLive() {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
       if (!isSetupCompleteRef.current) return;
 
-      const base64Data = arrayBufferToBase64(pcmBuffer);
+      // While Jarvis is replying (speaking, running an action, or just finished speaking) the
+      // server hears silence, so a noisy microphone or his own echo cannot cut him off. Silence
+      // rather than nothing keeps the stream steady for the server's speech detection.
+      const isReplying =
+        (!bargedInRef.current && isReplyStreaming()) ||
+        pcmPlayerRef.current?.activeSources?.size > 0 ||
+        Date.now() - replyEndedAtRef.current < LISTEN_AFTER_REPLY_MS;
+      let base64Data;
+      if (isReplying) {
+        if (silenceRef.current.bytes !== pcmBuffer.byteLength) {
+          silenceRef.current = {
+            bytes: pcmBuffer.byteLength,
+            data: arrayBufferToBase64(new ArrayBuffer(pcmBuffer.byteLength)),
+          };
+        }
+        base64Data = silenceRef.current.data;
+      } else {
+        base64Data = arrayBufferToBase64(pcmBuffer);
+      }
       const audioMessage = {
         realtimeInput: {
           audio: {
@@ -253,13 +295,12 @@ export function useGeminiLive() {
         console.error('[useGeminiLive] Failed to send audio chunk:', err);
       }
     },
-    []
+    [isReplyStreaming]
   );
 
-  // Audio Stream Ingestion Hook
+  // Audio Stream Ingestion Hook (no onUserSpeaking: talking over Jarvis does not interrupt him)
   const { startMic, stopMic, getInputByteFrequencyData, isMicActive } = useAudioStream({
     onAudioChunk: handleAudioChunk,
-    onUserSpeaking: handleBargeIn,
   });
 
   // Clear all resumption / reconnect bookkeeping (manual connect or disconnect)
@@ -277,6 +318,7 @@ export function useGeminiLive() {
     reconnectAttemptRef.current = 0;
     goAwayPendingRef.current = false;
     isTurnActiveRef.current = false;
+    bargedInRef.current = false;
     awaitingReplyRef.current = 0;
     cancelledToolIdsRef.current.clear();
   }, []);
@@ -625,6 +667,7 @@ export function useGeminiLive() {
         }
         isSetupCompleteRef.current = false;
         isTurnActiveRef.current = false;
+        bargedInRef.current = false;
         cancelledToolIdsRef.current.clear();
       } else {
         // Tearing down a stale socket must not drop directives queued for this connection
@@ -982,24 +1025,37 @@ export function useGeminiLive() {
             // Handle Gemini Live Tool Calling (e.g. get_system_telemetry)
             if (msg.toolCall) {
               isTurnActiveRef.current = true;
+              replyActivityAtRef.current = Date.now();
               const { functionCalls } = msg.toolCall;
               if (functionCalls && functionCalls.length > 0) {
                 const functionResponses = [];
 
-                for (const call of functionCalls) {
-                  const tool = TOOLS_BY_NAME.get(call.name);
-                  let output;
-                  if (!tool) {
-                    output = { status: 'UNKNOWN_TOOL', message: `No handler is registered for "${call.name}".` };
-                  } else {
-                    try {
-                      output = await tool.run(call.args || {}, toolContext);
-                    } catch (err) {
-                      console.error(`[useGeminiLive] Tool ${call.name} failed:`, err);
-                      output = { status: 'FAILED', message: err.message };
+                // The microphone stays closed until the actions have run (see handleAudioChunk)
+                toolsRunningRef.current += 1;
+                try {
+                  for (const call of functionCalls) {
+                    const tool = TOOLS_BY_NAME.get(call.name);
+                    let output;
+                    if (bargedInRef.current) {
+                      output = {
+                        status: 'CANCELLED',
+                        message: 'The operator pressed INTERRUPT before this ran, so it was not done. Do not retry it unless they ask again.',
+                      };
+                    } else if (!tool) {
+                      output = { status: 'UNKNOWN_TOOL', message: `No handler is registered for "${call.name}".` };
+                    } else {
+                      try {
+                        output = await tool.run(call.args || {}, toolContext);
+                      } catch (err) {
+                        console.error(`[useGeminiLive] Tool ${call.name} failed:`, err);
+                        output = { status: 'FAILED', message: err.message };
+                      }
                     }
+                    functionResponses.push({ response: { output }, id: call.id });
                   }
-                  functionResponses.push({ response: { output }, id: call.id });
+                } finally {
+                  toolsRunningRef.current -= 1;
+                  replyActivityAtRef.current = Date.now();
                 }
 
                 if (functionResponses.length > 0) {
@@ -1049,6 +1105,7 @@ export function useGeminiLive() {
               // Audio parts or their transcription both mean Jarvis's reply is under way
               if (modelTurn || outputTx?.text) {
                 isTurnActiveRef.current = true;
+                replyActivityAtRef.current = Date.now();
               }
 
               // Built-in Google Search grounding: remember the queries and cited sources
@@ -1063,17 +1120,19 @@ export function useGeminiLive() {
               if (interrupted) {
                 isTurnActiveRef.current = false;
                 awaitingReplyRef.current = 0;
-                bargedInRef.current = false;
                 const partialText = currentTurnTextRef.current.trim();
                 if (partialText) {
                   addCommsMessage('jarvis', `${partialText} [Interrupted]`);
                   currentTurnTextRef.current = '';
                 }
                 handleBargeIn();
+                // The turn is over: the next reply plays in full
+                bargedInRef.current = false;
                 return;
               }
 
-              if (modelTurn?.parts) {
+              // After INTERRUPT, the rest of the cut-off reply is dropped
+              if (modelTurn?.parts && !bargedInRef.current) {
                 for (const part of modelTurn.parts) {
                   // Inbound 24kHz PCM audio chunk
                   if (part.inlineData && part.inlineData.data) {
@@ -1261,6 +1320,7 @@ export function useGeminiLive() {
           const failedBeforeSetup = !isSetupCompleteRef.current;
           isSetupCompleteRef.current = false;
           isTurnActiveRef.current = false;
+          bargedInRef.current = false;
           awaitingReplyRef.current = 0;
           goAwayPendingRef.current = false;
           if (goAwayTimerRef.current) {

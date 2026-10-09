@@ -43,7 +43,7 @@ Developers and power users who want a voice-first assistant that can act on thei
 ### 🎙️ 3.1 Real-Time Audio Engine & Expressive Voice Core
 
 - **Native Bidirectional Streaming:** 16 kHz PCM mic ingest via `AudioWorkletNode` ➔ WebSocket ➔ Gemini 3.8 Live ➔ 24 kHz PCM playback through a jitter-buffered gapless player.
-- **Instant Barge-In:** `stopAndFlush()` silences playback within 50 ms of the operator speaking.
+- **Instant Barge-In:** `stopAndFlush()` silences playback within 50 ms of the operator pressing INTERRUPT. Speech does not interrupt: Ultron finishes his reply, and any action in it, before he listens again (`DEC-172`).
 - **Session Resilience:** Sliding-window context compression, resumption handles, GoAway socket swaps, and exponential-backoff re-sync behind a `RECONNECTING` status pill.
 - **Zero Subscription Cost:** Runs on the Gemini Live API free tier.
 
